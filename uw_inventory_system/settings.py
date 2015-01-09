@@ -53,6 +53,7 @@ ROOT_URLCONF = 'uw_inventory_system.urls'
 
 WSGI_APPLICATION = 'uw_inventory_system.wsgi.application'
 
+TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
