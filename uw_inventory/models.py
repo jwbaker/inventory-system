@@ -23,5 +23,6 @@ class InventoryItem(models.Model):
         blank=True,
         choices=STATUS_CHOICES,
         default=None,
-        max_length=2)
+        max_length=2,
+        null=True)
     purchase_price = models.IntegerField(blank=True, null=True)
