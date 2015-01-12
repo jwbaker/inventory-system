@@ -3,6 +3,7 @@
 {% block css_includes %}
   <!-- DataTables -->
   <link rel="stylesheet" href="http://cdn.datatables.net/1.10.4/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="http://cdn.datatables.net/plug-ins/3cfcc339e89/integration/bootstrap/3/dataTables.bootstrap.css">
   <style type="text/css">
     body{
       padding-top: 70px;
@@ -11,38 +12,35 @@
 {% endblock css_includes %}
 
 {% block content %}
+  <div class="row">
+    <table id="inventoryTable" class="table table-condensed table-hover">
+      <thead>
+        <td width="40%">Name</td>
+        <td width="20%">Creation Date</td>
+        <td width="20%">Status</td>
+        <td width="20%">Purchase Cost</td>
+      </thead>
+      <tbody>
+        {% for item in inventory_list %}
+          <tr>
+            <td>{{ item.name }}</td>
+            <td>{{ item.creation_date }}</td>
+            <td>{{ item.status }}</td>
+            <td>{{ item.purchase_cost }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock content %} 
 
-    <div class="container" role="main">
-      <div class="row">
-        <table id="inventoryTable" class="table table-condensed table-hover">
-          <thead>
-            <td width="40%">Name</td>
-            <td width="20%">Creation Date</td>
-            <td width="20%">Status</td>
-            <td width="20%">Purchase Cost</td>
-          </thead>
-          <tbody>
-            {% for item in inventory_items %}
-              <tr>
-                <td>{{ item.name }}</td>
-                <td>{{ item.creation_date }}</td>
-                <td>{{ item.status }}</td>
-                <td>{{ item.purchase_cost }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    {% block js_includes %}
-      <!-- DataTables -->
-      <script src="http://cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js"></script>
-      <script type="text/javascript">
-        $(function () {
-          $('table#inventoryTable').DataTable();                              
-        });
-      </script>
-    {% endblock js_includes %}
-    
-{% endblock content %}
+{% block js_includes %}
+  <!-- DataTables -->
+  <script src="http://cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js"></script>
+  <script src="http://cdn.datatables.net/plug-ins/3cfcc339e89/integration/bootstrap/3/dataTables.bootstrap.js"></script>
+  <script type="text/javascript">
+    $(function () {
+      $('table#inventoryTable').DataTable();                              
+    });
+  </script>
+{% endblock js_includes %}
