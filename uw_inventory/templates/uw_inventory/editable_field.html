@@ -7,9 +7,9 @@
       <input type="text" class="form-control hidden" id="{{ field_id}}" placeholder="{{ field_value }}" />
 
     {% elif field_type == 'currency' %}
-      <div class="input-group hidden">
+      <div class="input-group hidden" id="{{ field_id}}">
         <span class="input-group-addon">$</span>
-        <input type="number" class="form-control form-control" id="{{ field_id}}" placeholder="{{ field_value }}" />
+        <input type="number" class="form-control form-control" placeholder="{{ field_value }}" />
         <span class="input-group-addon">.00</span>
       </div>
 

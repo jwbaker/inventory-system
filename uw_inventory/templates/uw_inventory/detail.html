@@ -23,4 +23,27 @@
 
 {% block js_includes %}
   {{ block.super }}
+  <script type="text/javascript">
+    var editClickHandler = function(context){
+      var editTarget = context.attr('for');
+      var paragraph = $('p#' + editTarget);
+      paragraph.toggleClass('hidden');
+      paragraph.siblings().toggleClass('hidden');
+      editMenuToggle(editTarget);
+    }
+
+    var editMenuToggle = function(editTarget){
+      $('.save[for="' + editTarget + '"]').toggleClass('hidden');
+      $('.cancel[for="' + editTarget + '"]').toggleClass('hidden');
+      $('.edit[for="' + editTarget + '"]').toggleClass('hidden');
+    }
+
+    $('.edit').click(function(){
+      editClickHandler($(this));
+    });
+
+    $('.cancel').click(function(){
+      editClickHandler($(this));
+    });
+  </script>
 {% endblock js_includes %}

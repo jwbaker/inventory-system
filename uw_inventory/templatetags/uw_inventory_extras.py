@@ -10,7 +10,7 @@ def show_editable_field(field_value, field_type, field_label):
     context = {
         'field_value': field_value,
         'field_type': field_type,
-        'field_id': 'input' + field_label.strip(),
+        'field_id': 'input' + ''.join(field_label.split()),
         'field_label': field_label,
     }
 
