@@ -4,6 +4,11 @@
   <!-- DataTables -->
   <link rel="stylesheet" href="http://cdn.datatables.net/1.10.4/css/jquery.dataTables.min.css">
   <link rel="stylesheet" href="http://cdn.datatables.net/plug-ins/3cfcc339e89/integration/bootstrap/3/dataTables.bootstrap.css">
+  <style type="text/css">
+    table#inventoryTable tbody tr:hover{
+      cursor: pointer;
+    }
+  </style>
 {% endblock css_includes %}
 
 {% block content %}
@@ -24,7 +29,11 @@
               </a>
             </td>
             <td>{{ item.creation_date }}</td>
-            <td>{{ item.status }}</td>
+            <td>
+              {% if item.status %}
+                {{ item.status }}
+              {% endif %}
+              </td>
             <td>{{ item.purchase_cost }}</td>
           </tr>
         {% endfor %}
@@ -40,6 +49,11 @@
   <script type="text/javascript">
     $(function () {
       $('table#inventoryTable').DataTable();                              
+    });
+  </script>
+  <script type="text/javascript">
+    $('tbody tr').click(function(){
+      window.location = $(this).find('a').attr('href');
     });
   </script>
 {% endblock js_includes %}

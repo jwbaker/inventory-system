@@ -59,16 +59,18 @@
         var dateStr = inputControl[0].value;
         var dateArr = dateStr.split('-');
         var date = new Date(dateArr[0], dateArr[1] - 1, dateArr[2]);
-        saveText = $.datepicker.formatDate('M d, yy', date);
+        saveText = $.datepicker.formatDate('M. d, yy', date);
       } else {
         saveText = (inputControl[0].value == inputControl.placeholder ? '' : inputControl[0].value);
+      }
+
+      if(saveText !== paragraph[0].textContent){
+        $('#pageEditWarning').removeClass('hidden');
       }
 
       paragraph[0].textContent = saveText;
 
       editClickHandler($(this));
-
-      $('#pageEditWarning').removeClass('hidden');
     });
   </script>
 {% endblock js_includes %}
