@@ -23,6 +23,9 @@
           <option value="{{ key }}" {% if field_value %}selected="selected"{% endif %}>{{ value }}</option>
         {% endfor %}
       </select>
+
+    {% elif field_type == 'textarea' %}
+      <textarea class="form-control hidden" rows="10" style="resize:vertical" id="{{ field_id }}" placeholder="{{ field_label }}">{{ field_value }}</textarea>
     {% endif %}
     
   </div>

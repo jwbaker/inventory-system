@@ -19,6 +19,7 @@
         <td width="20%">Creation Date</td>
         <td width="20%">Status</td>
         <td width="20%">Purchase Cost</td>
+        <td>Description</td>
       </thead>
       <tbody>
         {% for item in inventory_list %}
@@ -35,6 +36,7 @@
               {% endif %}
               </td>
             <td>{{ item.purchase_cost }}</td>
+            <td>{{ item.description }}</td>
           </tr>
         {% endfor %}
       </tbody>
@@ -48,7 +50,14 @@
   <script src="http://cdn.datatables.net/plug-ins/3cfcc339e89/integration/bootstrap/3/dataTables.bootstrap.js"></script>
   <script type="text/javascript">
     $(function () {
-      $('table#inventoryTable').DataTable();                              
+      $('table#inventoryTable').DataTable({
+        'columnDefs': [
+          {
+            'targets': [4],
+            'visible': false,
+          }
+        ]
+      });                              
     });
   </script>
   <script type="text/javascript">
