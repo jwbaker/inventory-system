@@ -1,0 +1,26 @@
+{% extends 'uw_inventory_system/base.html' %}
+{% load uw_inventory_extras %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-xs-4 col-xs-offset-4 alert alert-warning hidden" id="pageEditWarning" role="alert">This page has unsaved changes</div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-8 col-xs-offset-2">
+      <div class="panel panel-default">
+        <div class="panel-heading">Heading</div>
+        <div class="panel-body">
+          {% show_editable_field inventory_item.name 'text' 'Name' %}
+          {% show_editable_field inventory_item.creation_date 'date' 'Creation Date' %}
+          {% show_editable_field inventory_item.status 'dropdown' 'Status' %}
+          {% show_editable_field inventory_item.purchase_price 'currency' 'Purchase Price' %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
+
+{% block js_includes %}
+  {{ block.super }}
+{% endblock js_includes %}

@@ -1,0 +1,34 @@
+<div class="form-group clearfix">
+  <label for="{{ field_id}}" class="col-xs-2 control-label">{{ field_label }}</label>
+  <div class="col-xs-9">
+    <p class="form-control-static" id="{{ field_id}}">{{ field_value }}</p>
+
+    {% if field_type == 'text' %}
+      <input type="text" class="form-control hidden" id="{{ field_id}}" placeholder="{{ field_value }}" />
+
+    {% elif field_type == 'currency' %}
+      <div class="input-group hidden">
+        <span class="input-group-addon">$</span>
+        <input type="number" class="form-control form-control" id="{{ field_id}}" placeholder="{{ field_value }}" />
+        <span class="input-group-addon">.00</span>
+      </div>
+
+    {% elif field_type == 'date' %}
+      <input type="date" class="form-control hidden" id="{{ field_id}}"/>
+
+    {% elif field_type == 'dropdown' %}
+      <select id="{{ field_id }}" class="form-control hidden">
+        <option value="">---Please choose a value---</option>
+        {% for key, value in field_options %}
+          <option value="{{ key }}" {% if field_value == key %}selected="selected"{% endif %}>{{ value }}</option>
+        {% endfor %}
+      </select>
+    {% endif %}
+    
+  </div>
+  <div class="col-xs-1">
+    <i class="fa fa-check save hidden" for="{{ field_id}}"></i>
+    <i class="fa fa-times cancel hidden" for="{{ field_id}}"></i>
+    <i class="fa fa-pencil edit" for="{{ field_id}}"></i>
+  </div>
+</div>
