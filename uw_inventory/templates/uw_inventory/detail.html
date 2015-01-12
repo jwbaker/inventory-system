@@ -45,5 +45,24 @@
     $('.cancel').click(function(){
       editClickHandler($(this));
     });
+
+    $('.save').click(function(){
+      var paragraph = $('p#' + $(this).attr('for'));
+      var inputControl = paragraph.closest('div').find('.form-control');
+      var saveText;
+
+      if(inputControl.is('select')){
+        inputControl = inputControl.find('option:selected');
+        saveText = (inputControl.hasClass('select-default') ? '' : inputControl[0].text);
+      } else {
+        saveText = (inputControl[0].value == inputControl.placeholder ? '' : inputControl[0].value);
+      }
+
+      paragraph[0].textContent = saveText;
+
+      editClickHandler($(this));
+
+      $('#pageEditWarning').removeClass('hidden');
+    });
   </script>
 {% endblock js_includes %}
