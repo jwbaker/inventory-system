@@ -18,7 +18,11 @@
       <tbody>
         {% for item in inventory_list %}
           <tr>
-            <td>{{ item.name }}</td>
+            <td>
+              <a href="{{ item.id }}">
+                {{ item.name }}
+              </a>
+            </td>
             <td>{{ item.creation_date }}</td>
             <td>{{ item.status }}</td>
             <td>{{ item.purchase_cost }}</td>

@@ -6,6 +6,8 @@ register = template.Library()
 
 
 def get_choice_text(arr, choice):
+    if choice is None:
+        return ''
     list = [t[1] for t in arr if t[0] == choice]
     if len(list) == 1:
         return list[0]
