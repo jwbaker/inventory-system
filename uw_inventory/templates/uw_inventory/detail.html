@@ -23,6 +23,7 @@
 
 {% block js_includes %}
   {{ block.super }}
+  <script src="https://code.jquery.com/ui/1.11.2/jquery-ui.min.js"></script>
   <script type="text/javascript">
     var editClickHandler = function(context){
       var editTarget = context.attr('for');
@@ -54,6 +55,11 @@
       if(inputControl.is('select')){
         inputControl = inputControl.find('option:selected');
         saveText = (inputControl.hasClass('select-default') ? '' : inputControl[0].text);
+      } else if(inputControl.is('input[type="date"]')){
+        var dateStr = inputControl[0].value;
+        var dateArr = dateStr.split('-');
+        var date = new Date(dateArr[0], dateArr[1] - 1, dateArr[2]);
+        saveText = $.datepicker.formatDate('M d, yy', date);
       } else {
         saveText = (inputControl[0].value == inputControl.placeholder ? '' : inputControl[0].value);
       }
