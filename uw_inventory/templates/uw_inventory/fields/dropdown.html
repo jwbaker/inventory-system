@@ -1,0 +1,6 @@
+<select id="{{ field_id }}" class="form-control hidden" name="{{ field_name }}" data-default="{{ field_value }}">
+	<option class="select-default">---Please choose a value---</option>
+	{% for key, value in field_options %}
+	  <option value="{{ key }}" {% ifequal field_value value %}selected="selected"{% endifequal %}>{{ value }}</option>
+	{% endfor %}
+</select>
