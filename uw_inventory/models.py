@@ -16,6 +16,14 @@ class InventoryItem(models.Model):
         (STATUS_OTHER,   'Other'),
     ]
 
+    EDITABLE_FIELDS = [
+        'creation_date',
+        'description',
+        'name',
+        'purchase_price',
+        'status',
+    ]
+
     name = models.CharField(blank=True, max_length=200)
     creation_date = models.DateField(blank=True, default=date.today, null=True)
     description = models.TextField(blank=True)

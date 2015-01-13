@@ -25,10 +25,9 @@ def inventory_detail(request, item_id):
 def inventory_save(request, item_id):
     if request.method == 'POST':
         item = InventoryItem.objects.get(pk=item_id)
-        item.name = request.POST['name']
-        item.creation_date = request.POST['creation_date']
-        item.description = request.POST['description']
-        item.status = request.POST['status']
-        item.purchase_price = request.POST['purchase_price']
+
+        for attr in item.EDITABLE_FIELDS:
+            setattr(item, attr, request.POST[attr])
+
         item.save()
     return HttpResponseRedirect('/list')
