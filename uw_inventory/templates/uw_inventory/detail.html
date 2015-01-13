@@ -76,6 +76,7 @@
     $('.save').click(function(){
       var paragraph = $('p#' + $(this).attr('for'));
       var inputControl = paragraph.closest('div').find('.form-control');
+      var original = inputControl.attr('data-default');
       var saveText;
 
       if(inputControl.is('select')){
@@ -89,10 +90,13 @@
       } else {
         saveText = (inputControl[0].value == inputControl.placeholder ? '' : inputControl[0].value);
       }
-
-      if(saveText !== paragraph[0].textContent){
+      
+      if(saveText !== original){
         $('#pageEditWarning').removeClass('hidden');
         $('#pageSave').removeAttr('disabled');
+      } else{
+        $('#pageEditWarning').addClass('hidden');
+        $('#pageSave').prop('disabled', 'disabled');
       }
 
       paragraph[0].textContent = saveText;

@@ -4,20 +4,20 @@
     <p class="form-control-static" id="{{ field_id }}">{{ field_value }}</p>
 
     {% if field_type == 'text' %}
-      <input type="text" class="form-control hidden" name="{{ field_name }}" id="{{ field_id }}" placeholder="{{ field_label }}" {% if field_value %}value="{{ field_value }}"{% endif %} />
+      <input type="text" class="form-control hidden" name="{{ field_name }}" id="{{ field_id }}" placeholder="{{ field_label }}" {% if field_value %}value="{{ field_value }}"{% endif %} data-default="{{ field_value }}" />
 
     {% elif field_type == 'currency' %}
       <div class="input-group hidden" id="{{ field_id }}">
         <span class="input-group-addon">$</span>
-        <input type="number" class="form-control" name="{{ field_name }}" placeholder="0" value="{% if field_value %}{{ field_value }}{% else %}0{% endif %}" />
+        <input type="number" class="form-control" name="{{ field_name }}" placeholder="0" value="{% if field_value %}{{ field_value }}{% else %}0{% endif %}" data-default="{{ field_value }}" />
         <span class="input-group-addon">.00</span>
       </div>
 
     {% elif field_type == 'date' %}
-      <input type="date" class="form-control hidden" name="{{ field_name }}" id="{{ field_id }}" {% if field_value %}value="{{ field_value|date:'Y-m-d' }}"{% endif %} />
+      <input type="date" class="form-control hidden" name="{{ field_name }}" id="{{ field_id }}" {% if field_value %}value="{{ field_value|date:'Y-m-d' }}"{% endif %} data-default="{{ field_value }}" />
 
     {% elif field_type == 'dropdown' %}
-      <select id="{{ field_id }}" class="form-control hidden" name="{{ field_name }}">
+      <select id="{{ field_id }}" class="form-control hidden" name="{{ field_name }}" data-default="{{ field_value }}">
         <option class="select-default">---Please choose a value---</option>
         {% for key, value in field_options %}
           <option value="{{ key }}" {% ifequal field_value value %}selected="selected"{% endifequal %}>{{ value }}</option>
@@ -25,7 +25,7 @@
       </select>
 
     {% elif field_type == 'textarea' %}
-      <textarea class="form-control hidden" name="{{ field_name }}" rows="10" style="resize:vertical" id="{{ field_id }}" placeholder="{{ field_label }}">{{ field_value }}</textarea>
+      <textarea class="form-control hidden" name="{{ field_name }}" rows="10" style="resize:vertical" id="{{ field_id }}" placeholder="{{ field_label }}" data-default="{{ field_value }}">{{ field_value }}</textarea>
     {% endif %}
     
   </div>
