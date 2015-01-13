@@ -10,20 +10,23 @@
   </li>
 {% endblock navbar_right %}
 
-{% block content %}
-  <div class="row">
+{% block messages %}
+   {{ block.super }}
     <div class="col-xs-4 col-xs-offset-4 alert alert-warning hidden" 
          id="pageEditWarning" 
          role="alert">
       This page has unsaved changes
     </div>
-  </div>
+{% endblock messages %}
 
+{% block content %}
   <div class="row">
     <div class="col-xs-8 col-xs-offset-2">
       <div class="panel panel-default">
         <div class="panel-heading">Heading</div>
-        <form action="{{ inventory_item.id }}/save" method="post" id="itemForm">
+        <form action="{% url 'uw_inventory.views.inventory_save' inventory_item.id %}"
+              method="post"
+              id="itemForm">
           {% csrf_token %}
           {% show_editable_field inventory_item.name 'text' 'Name' %}
           {% show_editable_field inventory_item.creation_date 'date' 'Creation Date' %}
@@ -86,8 +89,8 @@
 
         saveText = inputControl[0].text;
       } else if(inputControl.is('input[type="date"]')){
-        {# Need to do this because sending the string alone into the Date constructor will
-            interpret the data as UTC, but we want it to be Eastern time #}
+        {# Need to do this because sending the string alone into the Date constructor will #}
+        {#   interpret the data as UTC, but we want it to be Eastern time #}
         var dateStr = inputControl[0].value;
         var dateArr = dateStr.split('-');
         var date = new Date(dateArr[0], dateArr[1] - 1, dateArr[2]);

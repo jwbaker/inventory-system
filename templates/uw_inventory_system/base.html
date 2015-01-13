@@ -51,8 +51,27 @@
     </nav>
 
     <div class="container" role="main">
+      
+      {% block messages %}
+        <div class="row">
+          {% if success %}
+            {% if err_msg %}
+              <div class="col-xs-4 col-xs-offset-4 alert alert-danger alert-dissmissible">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <div>{{ err_msg }}</div>
+              </div>
+            {% else %}
+              <div class="col-xs-4 col-xs-offset-4 alert alert-success alert-dissmissible">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <div>All quiet on the western front</div>
+              </div>
+            {% endif %}
+          {% endif %}
+        </div>
+      {% endblock messages %}
 
       {% block content %}
+
       {% endblock content %}
 
       <hr>
