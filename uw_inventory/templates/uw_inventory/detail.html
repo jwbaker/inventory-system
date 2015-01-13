@@ -12,7 +12,11 @@
 
 {% block content %}
   <div class="row">
-    <div class="col-xs-4 col-xs-offset-4 alert alert-warning hidden" id="pageEditWarning" role="alert">This page has unsaved changes</div>
+    <div class="col-xs-4 col-xs-offset-4 alert alert-warning hidden" 
+         id="pageEditWarning" 
+         role="alert">
+      This page has unsaved changes
+    </div>
   </div>
 
   <div class="row">
@@ -34,18 +38,16 @@
 
 {% block js_includes %}
   {{ block.super }}
+  {# Need this for the date formatting further down #}
   <script src="https://code.jquery.com/ui/1.11.2/jquery-ui.min.js"></script>
+
   <script type="text/javascript">
-  $('#pageSave').click(function(){
-    $('form#itemForm').submit();
-  });
-  </script>
-  <script type="text/javascript">
+    {# Redirect on the cancel button #}
     $('#pageCancel').click(function(){
       window.location= '/list';
     });
     $('#pageSave').click(function(){
-
+      $('form#itemForm').submit();
     });
   </script>
   <script type="text/javascript">
@@ -58,6 +60,7 @@
     }
 
     var editMenuToggle = function(editTarget){
+      {# We could have used a class rather than the for attribute, but this is more semantically meaningful #}
       $('i[for="' + editTarget + '"]').toggleClass('hidden');
     }
 
@@ -71,27 +74,36 @@
 
     $('.save').click(function(){
       var paragraph = $('p#' + $(this).attr('for'));
+
+      {# This line looks up from the pragraph for the parent div, then down for the input element #}
       var inputControl = paragraph.closest('div').find('.form-control');
       var original = inputControl.attr('data-default');
-      var saveText;
+      var saveText; {# This will eventually go in the "saved" <p> tag text #}
 
       if(inputControl.is('select')){
+        {# inputControl was formerly the select box itself, but we need the selected option #}
         inputControl = inputControl.find('option:selected');
-        saveText = (inputControl.val() ? inputControl[0].text : inputControl.val());
+
+        saveText = inputControl[0].text;
       } else if(inputControl.is('input[type="date"]')){
+        {# Need to do this because sending the string alone into the Date constructor will
+            interpret the data as UTC, but we want it to be Eastern time #}
         var dateStr = inputControl[0].value;
         var dateArr = dateStr.split('-');
         var date = new Date(dateArr[0], dateArr[1] - 1, dateArr[2]);
+
+        {# Keeps a consistent formatting on the date. We could do this with native JS, but this is cleaner #}
         saveText = $.datepicker.formatDate('M. d, yy', date);
       } else {
+        {# We don't want to display placeholder text #}
         saveText = (inputControl[0].value == inputControl.placeholder ? '' : inputControl[0].value);
       }
       
-      if(saveText !== original){
+      if(saveText !== original){ {# Have we made a change? #}
         $('#pageEditWarning').removeClass('hidden');
         $('#pageSave').removeAttr('disabled');
         inputControl.parents('div.form-group').addClass('list-group-item-warning');
-      } else{
+      } else{ {# Are we back to original? #}
         $('#pageEditWarning').addClass('hidden');
         $('#pageSave').prop('disabled', 'disabled');
         inputControl.parents('div.form-group').removeClass('list-group-item-warning');

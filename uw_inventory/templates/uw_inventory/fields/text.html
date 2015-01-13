@@ -1,1 +1,8 @@
-<input type="text" class="form-control hidden" name="{{ field_name }}" id="{{ field_id }}" placeholder="{{ field_label }}" {% if field_value %}value="{{ field_value }}"{% endif %} data-default="{{ field_value }}" />
+<input type="text"
+       class="form-control hidden"
+       name="{{ field_name }}"
+       id="{{ field_id }}"
+       placeholder="{{ field_label }}"
+       value="{{ field_value }}"
+       {# The data-default attribute will be compared to the current value to detect changes #}
+       data-default="{{ field_value }}" />

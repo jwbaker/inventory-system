@@ -4,7 +4,9 @@
   <!-- DataTables -->
   <link rel="stylesheet" href="http://cdn.datatables.net/1.10.4/css/jquery.dataTables.min.css">
   <link rel="stylesheet" href="http://cdn.datatables.net/plug-ins/3cfcc339e89/integration/bootstrap/3/dataTables.bootstrap.css">
+
   <style type="text/css">
+    {# Make the whole row look clickable #}
     table#inventoryTable tbody tr:hover{
       cursor: pointer;
     }
@@ -19,12 +21,13 @@
         <td width="20%">Creation Date</td>
         <td width="20%">Status</td>
         <td width="20%">Purchase Cost</td>
-        <td>Description</td>
+        <td>Description</td> {# We're not going to display this field, but we want to search on it #}
       </thead>
       <tbody>
         {% for item in inventory_list %}
           <tr>
             <td>
+              {# Have to put the link somewhere #}
               <a href="{{ item.id }}">
                 {{ item.name }}
               </a>
@@ -48,9 +51,11 @@
   <!-- DataTables -->
   <script src="http://cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js"></script>
   <script src="http://cdn.datatables.net/plug-ins/3cfcc339e89/integration/bootstrap/3/dataTables.bootstrap.js"></script>
+
   <script type="text/javascript">
     $(function () {
       $('table#inventoryTable').DataTable({
+        {# This is how we can search on invisible columns - DataTables magic! #}
         'columnDefs': [
           {
             'targets': [4],
@@ -61,6 +66,7 @@
     });
   </script>
   <script type="text/javascript">
+    {# If we click anywhere in a row, we want to trigger the link contained in that row #}
     $('tbody tr').click(function(){
       window.location = $(this).find('a').attr('href');
     });

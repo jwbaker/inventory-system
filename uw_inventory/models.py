@@ -17,6 +17,9 @@ class InventoryItem(models.Model):
         (STATUS_OTHER,   'Other'),
     ]
 
+    # We're going to loop over this to make it easier for us to save items
+    # This is why we expect the control element to have a label that can be
+    # converted into an attribute name
     EDITABLE_FIELDS = [
         'creation_date',
         'description',

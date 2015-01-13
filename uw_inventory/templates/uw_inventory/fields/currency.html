@@ -1,5 +1,11 @@
 <div class="input-group hidden" id="{{ field_id }}">
-	<span class="input-group-addon">$</span>
-	<input type="number" class="form-control" name="{{ field_name }}" placeholder="0" value="{% if field_value %}{{ field_value }}{% else %}0{% endif %}" data-default="{{ field_value }}" />
-	<span class="input-group-addon">.00</span>
+    <span class="input-group-addon">$</span>
+    <input type="number" 
+           class="form-control"
+           name="{{ field_name }}"
+           placeholder="0"
+           value="{% if field_value %}{{ field_value }}{% else %}0{% endif %}"
+           {# The data-default attribute will be compared to the current value to detect changes #}
+           data-default="{{ field_value }}" />
+    <span class="input-group-addon">.00</span>
 </div>
