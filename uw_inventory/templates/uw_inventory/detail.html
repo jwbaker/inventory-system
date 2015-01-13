@@ -77,7 +77,7 @@
 
       if(inputControl.is('select')){
         inputControl = inputControl.find('option:selected');
-        saveText = (inputControl.hasClass('select-default') ? '' : inputControl[0].text);
+        saveText = (inputControl.val() ? inputControl[0].text : inputControl.val());
       } else if(inputControl.is('input[type="date"]')){
         var dateStr = inputControl[0].value;
         var dateArr = dateStr.split('-');

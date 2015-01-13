@@ -10,6 +10,7 @@ class InventoryItem(models.Model):
     STATUS_SURPLUS = 'SU'
     STATUS_OTHER = 'OT'
     STATUS_CHOICES = [
+        ('', ''),
         (STATUS_STAY,    'Stay'),
         (STATUS_STORAGE, 'Storage'),
         (STATUS_SURPLUS, 'Surplussed'),

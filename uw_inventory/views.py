@@ -30,4 +30,4 @@ def inventory_save(request, item_id):
             setattr(item, attr, request.POST[attr])
 
         item.save()
-    return HttpResponseRedirect('/list')
+    return HttpResponseRedirect('/list/' + item_id)

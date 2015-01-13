@@ -26,8 +26,11 @@ def show_editable_field(field_value, field_type, field_label):
     }
 
     if field_type == 'dropdown':
-        context['field_value'] = get_choice_text(InventoryItem.STATUS_CHOICES,
-                                                 field_value)
+        if field_value:
+            context['field_value'] = get_choice_text(
+                InventoryItem.STATUS_CHOICES,
+                field_value
+            )
         context['field_options'] = InventoryItem.STATUS_CHOICES
 
     return context
