@@ -19,16 +19,14 @@
     <div class="col-xs-8 col-xs-offset-2">
       <div class="panel panel-default">
         <div class="panel-heading">Heading</div>
-        <div class="panel-body">
-          <form action="{{ inventory_item.id }}/save" method="post" id="itemForm">
-            {% csrf_token %}
-            {% show_editable_field inventory_item.name 'text' 'Name' %}
-            {% show_editable_field inventory_item.creation_date 'date' 'Creation Date' %}
-            {% show_editable_field inventory_item.status 'dropdown' 'Status' %}
-            {% show_editable_field inventory_item.purchase_price 'currency' 'Purchase Price' %}
-            {% show_editable_field inventory_item.description 'textarea' 'Description' %}
-          </form>
-        </div>
+        <form action="{{ inventory_item.id }}/save" method="post" id="itemForm">
+          {% csrf_token %}
+          {% show_editable_field inventory_item.name 'text' 'Name' %}
+          {% show_editable_field inventory_item.creation_date 'date' 'Creation Date' %}
+          {% show_editable_field inventory_item.status 'dropdown' 'Status' %}
+          {% show_editable_field inventory_item.purchase_price 'currency' 'Purchase Price' %}
+          {% show_editable_field inventory_item.description 'textarea' 'Description' %}
+        </form>
       </div>
     </div>
   </div>
@@ -92,9 +90,11 @@
       if(saveText !== original){
         $('#pageEditWarning').removeClass('hidden');
         $('#pageSave').removeAttr('disabled');
+        inputControl.parents('div.form-group').addClass('list-group-item-warning');
       } else{
         $('#pageEditWarning').addClass('hidden');
         $('#pageSave').prop('disabled', 'disabled');
+        inputControl.parents('div.form-group').removeClass('list-group-item-warning');
       }
 
       paragraph[0].textContent = saveText;
