@@ -22,6 +22,7 @@ def show_editable_field(field_value, field_type, field_label):
         'field_type': field_type,
         'field_id': 'input' + ''.join(field_label.split()),
         'field_label': field_label,
+        'field_name': ('_'.join(field_label.split())).lower()
     }
 
     if field_type == 'dropdown':
