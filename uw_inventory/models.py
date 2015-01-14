@@ -37,4 +37,4 @@ class InventoryItem(models.Model):
         default=None,
         max_length=2,
         null=True)
-    purchase_price = models.IntegerField(blank=True, null=True)
+    purchase_price = models.IntegerField(blank=True, default=None, null=True)
