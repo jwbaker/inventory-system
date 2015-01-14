@@ -29,7 +29,7 @@
               id="itemForm">
           {% csrf_token %}
           {% show_editable_field inventory_item.name 'text' 'Name' %}
-          {% show_editable_field inventory_item.creation_date 'date' 'Creation Date' %}
+          {% show_static_field inventory_item.creation_date 'Creation Date' %}
           {% show_editable_field inventory_item.status 'dropdown' 'Status' %}
           {% show_editable_field inventory_item.purchase_price 'currency' 'Purchase Price' %}
           {% show_editable_field inventory_item.description 'textarea' 'Description' %}

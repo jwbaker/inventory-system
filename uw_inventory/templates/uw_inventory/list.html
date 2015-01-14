@@ -13,6 +13,14 @@
   </style>
 {% endblock css_includes %}
 
+{% block navbar_right %}
+  <li>
+    <a href="{% url 'uw_inventory.views.inventory_add' %}">
+      <i class="fa fa-plus-circle"></i>
+    </a>
+  </li>
+{% endblock navbar_right %}
+
 {% block content %}
   <div class="row">
     <table id="inventoryTable" class="table table-condensed table-hover">
@@ -28,9 +36,8 @@
           <tr>
             <td>
               {# Have to put the link somewhere #}
-              <a href="{{ item.id }}">
-                {{ item.name }}
-              </a>
+              <a href="{% url 'uw_inventory.views.inventory_detail' item.id %}"></a>
+              {{ item.name }}
             </td>
             <td>{{ item.creation_date }}</td>
             <td>

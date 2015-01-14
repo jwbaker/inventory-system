@@ -21,7 +21,7 @@ class InventoryItem(models.Model):
     # This is why we expect the control element to have a label that can be
     # converted into an attribute name
     EDITABLE_FIELDS = [
-        'creation_date',
+        #'creation_date',
         'description',
         'name',
         'purchase_price',

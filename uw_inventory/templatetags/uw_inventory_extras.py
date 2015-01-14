@@ -5,7 +5,7 @@ from uw_inventory.models import InventoryItem
 register = template.Library()
 
 
-def get_choice_text(arr, choice):
+def _get_choice_text(arr, choice):
     '''Performs a lookup in an array of 2-tuples.
 
     Positional arguments:
@@ -24,7 +24,30 @@ def get_choice_text(arr, choice):
         return ''
 
 
-@register.inclusion_tag('uw_inventory/editable_field.html')
+def _field_handler(field_label, tag, **kwargs):
+    context = {}
+    context['field_label'] = field_label
+    context['caller'] = tag
+
+    context['field_value'] = kwargs.get('field_value', '')
+    context['field_type'] = kwargs.get('field_type', '')
+
+    context['field_name'] = ('_'.join(context['field_label'].split())).lower()
+    context['field_id'] = 'input' + ''.join(context['field_label'].split())
+    context['field_hidden'] = context['caller'] == 'edit'
+
+    if context['field_type'] == 'dropdown':
+        if context['field_value']:
+            context['field_value'] = _get_choice_text(
+                InventoryItem.STATUS_CHOICES,
+                context['field_value']
+            )
+        context['field_options'] = InventoryItem.STATUS_CHOICES
+
+    return context
+
+
+@register.inclusion_tag('uw_inventory/field_container.html')
 def show_editable_field(field_value, field_type, field_label):
     """Generates a form field with edit, save, and cancel buttons.
 
@@ -36,20 +59,16 @@ def show_editable_field(field_value, field_type, field_label):
     field_label -- A unique identifier for the field. Expected to be the
                     Title Cased name of the model variable
     """
-    context = {
-        'field_value': field_value,
-        'field_type': field_type,
-        'field_id': 'input' + ''.join(field_label.split()),
-        'field_label': field_label,
-        'field_name': ('_'.join(field_label.split())).lower()
-    }
+    return _field_handler(field_label, 'edit',
+                          field_value=field_value,
+                          field_type=field_type)
 
-    if field_type == 'dropdown':
-        if field_value:
-            context['field_value'] = get_choice_text(
-                InventoryItem.STATUS_CHOICES,
-                field_value
-            )
-        context['field_options'] = InventoryItem.STATUS_CHOICES
 
-    return context
+@register.inclusion_tag('uw_inventory/field_container.html')
+def show_static_field(field_value, field_label):
+    return _field_handler(field_label, 'static', field_value=field_value)
+
+
+@register.inclusion_tag('uw_inventory/field_container.html')
+def show_field(field_type, field_label):
+    return _field_handler(field_label, 'field', field_type=field_type)

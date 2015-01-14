@@ -1,0 +1,8 @@
+<div class="form-group list-group-item clearfix">
+  <label for="{{field_id}}" class="col-xs-2 control-label">{{field_label}}</label>
+  <div class="col-xs-8">
+    {% with template_name=field_type|stringformat:"s"|add:".html"  %}
+        {% include 'uw_inventory/fields/'|add:template_name%}
+    {% endwith %}
+  </div>
+</div>

@@ -1,10 +1,8 @@
-<textarea class="form-control hidden"
+<textarea class="form-control {% if hide %}hidden{% endif %}"
           name="{{ field_name }}"
-          rows="10"               {# Arbitrary number is arbitrary #}
+          rows="5"                {# Arbitrary number is arbitrary #}
           style="resize:vertical" {# Horizontal resizing would mess up the column format #}
           id="{{ field_id }}"
           placeholder="{{ field_label }}"
           {# The data-default attribute will be compared to the current value to detect changes #}
-          data-default="{{ field_value }}">
-  {{ field_value }}
-</textarea>
+          data-default="{{ field_value }}">{{ field_value }}</textarea>

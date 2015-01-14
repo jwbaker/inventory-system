@@ -1,0 +1,24 @@
+<div class="form-group list-group-item clearfix">
+  <div class="col-xs-2">
+    <label for="{{ field_id }}" class="control-label">{{ field_label }}</label>
+  </div>
+  <div class="col-xs-9">
+    {% if caller == "static" or caller == "edit" %}
+      <p class="form-control-static" id="{{ field_id }}">{{ field_value }}</p>
+    {% endif %}
+
+    {% if caller == "field" or caller == "edit" %}
+      {% with template_name=field_type|stringformat:"s"|add:".html"  %}
+        {% include 'uw_inventory/fields/'|add:template_name with hide=field_hidden %}
+      {% endwith %}
+    {% endif %}
+  </div>
+
+  {% if caller == "edit" %}
+    <div class="col-xs-1">
+      <i class="fa fa-check save hidden" for="{{ field_id }}"></i>
+      <i class="fa fa-times cancel hidden" for="{{ field_id }}"></i>
+      <i class="fa fa-pencil edit" for="{{ field_id }}"></i>
+    </div>
+  {% endif %}
+</div>

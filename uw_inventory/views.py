@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_protect
@@ -31,3 +32,35 @@ def inventory_save(request, item_id):
 
         item.save()
     return HttpResponseRedirect('/list/' + item_id)
+
+
+@csrf_protect
+def inventory_add(request):
+    return render(request, 'uw_inventory/add.html')
+
+
+@csrf_protect
+def inventory_new(request):
+    if request.method == 'POST':
+        args = {}
+
+        for attr in InventoryItem.EDITABLE_FIELDS:
+            args[attr] = request.POST[attr]
+
+        new_item = InventoryItem(**args)
+
+        try:
+            new_item.full_clean()
+            new_item.save()
+        except ValidationError:
+            err_msg = "Shit broke"
+            success = False
+        else:
+            err_msg = ''
+            success = True
+
+        return render(request, 'uw_inventory/detail.html', {
+            'inventory_item': new_item,
+            'success': success,
+            'err_msg': err_msg,
+        })
