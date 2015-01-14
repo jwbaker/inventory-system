@@ -27,9 +27,9 @@ class InventoryItem(models.Model):
         'status',
     ]
 
-    name = models.CharField(blank=True, max_length=200)
+    name = models.CharField(blank=True, max_length=200, null=True)
     creation_date = models.DateField(default=date.today)
-    description = models.TextField(blank=True)
+    description = models.TextField(blank=True, null=True)
     status = models.CharField(
         blank=True,
         choices=STATUS_CHOICES,
