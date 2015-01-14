@@ -8,14 +8,14 @@ from uw_inventory.models import InventoryItem
 
 def _collect_messages(request):
     storage = messages.get_messages(request)
-    message_list = []
+    message_list = {'page': []}
     for msg in storage:
-        if 'page' in msg.extra_tags:
-            msg_class = msg.tags.replace(msg.extra_tags, '').replace(' ', '')
-            message_list.append({
-                'message': msg.message,
-                'class': 'danger' if ('error' in msg_class) else msg_class,
-            })
+        #if 'page' in msg.extra_tags:
+        msg_class = msg.tags.replace(msg.extra_tags, '').replace(' ', '')
+        message_list['page'].append({
+            'message': msg.message,
+            'class': 'danger' if ('error' in msg_class) else msg_class,
+        })
     return message_list
 
 
@@ -34,7 +34,7 @@ def inventory_detail(request, item_id):
     inventory_item = InventoryItem.objects.get(pk=item_id)
     return render(request, 'uw_inventory/detail.html', {
         'inventory_item': inventory_item,
-        'page_messages': [m for m in message_list if 'page' in m.extra_tags],
+        'page_messages': message_list['page'],
     })
 
 
@@ -44,12 +44,16 @@ def inventory_save(request, item_id):
         item = InventoryItem.objects.get(pk=item_id)
 
         for attr in item.EDITABLE_FIELDS:
-            setattr(item, attr, request.POST[attr])
+            if attr in item.NUMERIC_FIELDS and not request.POST[attr]:
+                setattr(item, attr, None)
+            else:
+                setattr(item, attr, request.POST[attr])
 
         try:
             item.save()
         except Exception as e:
-            messages.error(request, e.strerror, extra_tags='page')
+            for err in e.args:
+                messages.error(request, err, extra_tags='page')
         else:
             messages.success(request,
                              'All quiet on the western front',
@@ -62,7 +66,7 @@ def inventory_add(request):
     message_list = _collect_messages(request)
 
     return render(request, 'uw_inventory/add.html', {
-        'page_messages': [m for m in message_list if 'page' in m.extra_tags],
+        'page_messages': message_list['page'],
     })
 
 
@@ -73,7 +77,7 @@ def inventory_new(request):
         dest = None
 
         for attr in InventoryItem.EDITABLE_FIELDS:
-            args[attr] = request.POST[attr]
+            args[attr] = request.POST[attr] or None
 
         new_item = InventoryItem(**args)
 

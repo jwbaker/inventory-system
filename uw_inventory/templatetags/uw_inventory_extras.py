@@ -29,8 +29,8 @@ def _field_handler(field_label, tag, **kwargs):
     context['field_label'] = field_label
     context['caller'] = tag
 
-    context['field_value'] = kwargs.get('field_value', '')
-    context['field_type'] = kwargs.get('field_type', '')
+    context['field_value'] = kwargs.get('field_value', '') or ''
+    context['field_type'] = kwargs.get('field_type', '') or ''
 
     context['field_name'] = ('_'.join(context['field_label'].split())).lower()
     context['field_id'] = 'input' + ''.join(context['field_label'].split())

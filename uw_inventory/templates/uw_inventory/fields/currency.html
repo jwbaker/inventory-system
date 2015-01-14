@@ -4,7 +4,7 @@
            class="form-control"
            name="{{ field_name }}"
            placeholder="0"
-           value="{% if field_value %}{{ field_value }}{% else %}0{% endif %}"
+           {% if field_value %}value="{{ field_value }}"{% endif %}
            {# The data-default attribute will be compared to the current value to detect changes #}
            data-default="{{ field_value }}" />
     <span class="input-group-addon">.00</span>

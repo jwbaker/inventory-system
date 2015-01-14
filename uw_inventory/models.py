@@ -27,6 +27,10 @@ class InventoryItem(models.Model):
         'status',
     ]
 
+    NUMERIC_FIELDS = [
+        'purchase_price',
+    ]
+
     name = models.CharField(blank=True, max_length=200, null=True)
     creation_date = models.DateField(default=date.today)
     description = models.TextField(blank=True, null=True)
