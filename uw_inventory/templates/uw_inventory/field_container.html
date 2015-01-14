@@ -4,13 +4,16 @@
   </div>
   <div class="col-xs-9">
     {% if caller == "static" or caller == "edit" %}
-      <p class="form-control-static" id="{{ field_id }}">{{ field_value }}</p>
+      <p class="form-control-static" id="{{ field_id }}">{{field_value}}</p>
     {% endif %}
 
     {% if caller == "field" or caller == "edit" %}
-      {% with template_name=field_type|stringformat:"s"|add:".html"  %}
-        {% include 'uw_inventory/fields/'|add:template_name with hide=field_hidden %}
-      {% endwith %}
+      {% ifequal field_type 'currency' %}
+        {% include 'uw_inventory/fields/currency.html' %}
+      {% else %}
+        {{ field }}
+        {{ field.errors }}
+      {% endifequal %}
     {% endif %}
   </div>
 

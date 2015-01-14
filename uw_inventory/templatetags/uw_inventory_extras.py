@@ -24,51 +24,45 @@ def _get_choice_text(arr, choice):
         return ''
 
 
-def _field_handler(field_label, tag, **kwargs):
+def _field_handler(field, tag, **kwargs):
     context = {}
-    context['field_label'] = field_label
     context['caller'] = tag
+    context['field'] = field
 
-    context['field_value'] = kwargs.get('field_value', '') or ''
+    context['field_id'] = str('input%s' % ''.join(field.label.split()))
+    context['field_label'] = field.label
     context['field_type'] = kwargs.get('field_type', '') or ''
+    context['field_value'] = kwargs.get('field_value', '') or ''
 
-    context['field_name'] = ('_'.join(context['field_label'].split())).lower()
-    context['field_id'] = 'input' + ''.join(context['field_label'].split())
-    context['field_hidden'] = context['caller'] == 'edit'
-
-    if context['field_type'] == 'dropdown':
-        if context['field_value']:
-            context['field_value'] = _get_choice_text(
-                InventoryItem.STATUS_CHOICES,
-                context['field_value']
-            )
-        context['field_options'] = InventoryItem.STATUS_CHOICES
-
+    if(context['field_type'] == 'dropdown'):
+        context['field_value'] = _get_choice_text(
+            InventoryItem.STATUS_CHOICES,
+            context['field_value']
+        )
     return context
 
 
 @register.inclusion_tag('uw_inventory/field_container.html')
-def show_editable_field(field_value, field_type, field_label):
+def show_editable_field(field, field_value, field_type):
     """Generates a form field with edit, save, and cancel buttons.
 
     Positional arguments:
+    field -- The Django field object
     field_value -- The current value of the field
     field_type -- Used to choose which input control to render
                   Currently supported: 'text', 'currency', 'dropdown',
                   'textarea'
-    field_label -- A unique identifier for the field. Expected to be the
-                    Title Cased name of the model variable
     """
-    return _field_handler(field_label, 'edit',
+    return _field_handler(field, 'edit',
                           field_value=field_value,
                           field_type=field_type)
 
 
 @register.inclusion_tag('uw_inventory/field_container.html')
-def show_static_field(field_value, field_label):
-    return _field_handler(field_label, 'static', field_value=field_value)
+def show_static_field(field, field_value):
+    return _field_handler(field, 'static', field_value=field_value)
 
 
 @register.inclusion_tag('uw_inventory/field_container.html')
-def show_field(field_type, field_label):
-    return _field_handler(field_label, 'field', field_type=field_type)
+def show_field(field, field_type):
+    return _field_handler(field, 'field', field_type=field_type)

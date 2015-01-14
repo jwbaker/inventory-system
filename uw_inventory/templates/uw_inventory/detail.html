@@ -13,15 +13,15 @@
 {% block page_heading %}Heading{% endblock page_heading %}
 
 {% block page_body %}
-  <form action="{% url 'uw_inventory.views.inventory_save' inventory_item.id %}"
+  <form action="{% url 'uw_inventory.views.inventory_detail' inventory_item.id %}"
         method="post"
         id="itemForm">
     {% csrf_token %}
-    {% show_editable_field inventory_item.name 'text' 'Name' %}
-    {% show_static_field inventory_item.creation_date 'Creation Date' %}
-    {% show_editable_field inventory_item.status 'dropdown' 'Status' %}
-    {% show_editable_field inventory_item.purchase_price 'currency' 'Purchase Price' %}
-    {% show_editable_field inventory_item.description 'textarea' 'Description' %}
+    {% show_editable_field form.name form_data.name 'text' %}
+    {% show_static_field form.creation_date form_data.creation_date %}
+    {% show_editable_field form.status form_data.status 'dropdown' %}
+    {% show_editable_field form.purchase_price form_data.purchase_price 'currency' %}
+    {% show_editable_field form.description form_data.description 'textarea' %}
   </form>
 {% endblock page_body %}
 
@@ -32,6 +32,7 @@
 
   <script type="text/javascript">
   $('#pageSave').attr('disabled', 'disabled');
+  $('.item-input').addClass('hidden');
   </script>
 
   <script type="text/javascript">

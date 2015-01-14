@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_protect
 
+from uw_inventory.forms import ItemForm
 from uw_inventory.models import InventoryItem
 
 
@@ -29,43 +30,40 @@ def inventory_list(request):
 
 @csrf_protect
 def inventory_detail(request, item_id):
-    message_list = _collect_messages(request)
-
     inventory_item = InventoryItem.objects.get(pk=item_id)
-    return render(request, 'uw_inventory/detail.html', {
-        'inventory_item': inventory_item,
-        'page_messages': message_list['page'],
-    })
 
-
-@csrf_protect
-def inventory_save(request, item_id):
     if request.method == 'POST':
-        item = InventoryItem.objects.get(pk=item_id)
-
-        for attr in item.EDITABLE_FIELDS:
-            if attr in item.NUMERIC_FIELDS and not request.POST[attr]:
-                setattr(item, attr, None)
-            else:
-                setattr(item, attr, request.POST[attr])
-
-        try:
-            item.save()
-        except Exception as e:
-            for err in e.args:
-                messages.error(request, err, extra_tags='page')
-        else:
+        print 'made it'
+        form = ItemForm(request.POST, instance=inventory_item)
+        if form.is_valid():
+            form.save()
             messages.success(request,
-                             'All quiet on the western front',
+                             'Item saved successfully',
                              extra_tags='page')
-    return HttpResponseRedirect('/list/' + item_id)
+        else:
+            messages.error(request,
+                           'Something went wrong. Check below for errors',
+                           extra_tags='page')
+        return HttpResponseRedirect('/list/' + item_id)
+    else:
+        message_list = _collect_messages(request)
+        form = ItemForm(instance=inventory_item)
+
+        return render(request, 'uw_inventory/detail.html', {
+            'inventory_item': inventory_item,
+            'form': form,
+            'form_data': form.instance,
+            'page_messages': message_list['page'],
+        })
 
 
 @csrf_protect
 def inventory_add(request):
     message_list = _collect_messages(request)
+    form = ItemForm()
 
     return render(request, 'uw_inventory/add.html', {
+        'form': form,
         'page_messages': message_list['page'],
     })
 

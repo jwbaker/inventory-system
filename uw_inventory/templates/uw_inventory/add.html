@@ -6,10 +6,10 @@
 {% block page_body %}
   <form action="{% url 'uw_inventory.views.inventory_new' %}" method="post" id="itemForm">
     {% csrf_token %}
-    {% show_field 'text' 'Name' %}
-    {% show_field 'dropdown' 'Status' %}
-    {% show_field 'currency' 'Purchase Price' %}
-    {% show_field 'textarea' 'Description' %}
+    {% show_field form.name 'text' %}
+    {% show_field form.status 'dropdown' %}
+    {% show_field form.purchase_price 'currency' %}
+    {% show_field form.description 'textarea' %}
   </form>
 {% endblock page_body %}
 

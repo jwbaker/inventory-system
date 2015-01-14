@@ -1,11 +1,6 @@
-<div class="input-group {% if hide %}hidden{% endif %}" id="{{ field_id }}">
+<div class="input-group item-input">
     <span class="input-group-addon">$</span>
-    <input type="number" 
-           class="form-control"
-           name="{{ field_name }}"
-           placeholder="0"
-           {% if field_value %}value="{{ field_value }}"{% endif %}
-           {# The data-default attribute will be compared to the current value to detect changes #}
-           data-default="{{ field_value }}" />
+    {{ field }}
     <span class="input-group-addon">.00</span>
+    {{ field.errors }}
 </div>
