@@ -1,41 +1,39 @@
-{% extends 'uw_inventory_system/base.html' %}
+{% extends 'uw_inventory/item_base.html' %}
 {% load uw_inventory_extras %}
 
-{% block navbar_right %}
-  <li>
-    <button class="btn navbar-btn btn-success" id="pageSave">Save</button>
-  </li>
-  <li>
-    <button class="btn navbar-btn btn-danger" id="pageCancel">Cancel</button>
-  </li>
-  {{ block.super }}
-{% endblock navbar_right %}
+{% block page_heading %}New Item{% endblock page_heading %}
 
-{% block content %}
-  <div class="row">
-    <div class="col-xs-8 col-xs-offset-2">
-      <div class="panel panel-default">
-        <div class="panel-heading">New Item</div>
-        <form action="{% url 'uw_inventory.views.inventory_new' %}" method="post" id="itemForm">
-          {% csrf_token %}
-          {% show_field 'text' 'Name' %}
-          {% show_field 'dropdown' 'Status' %}
-          {% show_field 'currency' 'Purchase Price' %}
-          {% show_field 'textarea' 'Description' %}
-        </form>
-      </div>
-    </div>
-  </div>
-{% endblock content %}
+{% block page_body %}
+  <form action="{% url 'uw_inventory.views.inventory_new' %}" method="post" id="itemForm">
+    {% csrf_token %}
+    {% show_field 'text' 'Name' %}
+    {% show_field 'dropdown' 'Status' %}
+    {% show_field 'currency' 'Purchase Price' %}
+    {% show_field 'textarea' 'Description' %}
+  </form>
+{% endblock page_body %}
 
 {% block js_includes %}
+  {{ block.super }}
   <script type="text/javascript">
-    {# Redirect on the cancel button #}
-    $('#pageCancel').click(function(){
-      window.location= '/list';
-    });
     $('#pageSave').click(function(){
       $('form#itemForm').submit();
     });
+  </script>
+
+  <script type="text/javascript">
+    var onChangeHandler = function(event){
+      if(event.target.value === ''){
+        pageDirty = false;
+      } else{
+        pageDirty = true;
+      }
+
+      console.log(pageDirty);
+    }
+
+    $('select').change(onChangeHandler);
+    $('input').change(onChangeHandler);
+    $('textarea').change(onChangeHandler);
   </script>
 {% endblock js_includes %}

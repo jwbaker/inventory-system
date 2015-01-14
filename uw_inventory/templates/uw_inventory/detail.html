@@ -1,15 +1,5 @@
-{% extends 'uw_inventory_system/base.html' %}
+{% extends 'uw_inventory/item_base.html' %}
 {% load uw_inventory_extras %}
-
-{% block navbar_right %}
-  <li>
-    <button class="btn navbar-btn btn-success" id="pageSave" disabled="disabled">Save</button>
-  </li>
-  <li>
-    <button class="btn navbar-btn btn-danger" id="pageCancel">Cancel</button>
-  </li>
-  {{ block.super }}
-{% endblock navbar_right %}
 
 {% block messages %}
    {{ block.super }}
@@ -20,25 +10,20 @@
     </div>
 {% endblock messages %}
 
-{% block content %}
-  <div class="row">
-    <div class="col-xs-8 col-xs-offset-2">
-      <div class="panel panel-default">
-        <div class="panel-heading">Heading</div>
-        <form action="{% url 'uw_inventory.views.inventory_save' inventory_item.id %}"
-              method="post"
-              id="itemForm">
-          {% csrf_token %}
-          {% show_editable_field inventory_item.name 'text' 'Name' %}
-          {% show_static_field inventory_item.creation_date 'Creation Date' %}
-          {% show_editable_field inventory_item.status 'dropdown' 'Status' %}
-          {% show_editable_field inventory_item.purchase_price 'currency' 'Purchase Price' %}
-          {% show_editable_field inventory_item.description 'textarea' 'Description' %}
-        </form>
-      </div>
-    </div>
-  </div>
-{% endblock content %}
+{% block page_heading %}Heading{% endblock page_heading %}
+
+{% block page_body %}
+  <form action="{% url 'uw_inventory.views.inventory_save' inventory_item.id %}"
+        method="post"
+        id="itemForm">
+    {% csrf_token %}
+    {% show_editable_field inventory_item.name 'text' 'Name' %}
+    {% show_static_field inventory_item.creation_date 'Creation Date' %}
+    {% show_editable_field inventory_item.status 'dropdown' 'Status' %}
+    {% show_editable_field inventory_item.purchase_price 'currency' 'Purchase Price' %}
+    {% show_editable_field inventory_item.description 'textarea' 'Description' %}
+  </form>
+{% endblock page_body %}
 
 {% block js_includes %}
   {{ block.super }}
@@ -46,10 +31,10 @@
   <script src="https://code.jquery.com/ui/1.11.2/jquery-ui.min.js"></script>
 
   <script type="text/javascript">
-    {# Redirect on the cancel button #}
-    $('#pageCancel').click(function(){
-      window.location= '/list';
-    });
+  $('#pageSave').attr('disabled', 'disabled');
+  </script>
+
+  <script type="text/javascript">
     $('#pageSave').click(function(){
       $('form#itemForm').submit();
     });
@@ -107,10 +92,12 @@
         $('#pageEditWarning').removeClass('hidden');
         $('#pageSave').removeAttr('disabled');
         inputControl.parents('div.form-group').addClass('list-group-item-warning');
+        pageDirty = true;
       } else{ {# Are we back to original? #}
         $('#pageEditWarning').addClass('hidden');
         $('#pageSave').prop('disabled', 'disabled');
         inputControl.parents('div.form-group').removeClass('list-group-item-warning');
+        pageDirty = false;
       }
 
       paragraph[0].textContent = saveText;

@@ -46,7 +46,7 @@
               {% block navbar_right %}
                 <li>
                   <a href="{% url 'uw_inventory.views.inventory_add' %}">
-                    <i class="fa fa-plus-circle"></i>
+                    <i class="fa fa-plus-circle add"></i>
                   </a>
                 </li>
               {% endblock navbar_right %}
@@ -75,6 +75,10 @@
       {% block content %}
 
       {% endblock content %}
+
+      {% block modal %}
+        
+      {% endblock modal %}
 
       <hr>
 
