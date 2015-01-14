@@ -14,11 +14,7 @@
 {% endblock css_includes %}
 
 {% block navbar_right %}
-  <li>
-    <a href="{% url 'uw_inventory.views.inventory_add' %}">
-      <i class="fa fa-plus-circle"></i>
-    </a>
-  </li>
+  {{ block.super }}
 {% endblock navbar_right %}
 
 {% block content %}
