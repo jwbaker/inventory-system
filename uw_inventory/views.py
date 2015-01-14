@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
@@ -16,9 +17,20 @@ def inventory_list(request):
 
 @csrf_protect
 def inventory_detail(request, item_id):
+    storage = messages.get_messages(request)
+    page_messages = []
+    for msg in storage:
+        if 'page' in msg.extra_tags:
+            msg_class = msg.tags.replace(msg.extra_tags, '').replace(' ', '')
+            page_messages.append({
+                'message': msg.message,
+                'class': 'danger' if ('error' in msg_class) else msg_class,
+            })
+
     inventory_item = InventoryItem.objects.get(pk=item_id)
     return render(request, 'uw_inventory/detail.html', {
         'inventory_item': inventory_item,
+        'page_messages': page_messages,
     })
 
 
@@ -53,14 +65,10 @@ def inventory_new(request):
             new_item.full_clean()
             new_item.save()
         except ValidationError:
-            err_msg = "Shit broke"
-            success = False
+            messages.error(request, 'Shit broke', extra_tags='page')
         else:
-            err_msg = ''
-            success = True
+            messages.success(request,
+                             'All quiet on the western front',
+                             extra_tags='page')
 
-        return render(request, 'uw_inventory/detail.html', {
-            'inventory_item': new_item,
-            'success': success,
-            'err_msg': err_msg,
-        })
+        return HttpResponseRedirect('/list/%s' % new_item.pk)

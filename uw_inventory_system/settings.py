@@ -56,6 +56,8 @@ WSGI_APPLICATION = 'uw_inventory_system.wsgi.application'
 
 TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
 
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
