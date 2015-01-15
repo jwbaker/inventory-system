@@ -67,7 +67,7 @@
 
       {# This line looks up from the pragraph for the parent div, then down for the input element #}
       var inputControl = paragraph.closest('div').find('.form-control');
-      var original = inputControl.attr('data-default');
+      var original = inputControl.parents('div.form-group').find('span.default-value')[0].textContent;
       var saveText; {# This will eventually go in the "saved" <p> tag text #}
 
       if(inputControl.is('select')){

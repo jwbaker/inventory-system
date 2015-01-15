@@ -26,6 +26,7 @@
 
   {# If we came from a _show_editable_field tag #}
   {% if caller == "edit" %}
+    <span class="hidden default-value" for="{{ field_id }}">{{ field_value }}</span>
     <div class="col-xs-1">
       <i class="fa fa-check save hidden" for="{{ field_id }}"></i>
       <i class="fa fa-times cancel hidden" for="{{ field_id }}"></i>
