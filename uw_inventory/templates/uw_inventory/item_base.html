@@ -54,7 +54,7 @@
   <script type="text/javascript">
     {# Redirect on the cancel button #}
     $('#pageCancel').click(function(){
-      window.location= '/list';
+      window.location = {% url 'uw_inventory.views.inventory_list' %};
     });
   </script>
 
@@ -73,7 +73,7 @@
 
     $('#confirmNavigation').click(function(){
       $('#confirmExitModal').modal('hide');
-      window.location = targetDestination || '/list'
+      window.location = targetDestination || {% url 'uw_inventory.views.inventory_list' %};
     });
   </script>
 {% endblock js_includes %}
