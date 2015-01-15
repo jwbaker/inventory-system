@@ -35,7 +35,6 @@ def inventory_detail(request, item_id):
     inventory_item = InventoryItem.objects.get(pk=item_id)
 
     if request.method == 'POST':
-        print 'made it'
         form = ItemForm(request.POST, instance=inventory_item)
         if form.is_valid():
             form.save()
@@ -82,30 +81,3 @@ def inventory_add(request):
             'form': form,
             'page_messages': message_list['page'],
         })
-
-
-@csrf_protect
-def inventory_new(request):
-    if request.method == 'POST':
-        args = {}
-        dest = None
-
-        for attr in InventoryItem.EDITABLE_FIELDS:
-            args[attr] = request.POST[attr] or None
-
-        new_item = InventoryItem(**args)
-
-        try:
-            new_item.full_clean()
-            new_item.save()
-        except Exception as e:
-            for err in e.args:
-                messages.error(request, err, extra_tags='page')
-            dest = '/list/add'
-        else:
-            messages.success(request,
-                             'All quiet on the western front',
-                             extra_tags='page')
-            dest = '/list/%s' % new_item.pk
-
-        return HttpResponseRedirect(dest)

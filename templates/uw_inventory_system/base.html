@@ -56,21 +56,21 @@
     </nav>
 
     <div class="container" role="main">
-      
-      {% block messages %}
-        <div class="row">
-          <div class="col-xs-4 col-xs-offset-4">
-            {% if page_messages %}
-              {% for msg in page_messages %}
-                <div class="alert alert-dismissible alert-{{ msg.class }}"  role="alert">
-                  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                  {{ msg.message }}
-                </div>
-              {% endfor %}
-            {% endif %}
-          </div>
+
+      <div class="row">
+        <div class="col-xs-4 col-xs-offset-4">
+          {% if page_messages %}
+            {% for msg in page_messages %}
+              <div class="alert alert-dismissible alert-{{ msg.class }}"  role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                {{ msg.message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+          {% block messages %}
+          {% endblock messages %}
         </div>
-      {% endblock messages %}
+      </div>
 
       {% block content %}
 
