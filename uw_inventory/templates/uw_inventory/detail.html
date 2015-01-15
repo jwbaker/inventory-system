@@ -17,6 +17,11 @@
       <i class="fa fa-files-o navigate"></i>
     </a>
   </li>
+  <li>
+    <a href="{% url 'uw_inventory.views.inventory_delete' inventory_item.id %}">
+      <i class="fa fa-trash navigate"></i>
+    </a>
+  </li>
 {% endblock navbar_right %}
 
 {% block page_heading %}Heading{% endblock page_heading %}

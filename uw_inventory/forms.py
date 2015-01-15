@@ -6,7 +6,7 @@ from uw_inventory.models import InventoryItem
 class ItemForm(forms.ModelForm):
     class Meta:
         model = InventoryItem
-        fields = '__all__'
+        exclude = ['deleted']
         widgets = {
             'name': forms.TextInput(attrs={
                 'id': 'inputName',

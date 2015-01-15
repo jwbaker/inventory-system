@@ -61,17 +61,19 @@
   <script type="text/javascript">
     {# We want to confirm user intent if they try to navigate away with unsaved changes #}
     var pageDirty = false;
+    var targetDestination;
     $('.navigate').parent().click(function(event){
       if(pageDirty){
         event.preventDefault();
         event.stopPropagation();
+        targetDestination = event.target.href;
         $('#confirmExitModal').modal('show');
       }
     });
 
     $('#confirmNavigation').click(function(){
       $('#confirmExitModal').modal('hide');
-      window.location = '/list/add'
+      window.location = targetDestination || '/list'
     });
   </script>
 {% endblock js_includes %}
