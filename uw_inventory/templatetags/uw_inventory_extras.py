@@ -45,6 +45,7 @@ def _field_handler(field, tag, **kwargs):
     try:
         context['field_id'] = str('input%s' % ''.join(field.label.split()))
         context['field_label'] = field.label
+        context['field_required'] = field.field.required
     except:
         context['field_label'] = kwargs.get('field_label', '') or ''
 
