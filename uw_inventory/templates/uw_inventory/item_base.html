@@ -61,7 +61,7 @@
   <script type="text/javascript">
     {# We want to confirm user intent if they try to navigate away with unsaved changes #}
     var pageDirty = false;
-    $('.add').parent().click(function(event){
+    $('.navigate').parent().click(function(event){
       if(pageDirty){
         event.preventDefault();
         event.stopPropagation();

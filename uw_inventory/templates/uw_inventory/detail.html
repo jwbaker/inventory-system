@@ -10,6 +10,15 @@
     </div>
 {% endblock messages %}
 
+{% block navbar_right %}
+  {{ block.super }}
+  <li>
+    <a href="{% url 'uw_inventory.views.inventory_copy' inventory_item.id %}">
+      <i class="fa fa-files-o navigate"></i>
+    </a>
+  </li>
+{% endblock navbar_right %}
+
 {% block page_heading %}Heading{% endblock page_heading %}
 
 {% block page_body %}

@@ -63,7 +63,7 @@ def inventory_add(request):
             messages.success(request,
                              'Inventory item saved successfully')
             new_item = form.save()
-            return HttpResponseRedirect(request, '/list/%s' % new_item.pk)
+            return HttpResponseRedirect('/list/%s' % new_item.pk)
         else:
             print form.errors
             messages.error(request,
@@ -75,3 +75,18 @@ def inventory_add(request):
         'form': form,
         'page_messages': message_list,
     })
+
+
+def inventory_copy(request, item_id):
+    item = InventoryItem.objects.get(pk=item_id)
+    item.pk = None
+    try:
+        item.save()
+    except:
+        messages.error(request,
+                       'Something went wrong')
+    else:
+        messages.success(request,
+                         'Duplication was successful')
+
+    return HttpResponseRedirect('/list/%s' % item.pk)
