@@ -4,7 +4,7 @@
 {% block page_heading %}New Item{% endblock page_heading %}
 
 {% block page_body %}
-  <form action="{% url 'uw_inventory.views.inventory_new' %}" method="post" id="itemForm">
+  <form action="{% url 'uw_inventory.views.inventory_add' %}" method="post" id="itemForm">
     {% csrf_token %}
     {% show_field form.name 'text' %}
     {% show_field form.status 'dropdown' %}

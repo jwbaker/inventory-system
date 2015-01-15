@@ -22,9 +22,11 @@ def _collect_messages(request):
 
 # Create your views here.
 def inventory_list(request):
+    message_list = _collect_messages(request)
     inventory_list = InventoryItem.objects.all()
     return render(request, 'uw_inventory/list.html', {
         'inventory_list': inventory_list,
+        'message_list': message_list['page'],
     })
 
 
@@ -60,12 +62,26 @@ def inventory_detail(request, item_id):
 @csrf_protect
 def inventory_add(request):
     message_list = _collect_messages(request)
-    form = ItemForm()
-
-    return render(request, 'uw_inventory/add.html', {
-        'form': form,
-        'page_messages': message_list['page'],
-    })
+    if request.method == 'POST':
+        form = ItemForm(request.POST)
+        if form.is_valid():
+            new_item = form.save()
+            messages.success(request,
+                             'Item saved successfully',
+                             extra_tags='page')
+            dest = '/list/%s' % new_item.id
+        else:
+            messages.error(request,
+                           'Something went wrong. Check below for errors',
+                           extra_tags='page')
+            dest = '/list/add'
+        return HttpResponseRedirect(dest)
+    else:
+        form = ItemForm()
+        return render(request, 'uw_inventory/add.html', {
+            'form': form,
+            'page_messages': message_list['page'],
+        })
 
 
 @csrf_protect

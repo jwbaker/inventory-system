@@ -29,8 +29,12 @@ def _field_handler(field, tag, **kwargs):
     context['caller'] = tag
     context['field'] = field
 
-    context['field_id'] = str('input%s' % ''.join(field.label.split()))
-    context['field_label'] = field.label
+    try:
+        context['field_id'] = str('input%s' % ''.join(field.label.split()))
+        context['field_label'] = field.label
+    except:
+        context['field_label'] = kwargs.get('field_label', '') or ''
+
     context['field_type'] = kwargs.get('field_type', '') or ''
     context['field_value'] = kwargs.get('field_value', '') or ''
 
@@ -59,8 +63,10 @@ def show_editable_field(field, field_value, field_type):
 
 
 @register.inclusion_tag('uw_inventory/field_container.html')
-def show_static_field(field, field_value):
-    return _field_handler(field, 'static', field_value=field_value)
+def show_static_field(field_label, field_value):
+    return _field_handler(None, 'static',
+                          field_label=field_label,
+                          field_value=field_value)
 
 
 @register.inclusion_tag('uw_inventory/field_container.html')
