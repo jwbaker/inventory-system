@@ -1,4 +1,4 @@
-<div class="form-group list-group-item clearfix">
+<div class="form-group list-group-item clearfix {% if field.errors %}list-group-item-danger has-error{% endif %}">
   <div class="col-xs-2">
     <label for="{{ field_id }}" class="control-label">
       {{ field_label }}
@@ -7,7 +7,9 @@
   <div class="col-xs-9">
     {# If we came from a show_static_field or _show_editable_field tag #}
     {% if caller == "static" or caller == "edit" %}
-      <p class="form-control-static" id="{{ field_id }}">{{field_value}}</p>
+      <p class="form-control-static" id="{{ field_id }}">
+        {{field_value}}{% if field.required %}<span class="text-danger">*</span>{% endif %}
+      </p>
     {% endif %}
 
     {# If we came from a show_field or _show_editable_field tag #}

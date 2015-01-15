@@ -9,11 +9,11 @@ from uw_inventory.models import InventoryItem
 
 def _collect_messages(request):
     storage = messages.get_messages(request)
-    message_list = {'page': []}
+    message_list = []
     for msg in storage:
         #if 'page' in msg.extra_tags:
-        msg_class = msg.tags.replace(msg.extra_tags, '').replace(' ', '')
-        message_list['page'].append({
+        msg_class = msg.tags.replace(' ', '')
+        message_list.append({
             'message': msg.message,
             'class': 'danger' if ('error' in msg_class) else msg_class,
         })
@@ -25,7 +25,7 @@ def inventory_list(request):
     inventory_list = InventoryItem.objects.all()
     return render(request, 'uw_inventory/list.html', {
         'inventory_list': inventory_list,
-        'message_list': message_list['page'],
+        'message_list': message_list,
     })
 
 
@@ -38,12 +38,10 @@ def inventory_detail(request, item_id):
         if form.is_valid():
             form.save()
             messages.success(request,
-                             'Item saved successfully',
-                             extra_tags='page')
+                             'Item saved successfully')
         else:
             messages.error(request,
-                           'Something went wrong. Check below for errors',
-                           extra_tags='page')
+                           'Something went wrong. Check below for errors')
         return HttpResponseRedirect('/list/' + item_id)
     else:
         message_list = _collect_messages(request)
@@ -53,30 +51,27 @@ def inventory_detail(request, item_id):
             'inventory_item': inventory_item,
             'form': form,
             'form_data': form.instance,
-            'page_messages': message_list['page'],
+            'page_messages': message_list,
         })
 
 
 @csrf_protect
 def inventory_add(request):
-    message_list = _collect_messages(request)
     if request.method == 'POST':
         form = ItemForm(request.POST)
         if form.is_valid():
-            new_item = form.save()
             messages.success(request,
-                             'Item saved successfully',
-                             extra_tags='page')
-            dest = '/list/%s' % new_item.id
+                             'Inventory item saved successfully')
+            new_item = form.save()
+            return HttpResponseRedirect(request, '/list/%s' % new_item.pk)
         else:
+            print form.errors
             messages.error(request,
-                           'Something went wrong. Check below for errors',
-                           extra_tags='page')
-            dest = '/list/add'
-        return HttpResponseRedirect(dest)
+                           'Something went wrong. Check below for errors')
     else:
         form = ItemForm()
-        return render(request, 'uw_inventory/add.html', {
-            'form': form,
-            'page_messages': message_list['page'],
-        })
+    message_list = _collect_messages(request)
+    return render(request, 'uw_inventory/add.html', {
+        'form': form,
+        'page_messages': message_list,
+    })

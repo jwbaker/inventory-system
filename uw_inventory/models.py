@@ -29,7 +29,7 @@ class InventoryItem(models.Model):
         'purchase_price',
     ]
 
-    name = models.CharField(blank=True, max_length=200, null=True)
+    name = models.CharField(max_length=200)
     creation_date = models.DateField(auto_now_add=True)
     description = models.TextField(blank=True, null=True)
     status = models.CharField(

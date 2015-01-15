@@ -94,11 +94,11 @@
       if(pageDirty){ {# Have we made a change? #}
         $('#pageEditWarning').removeClass('hidden');
         $('#pageSave').removeAttr('disabled');
-        inputControl.parents('div.form-group').addClass('list-group-item-warning');
+        inputControl.parents('div.form-group').addClass('list-group-item-warning has-warning');
       } else{ {# Are we back to original? #}
         $('#pageEditWarning').addClass('hidden');
         $('#pageSave').prop('disabled', 'disabled');
-        inputControl.parents('div.form-group').removeClass('list-group-item-warning');
+        inputControl.parents('div.form-group').removeClass('list-group-item-warning has-warning');
       }
 
       paragraph[0].textContent = saveText;

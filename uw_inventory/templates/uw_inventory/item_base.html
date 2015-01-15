@@ -1,5 +1,13 @@
 {% extends 'uw_inventory_system/base.html' %}
 
+{% block css_includes %}
+  <style type='text/css'>
+    ul.errorlist li{
+      list-style-type: none;
+    }
+  </style>
+{% endblock css_includes %}
+
 {% block navbar_right %}
   <li>
     <button class="btn navbar-btn btn-success" id="pageSave">Save</button>
