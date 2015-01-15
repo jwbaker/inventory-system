@@ -88,17 +88,17 @@
         {# We don't want to display placeholder text #}
         saveText = (inputControl[0].value == inputControl.placeholder ? '' : inputControl[0].value);
       }
+
+      pageDirty = (saveText !== original) {# Here, blank values are considered a change #}
       
-      if(saveText !== original){ {# Have we made a change? #}
+      if(pageDirty){ {# Have we made a change? #}
         $('#pageEditWarning').removeClass('hidden');
         $('#pageSave').removeAttr('disabled');
         inputControl.parents('div.form-group').addClass('list-group-item-warning');
-        pageDirty = true;
       } else{ {# Are we back to original? #}
         $('#pageEditWarning').addClass('hidden');
         $('#pageSave').prop('disabled', 'disabled');
         inputControl.parents('div.form-group').removeClass('list-group-item-warning');
-        pageDirty = false;
       }
 
       paragraph[0].textContent = saveText;

@@ -1,14 +1,18 @@
 <div class="form-group list-group-item clearfix">
   <div class="col-xs-2">
-    <label for="{{ field_id }}" class="control-label">{{ field_label }}</label>
+    <label for="{{ field_id }}" class="control-label">
+      {{ field_label }}
+    </label>
   </div>
   <div class="col-xs-9">
+    {# If we came from a show_static_field or _show_editable_field tag #}
     {% if caller == "static" or caller == "edit" %}
       <p class="form-control-static" id="{{ field_id }}">{{field_value}}</p>
     {% endif %}
 
+    {# If we came from a show_field or _show_editable_field tag #}
     {% if caller == "field" or caller == "edit" %}
-      {% ifequal field_type 'currency' %}
+      {% ifequal field_type 'currency' %} {# Currency has some special formatting requirements #}
         {% include 'uw_inventory/fields/currency.html' %}
       {% else %}
         {{ field }}
@@ -17,6 +21,7 @@
     {% endif %}
   </div>
 
+  {# If we came from a _show_editable_field tag #}
   {% if caller == "edit" %}
     <div class="col-xs-1">
       <i class="fa fa-check save hidden" for="{{ field_id }}"></i>

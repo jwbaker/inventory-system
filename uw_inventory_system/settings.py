@@ -54,8 +54,10 @@ ROOT_URLCONF = 'uw_inventory_system.urls'
 
 WSGI_APPLICATION = 'uw_inventory_system.wsgi.application'
 
+# Allows us to have our global base template in the project root directory
 TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
 
+# We want messages to be per-user, so store them in SessionStorage
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 # Database

@@ -23,13 +23,12 @@
 
   <script type="text/javascript">
     var onChangeHandler = function(event){
+      {# Empty values aren't considered 'changes' #}
       if(event.target.value === ''){
         pageDirty = false;
       } else{
         pageDirty = true;
       }
-
-      console.log(pageDirty);
     }
 
     $('select').change(onChangeHandler);

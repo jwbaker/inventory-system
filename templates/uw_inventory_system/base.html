@@ -22,6 +22,7 @@
     {% endblock css_includes %}
 
     <style type="text/css">
+      {# Pushes the whole page down to account for the sticky navigation bar #}
       body{
         padding-top: 70px;
       }
@@ -61,8 +62,10 @@
         <div class="col-xs-4 col-xs-offset-4">
           {% if page_messages %}
             {% for msg in page_messages %}
-              <div class="alert alert-dismissible alert-{{ msg.class }}"  role="alert">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <div class="alert alert-dismissible alert-{{ msg.class }}" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
                 {{ msg.message }}
               </div>
             {% endfor %}
@@ -73,11 +76,9 @@
       </div>
 
       {% block content %}
-
       {% endblock content %}
 
       {% block modal %}
-        
       {% endblock modal %}
 
       <hr>

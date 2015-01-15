@@ -20,7 +20,6 @@ def _collect_messages(request):
     return message_list
 
 
-# Create your views here.
 def inventory_list(request):
     message_list = _collect_messages(request)
     inventory_list = InventoryItem.objects.all()

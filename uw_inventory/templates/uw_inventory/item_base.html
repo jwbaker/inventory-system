@@ -16,7 +16,6 @@
       <div class="panel panel-default">
         <div class="panel-heading">{% block page_heading %}{% endblock page_heading %}</div>
             {% block page_body %}
-                
             {% endblock page_body %}
         </div>
     </div>
@@ -52,6 +51,7 @@
   </script>
 
   <script type="text/javascript">
+    {# We want to confirm user intent if they try to navigate away with unsaved changes #}
     var pageDirty = false;
     $('.add').parent().click(function(event){
       if(pageDirty){
