@@ -37,6 +37,7 @@ class InventoryItem(models.Model):
     deleted = models.BooleanField(default=False)
 
     # These fields are supplied by the user
+    csa_required = models.BooleanField(default=False)
     description = models.TextField(blank=True, null=True)
     manufacture_date = models.DateField(blank=True, default=None, null=True)
     name = models.CharField(max_length=200)

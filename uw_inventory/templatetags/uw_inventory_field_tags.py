@@ -1,3 +1,5 @@
+import re
+
 from django import template
 
 from uw_inventory.models import InventoryItem
@@ -23,7 +25,13 @@ def _field_handler(field, tag, **kwargs):
     context['field'] = field
 
     try:
-        context['field_id'] = str('input%s' % ''.join(field.label.split()))
+        field_label_words = [s.lower().capitalize()
+                             for s in field.label.split()]
+        context['field_id'] = re.sub(
+            r'[^\w]',
+            ' ',
+            str('input%s' % ''.join(field_label_words))
+        )
         context['field_label'] = field.label
         context['field_required'] = field.field.required
     except:

@@ -13,9 +13,14 @@ class ItemForm(forms.ModelForm):
         model = InventoryItem
         exclude = ['deleted']
         labels = {
+            'csa_required': 'CSA required?',
             'replacement_cost_date': 'Estimation date',
         }
         widgets = {
+            'csa_required': forms.RadioSelect(attrs={
+                'id': 'inputCsaRequired',
+                'class': 'form-control item-input',
+            }),
             'description': forms.Textarea(attrs={
                 'id': 'inputDescription',
                 'class': 'form-control item-input',
