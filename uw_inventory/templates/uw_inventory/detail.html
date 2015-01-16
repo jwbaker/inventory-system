@@ -1,5 +1,5 @@
 {% extends 'uw_inventory/item_base.html' %}
-{% load uw_inventory_extras %}
+{% load uw_inventory_field_tags %}
 
 {% block messages %}
    {{ block.super }}
@@ -14,7 +14,7 @@
   {{ block.super }}
   <li>
     <a href="{% url 'uw_inventory.views.inventory_copy' inventory_item.id %}">
-      <i class="fa fa-files-o navigate"></i>
+      <i class="fa fa-files-o navigate" id="duplicate"></i>
     </a>
   </li>
   <li>
@@ -43,6 +43,14 @@
   {{ block.super }}
   {# Need this for the date formatting further down #}
   <script src="https://code.jquery.com/ui/1.11.2/jquery-ui.min.js"></script>
+
+  <script type="text/javascript">
+  $("#duplicate").parent().click(function(){
+    if(pageDirty){
+      $('#confirmExitModal').find('.modal-body').append("<p>Unsaved changes will not be duplicated.</p>");
+    }
+  });
+  </script>
 
   <script type="text/javascript">
   $('#pageSave').attr('disabled', 'disabled');
