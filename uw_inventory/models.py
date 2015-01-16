@@ -38,13 +38,15 @@ class InventoryItem(models.Model):
 
     # These fields are supplied by the user
     description = models.TextField(blank=True, null=True)
-    manufacture_date = models.DateField(blank=True, null=True)
+    manufacture_date = models.DateField(blank=True, default=None, null=True)
     name = models.CharField(max_length=200)
-    purchase_date = models.DateField(blank=True, null=True)
+    purchase_date = models.DateField(blank=True, default=None, null=True)
     purchase_price = models.IntegerField(blank=True, default=None, null=True)
+    replacement_cost = models.IntegerField(blank=True, default=None, null=True)
     status = models.CharField(
         blank=True,
         choices=STATUS_CHOICES,
         default=None,
         max_length=2,
-        null=True)
+        null=True
+    )

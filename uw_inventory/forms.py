@@ -31,11 +31,16 @@ class ItemForm(forms.ModelForm):
             }),
             'purchase_date': DateInput(attrs={
                 'id': 'inputPurchaseDate',
-                'class': 'form-control item-input'
+                'class': 'form-control item-input',
             }),
             'purchase_price': forms.NumberInput(attrs={
                 'id': 'inputStatus',
                 # .item-input will be added to the container div
+                'class': 'form-control',
+                'placeholder': 0,
+            }),
+            'replacement_cost': forms.NumberInput(attrs={
+                'id': 'inputReplacementCost',
                 'class': 'form-control',
                 'placeholder': 0,
             }),
