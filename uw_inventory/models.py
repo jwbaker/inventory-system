@@ -15,17 +15,6 @@ class InventoryItem(models.Model):
         (STATUS_OTHER,   'Other'),
     ]
 
-    # We're going to loop over this to make it easier for us to save items
-    # This is why we expect the control element to have a label that can be
-    # converted into an attribute name
-    EDITABLE_FIELDS = [
-        'description',
-        'name',
-        'purchase_price',
-        'status',
-        'manufacture_date',
-    ]
-
     @staticmethod
     def get_status_display(status_key):
         '''
@@ -51,6 +40,7 @@ class InventoryItem(models.Model):
     description = models.TextField(blank=True, null=True)
     manufacture_date = models.DateField(blank=True, null=True)
     name = models.CharField(max_length=200)
+    purchase_date = models.DateField(blank=True, null=True)
     purchase_price = models.IntegerField(blank=True, default=None, null=True)
     status = models.CharField(
         blank=True,

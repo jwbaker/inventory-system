@@ -33,10 +33,11 @@
     {% csrf_token %}
     {% show_editable_field form.name form_data.name 'text' %}
     {% show_static_field 'Creation date' form_data.creation_date %}
-    {% show_editable_field form.status form_data.status 'dropdown' %}
-    {% show_editable_field form.purchase_price form_data.purchase_price 'currency' %}
     {% show_editable_field form.description form_data.description 'textarea' %}
+    {% show_editable_field form.status form_data.status 'dropdown' %}
     {% show_editable_field form.manufacture_date form_data.manufacture_date 'date' %}
+    {% show_editable_field form.purchase_price form_data.purchase_price 'currency' %}
+    {% show_editable_field form.purchase_date form_data.purchase_date 'date' %}
   </form>
 {% endblock page_body %}
 

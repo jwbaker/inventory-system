@@ -13,11 +13,6 @@ class ItemForm(forms.ModelForm):
         model = InventoryItem
         exclude = ['deleted']
         widgets = {
-            'name': forms.TextInput(attrs={
-                'id': 'inputName',
-                'class': 'form-control item-input',
-                'placeholder': 'Name',
-            }),
             'description': forms.Textarea(attrs={
                 'id': 'inputDescription',
                 'class': 'form-control item-input',
@@ -25,9 +20,18 @@ class ItemForm(forms.ModelForm):
                 'rows': '5',  # Arbitrary number is arbitrary
                 'style': 'resize:vertical',  # Horizontal resizing kills layout
             }),
-            'status': forms.Select(attrs={
-                'id': 'inputStatus',
+            'manufacture_date': DateInput(attrs={
+                'id': 'inputManufactureDate',
                 'class': 'form-control item-input',
+            }),
+            'name': forms.TextInput(attrs={
+                'id': 'inputName',
+                'class': 'form-control item-input',
+                'placeholder': 'Name',
+            }),
+            'purchase_date': DateInput(attrs={
+                'id': 'inputPurchaseDate',
+                'class': 'form-control item-input'
             }),
             'purchase_price': forms.NumberInput(attrs={
                 'id': 'inputStatus',
@@ -35,8 +39,8 @@ class ItemForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': 0,
             }),
-            'manufacture_date': DateInput(attrs={
-                'id': 'inputManufactureDate',
+            'status': forms.Select(attrs={
+                'id': 'inputStatus',
                 'class': 'form-control item-input',
             }),
         }
