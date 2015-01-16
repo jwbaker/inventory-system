@@ -43,6 +43,11 @@ class InventoryItem(models.Model):
     purchase_date = models.DateField(blank=True, default=None, null=True)
     purchase_price = models.IntegerField(blank=True, default=None, null=True)
     replacement_cost = models.IntegerField(blank=True, default=None, null=True)
+    replacement_cost_date = models.DateField(
+        blank=True,
+        default=None,
+        null=True
+    )
     status = models.CharField(
         blank=True,
         choices=STATUS_CHOICES,

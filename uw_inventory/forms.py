@@ -12,6 +12,9 @@ class ItemForm(forms.ModelForm):
     class Meta:
         model = InventoryItem
         exclude = ['deleted']
+        labels = {
+            'replacement_cost_date': 'Estimation date',
+        }
         widgets = {
             'description': forms.Textarea(attrs={
                 'id': 'inputDescription',
@@ -43,6 +46,10 @@ class ItemForm(forms.ModelForm):
                 'id': 'inputReplacementCost',
                 'class': 'form-control',
                 'placeholder': 0,
+            }),
+            'replacement_cost_date': DateInput(attrs={
+                'id': 'inputReplacementCostDate',
+                'class': 'form-control item-input',
             }),
             'status': forms.Select(attrs={
                 'id': 'inputStatus',
