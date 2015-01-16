@@ -3,6 +3,11 @@ from django import forms
 from uw_inventory.models import InventoryItem
 
 
+# We need this class because Django's default date widget is a text box
+class DateInput(forms.DateInput):
+    input_type = 'date'
+
+
 class ItemForm(forms.ModelForm):
     class Meta:
         model = InventoryItem
@@ -29,5 +34,9 @@ class ItemForm(forms.ModelForm):
                 # .item-input will be added to the container div
                 'class': 'form-control',
                 'placeholder': 0,
+            }),
+            'manufacture_date': DateInput(attrs={
+                'id': 'inputManufactureDate',
+                'class': 'form-control item-input',
             }),
         }

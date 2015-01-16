@@ -23,19 +23,8 @@ class InventoryItem(models.Model):
         'name',
         'purchase_price',
         'status',
+        'manufacture_date',
     ]
-
-    name = models.CharField(max_length=200)
-    creation_date = models.DateField(auto_now_add=True)
-    description = models.TextField(blank=True, null=True)
-    status = models.CharField(
-        blank=True,
-        choices=STATUS_CHOICES,
-        default=None,
-        max_length=2,
-        null=True)
-    purchase_price = models.IntegerField(blank=True, default=None, null=True)
-    deleted = models.BooleanField(default=False)
 
     @staticmethod
     def get_status_display(status_key):
@@ -53,3 +42,19 @@ class InventoryItem(models.Model):
         # We return '' rather than None because the combination of Django and
         # JavaScript used in the detail page renders None as 'None' (a string)
         return ''
+
+    # These fields get automatically filled and cannot be edited
+    creation_date = models.DateField(auto_now_add=True)
+    deleted = models.BooleanField(default=False)
+
+    # These fields are supplied by the user
+    description = models.TextField(blank=True, null=True)
+    manufacture_date = models.DateField(blank=True, null=True)
+    name = models.CharField(max_length=200)
+    purchase_price = models.IntegerField(blank=True, default=None, null=True)
+    status = models.CharField(
+        blank=True,
+        choices=STATUS_CHOICES,
+        default=None,
+        max_length=2,
+        null=True)
