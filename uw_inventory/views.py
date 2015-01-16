@@ -55,17 +55,17 @@ def inventory_detail(request, item_id):
         else:
             messages.error(request,
                            'Something went wrong. Check below for errors')
-        return HttpResponseRedirect('/list/' + item_id)
+        # return HttpResponseRedirect('/list/' + item_id)
     else:
-        message_list = _collect_messages(request)
         form = ItemForm(instance=inventory_item)
 
-        return render(request, 'uw_inventory/detail.html', {
-            'inventory_item': inventory_item,
-            'form': form,
-            'form_data': form.instance,
-            'page_messages': message_list,
-        })
+    message_list = _collect_messages(request)
+    return render(request, 'uw_inventory/detail.html', {
+        'inventory_item': inventory_item,
+        'form': form,
+        'form_data': form.instance,
+        'page_messages': message_list,
+    })
 
 
 @csrf_protect
