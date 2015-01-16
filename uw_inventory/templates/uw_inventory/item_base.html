@@ -37,6 +37,15 @@
 
 {% block js_includes %}
   <script type="text/javascript">
+    $('i.checkbox').click(function(){
+      if(!$(this).hasClass('hidden')){
+        $(this).toggleClass('fa-square-o');
+        $(this).toggleClass('fa-check-square-o');
+        $(this).attr('value', $(this).hasClass('fa-check-square-o'))
+      }
+    });
+  </script>
+  <script type="text/javascript">
     {# Redirect on the cancel button #}
     $('#pageCancel').click(function(){
       window.location = {% url 'uw_inventory.views.inventory_list' %};

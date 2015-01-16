@@ -1,4 +1,5 @@
 from django import forms
+from django.utils.safestring import mark_safe
 
 from uw_inventory.models import InventoryItem
 
@@ -8,7 +9,35 @@ class DateInput(forms.DateInput):
     input_type = 'date'
 
 
+class CheckboxInput(forms.Widget):
+
+    def render(self, name, value, attrs=None):
+        try:
+            widget_id = self.attrs['id']
+        except:
+            widget_id = None
+
+        try:
+            widget_class = self.attrs['class']
+        except:
+            widget_class = ''
+        widget_class += ' checkbox fa fa-2x'
+        widget_class += ' {0}'.format(
+            'fa-check-square-o' if value else 'fa-square-o'
+        )
+
+        return mark_safe(
+            u'<i class="{0}" id="{1}" name="{2}" value="{3}"></i>'.format(
+                widget_class,
+                widget_id,
+                name,
+                value
+            )
+        )
+
+
 class ItemForm(forms.ModelForm):
+
     class Meta:
         model = InventoryItem
         exclude = ['deleted']
@@ -17,9 +46,9 @@ class ItemForm(forms.ModelForm):
             'replacement_cost_date': 'Estimation date',
         }
         widgets = {
-            'csa_required': forms.RadioSelect(attrs={
+            'csa_required': CheckboxInput(attrs={
                 'id': 'inputCsaRequired',
-                'class': 'form-control item-input',
+                'class': 'item-input',
             }),
             'description': forms.Textarea(attrs={
                 'id': 'inputDescription',
