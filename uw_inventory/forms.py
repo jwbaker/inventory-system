@@ -17,8 +17,8 @@ class ItemForm(forms.ModelForm):
                 'id': 'inputDescription',
                 'class': 'form-control item-input',
                 'placeholder': 'Description',
-                'rows': '5',
-                'style': 'resize:vertical',
+                'rows': '5',  # Arbitrary number is arbitrary
+                'style': 'resize:vertical',  # Horizontal resizing kills layout
             }),
             'status': forms.Select(attrs={
                 'id': 'inputStatus',
@@ -26,6 +26,7 @@ class ItemForm(forms.ModelForm):
             }),
             'purchase_price': forms.NumberInput(attrs={
                 'id': 'inputStatus',
+                # .item-input will be added to the container div
                 'class': 'form-control',
                 'placeholder': 0,
             }),

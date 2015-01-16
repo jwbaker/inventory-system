@@ -25,10 +25,6 @@ class InventoryItem(models.Model):
         'status',
     ]
 
-    NUMERIC_FIELDS = [
-        'purchase_price',
-    ]
-
     name = models.CharField(max_length=200)
     creation_date = models.DateField(auto_now_add=True)
     description = models.TextField(blank=True, null=True)
@@ -43,7 +39,17 @@ class InventoryItem(models.Model):
 
     @staticmethod
     def get_status_display(status_key):
+        '''
+        Looks up the display text of a given status key
+
+        Positional arguments:
+            status_key -- The value of a status field.
+                            One of: '', STATUS_OTHER, STATUS_SURPLUS,
+                            STATUS_STORAGE, or STATUS_STAY
+        '''
         if status_key:
             return [v[1] for i, v in enumerate(InventoryItem.STATUS_CHOICES)
                     if v[0] == status_key]
+        # We return '' rather than None because the combination of Django and
+        # JavaScript used in the detail page renders None as 'None' (a string)
         return ''

@@ -6,14 +6,14 @@
     </label>
   </div>
   <div class="col-xs-9">
-    {# If we came from a show_static_field or _show_editable_field tag #}
+    {# If we came from a show_static_field or show_editable_field tag #}
     {% if caller == "static" or caller == "edit" %}
       <p class="form-control-static" id="{{ field_id }}">
         {{field_value}}{% if field.required %}<span class="text-danger">*</span>{% endif %}
       </p>
     {% endif %}
 
-    {# If we came from a show_field or _show_editable_field tag #}
+    {# If we came from a show_field or show_editable_field tag #}
     {% if caller == "field" or caller == "edit" %}
       {% ifequal field_type 'currency' %} {# Currency has some special formatting requirements #}
         {% include 'uw_inventory/fields/currency.html' %}
@@ -24,7 +24,7 @@
     {% endif %}
   </div>
 
-  {# If we came from a _show_editable_field tag #}
+  {# If we came from a show_editable_field tag #}
   {% if caller == "edit" %}
     <span class="hidden default-value" for="{{ field_id }}">{{ field_value }}</span>
     <div class="col-xs-1">

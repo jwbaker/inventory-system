@@ -8,11 +8,24 @@ from uw_inventory.models import InventoryItem
 
 
 def _collect_messages(request):
+    '''
+    Loops through stored messages and packages them for consumption.
+
+    We need to iterate through in order to mark the message as seen, otherwise
+    it will keep displaying on every page.
+
+    This method also converts the 'error' class into the 'danger' class, so
+    bootstrap will recognize and render it properly.
+
+    Positional arguments:
+        request - The request object passed to the view
+
+    Returns: An array of message objects
+    '''
     storage = messages.get_messages(request)
     message_list = []
     for msg in storage:
-        #if 'page' in msg.extra_tags:
-        msg_class = msg.tags.replace(' ', '')
+        msg_class = msg.tags
         message_list.append({
             'message': msg.message,
             'class': 'danger' if ('error' in msg_class) else msg_class,

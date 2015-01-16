@@ -33,9 +33,6 @@ def _field_handler(field, tag, **kwargs):
     context['field_value'] = kwargs.get('field_value', '') or ''
 
     if(context['field_type'] == 'dropdown'):
-        # context['field_value'] = _get_choice_text(
-        #     InventoryItem.STATUS_CHOICES,
-        #     context['field_value']
         context['field_value'] = InventoryItem.get_status_display(
             context['field_value']
         )

@@ -5,6 +5,13 @@ register = template.Library()
 
 @register.inclusion_tag('uw_inventory/modal.html')
 def confirm_modal(modal_name):
+    '''
+    Generates an unsaved changes confirmation dialogue modal.
+
+    Parameters:
+        modal_name -- A unique identifying name for the modal.
+                        The id will be generated from this name.
+    '''
     context = {
         'buttons': [
             {
