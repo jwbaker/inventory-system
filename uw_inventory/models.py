@@ -40,3 +40,10 @@ class InventoryItem(models.Model):
         null=True)
     purchase_price = models.IntegerField(blank=True, default=None, null=True)
     deleted = models.BooleanField(default=False)
+
+    @staticmethod
+    def get_status_display(status_key):
+        if status_key:
+            return [v[1] for i, v in enumerate(InventoryItem.STATUS_CHOICES)
+                    if v[0] == status_key]
+        return ''
