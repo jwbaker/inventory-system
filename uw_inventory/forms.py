@@ -15,6 +15,7 @@ class ItemForm(forms.ModelForm):
             'csa_special': 'Special CSA inspection?',
             'csa_special_date': 'CSA inspection date',
             'factory_csa': 'Factory CSA certification?',
+            'lifting_device': 'Lifting device?',
             'modified_since_csa': 'Modified since inspection?',
             'replacement_cost_date': 'Estimation date',
             'undergraduate': 'Used for undergrad teaching?',
@@ -46,7 +47,11 @@ class ItemForm(forms.ModelForm):
             }),
             'factory_csa': widgets.CheckboxInput(attrs={
                 'id': 'inputFactoryCsa',
-                'class': 'item-input form-element'
+                'class': 'item-input form-element',
+            }),
+            'lifting_device': widgets.CheckboxInput(attrs={
+                'id': 'inputLiftingDevice',
+                'class': 'item-input form-element',
             }),
             'manufacture_date': widgets.DateInput(attrs={
                 'id': 'inputManufactureDate',
