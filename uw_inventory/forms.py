@@ -48,45 +48,45 @@ class ItemForm(forms.ModelForm):
         widgets = {
             'csa_required': CheckboxInput(attrs={
                 'id': 'inputCsaRequired',
-                'class': 'item-input',
+                'class': 'item-input form-element',
             }),
             'description': forms.Textarea(attrs={
                 'id': 'inputDescription',
-                'class': 'form-control item-input',
+                'class': 'form-control item-input form-element',
                 'placeholder': 'Description',
                 'rows': '5',  # Arbitrary number is arbitrary
                 'style': 'resize:vertical',  # Horizontal resizing kills layout
             }),
             'manufacture_date': DateInput(attrs={
                 'id': 'inputManufactureDate',
-                'class': 'form-control item-input',
+                'class': 'form-control item-input form-element',
             }),
             'name': forms.TextInput(attrs={
                 'id': 'inputName',
-                'class': 'form-control item-input',
+                'class': 'form-control item-input form-element',
                 'placeholder': 'Name',
             }),
             'purchase_date': DateInput(attrs={
                 'id': 'inputPurchaseDate',
-                'class': 'form-control item-input',
+                'class': 'form-control item-input form-element',
             }),
             'purchase_price': forms.NumberInput(attrs={
                 'id': 'inputStatus',
                 # .item-input will be added to the container div
-                'class': 'form-control',
+                'class': 'form-control form-element',
                 'placeholder': 0,
             }),
             'replacement_cost': forms.NumberInput(attrs={
                 'id': 'inputReplacementCost',
-                'class': 'form-control',
+                'class': 'form-control form-element',
                 'placeholder': 0,
             }),
             'replacement_cost_date': DateInput(attrs={
                 'id': 'inputReplacementCostDate',
-                'class': 'form-control item-input',
+                'class': 'form-control item-input form-element',
             }),
             'status': forms.Select(attrs={
                 'id': 'inputStatus',
-                'class': 'form-control item-input',
+                'class': 'form-control item-input form-element',
             }),
         }

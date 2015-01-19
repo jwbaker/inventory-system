@@ -93,7 +93,7 @@
       var paragraph = $('p#' + $(this).attr('for'));
 
       {# This line looks up from the pragraph for the parent div, then down for the input element #}
-      var inputControl = paragraph.closest('div').find('.form-control');
+      var inputControl = paragraph.closest('div').find('.form-element');
       var original = inputControl.parents('div.form-group').find('span.default-value')[0].textContent;
       var saveText; {# This will eventually go in the "saved" <p> tag text #}
 
@@ -111,6 +111,8 @@
 
         {# Keeps a consistent formatting on the date. We could do this with native JS, but this is cleaner #}
         saveText = $.datepicker.formatDate('M. d, yy', date);
+      } else if(inputControl.is('i.checkbox')){
+        saveText = (inputControl.hasClass('fa-check-square-o') ? 'Yes' : 'No');
       } else {
         {# We don't want to display placeholder text #}
         saveText = (inputControl[0].value == inputControl.placeholder ? '' : inputControl[0].value);
