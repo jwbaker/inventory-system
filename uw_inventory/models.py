@@ -39,6 +39,7 @@ class InventoryItem(models.Model):
     # These fields are supplied by the user
     csa_required = models.BooleanField(default=False)
     description = models.TextField(blank=True, null=True)
+    factory_csa = models.BooleanField(default=False)
     manufacture_date = models.DateField(blank=True, default=None, null=True)
     name = models.CharField(max_length=200)
     purchase_date = models.DateField(blank=True, default=None, null=True)

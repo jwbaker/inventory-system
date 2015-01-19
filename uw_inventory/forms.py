@@ -11,6 +11,7 @@ class ItemForm(forms.ModelForm):
         exclude = ['deleted']
         labels = {
             'csa_required': 'CSA required?',
+            'factory_csa': 'Factory CSA Certification?',
             'replacement_cost_date': 'Estimation date',
         }
         widgets = {
@@ -24,6 +25,10 @@ class ItemForm(forms.ModelForm):
                 'placeholder': 'Description',
                 'rows': '5',  # Arbitrary number is arbitrary
                 'style': 'resize:vertical',  # Horizontal resizing kills layout
+            }),
+            'factory_csa': widgets.CheckboxInput(attrs={
+                'id': 'inputFactoryCsa',
+                'class': 'item-input form-element'
             }),
             'manufacture_date': widgets.DateInput(attrs={
                 'id': 'inputManufactureDate',
