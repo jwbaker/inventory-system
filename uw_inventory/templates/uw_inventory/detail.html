@@ -109,11 +109,15 @@
         {# Need to do this because sending the string alone into the Date constructor will #}
         {#   interpret the data as UTC, but we want it to be Eastern time #}
         var dateStr = inputControl[0].value;
-        var dateArr = dateStr.split('-');
-        var date = new Date(dateArr[0], dateArr[1] - 1, dateArr[2]);
+        if(dateStr){
+          var dateArr = dateStr.split('-');
+          var date = new Date(dateArr[0], dateArr[1] - 1, dateArr[2]);
 
-        {# Keeps a consistent formatting on the date. We could do this with native JS, but this is cleaner #}
-        saveText = $.datepicker.formatDate('M. d, yy', date);
+          {# Keeps a consistent formatting on the date. We could do this with native JS, but this is cleaner #}
+          saveText = $.datepicker.formatDate('M. d, yy', date);
+        } else{
+          saveText = '';
+        }
       } else if(inputControl.is('i.checkbox')){
         saveText = (inputControl.hasClass('fa-check-square-o') ? 'Yes' : 'No');
         var hidden_input = inputControl.find('input');
