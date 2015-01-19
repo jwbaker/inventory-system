@@ -60,3 +60,4 @@ class InventoryItem(models.Model):
         max_length=2,
         null=True
     )
+    undergraduate = models.BooleanField(default=False)

@@ -16,6 +16,7 @@ class ItemForm(forms.ModelForm):
             'factory_csa': 'Factory CSA certification?',
             'modified_since_csa': 'Modified since inspection?',
             'replacement_cost_date': 'Estimation date',
+            'undergraduate': 'Used for undergrad teaching?',
         }
         widgets = {
             'csa_required': widgets.CheckboxInput(attrs={
@@ -76,5 +77,9 @@ class ItemForm(forms.ModelForm):
             'status': forms.Select(attrs={
                 'id': 'inputStatus',
                 'class': 'form-control item-input form-element',
+            }),
+            'undergraduate': widgets.CheckboxInput(attrs={
+                'id': 'inputUndergraduate',
+                'class': 'item-input form-element',
             }),
         }
