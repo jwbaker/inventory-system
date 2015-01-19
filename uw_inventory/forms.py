@@ -1,47 +1,7 @@
 from django import forms
-from django.utils.safestring import mark_safe
 
+from uw_inventory import widgets
 from uw_inventory.models import InventoryItem
-
-
-# We need this class because Django's default date widget is a text box
-class DateInput(forms.DateInput):
-    input_type = 'date'
-
-
-class CheckboxInput(forms.Widget):
-
-    def render(self, name, value, attrs=None):
-        try:
-            widget_id = self.attrs['id']
-        except:
-            widget_id = None
-
-        try:
-            widget_class = self.attrs['class']
-        except:
-            widget_class = ''
-        widget_class += ' checkbox fa fa-2x'
-        widget_class += ' {0}'.format(
-            'fa-check-square-o' if value else 'fa-square-o'
-        )
-
-        input_ctl = '''<input type="checkbox" id="{0}" name="{1}"
-                        class="hidden" {2} />'''.format(
-            widget_id,
-            name,
-            'checked="checked"' if value else ''
-        )
-
-        return mark_safe(
-            u'<i class="{0}" id="{1}" name="{2}" value="{3}">{4}</i>'.format(
-                widget_class,
-                widget_id,
-                name,
-                value,
-                input_ctl
-            )
-        )
 
 
 class ItemForm(forms.ModelForm):
@@ -54,7 +14,7 @@ class ItemForm(forms.ModelForm):
             'replacement_cost_date': 'Estimation date',
         }
         widgets = {
-            'csa_required': CheckboxInput(attrs={
+            'csa_required': widgets.CheckboxInput(attrs={
                 'id': 'inputCsaRequired',
                 'class': 'item-input form-element',
             }),
@@ -65,7 +25,7 @@ class ItemForm(forms.ModelForm):
                 'rows': '5',  # Arbitrary number is arbitrary
                 'style': 'resize:vertical',  # Horizontal resizing kills layout
             }),
-            'manufacture_date': DateInput(attrs={
+            'manufacture_date': widgets.DateInput(attrs={
                 'id': 'inputManufactureDate',
                 'class': 'form-control item-input form-element',
             }),
@@ -74,7 +34,7 @@ class ItemForm(forms.ModelForm):
                 'class': 'form-control item-input form-element',
                 'placeholder': 'Name',
             }),
-            'purchase_date': DateInput(attrs={
+            'purchase_date': widgets.DateInput(attrs={
                 'id': 'inputPurchaseDate',
                 'class': 'form-control item-input form-element',
             }),
@@ -89,7 +49,7 @@ class ItemForm(forms.ModelForm):
                 'class': 'form-control form-element',
                 'placeholder': 0,
             }),
-            'replacement_cost_date': DateInput(attrs={
+            'replacement_cost_date': widgets.DateInput(attrs={
                 'id': 'inputReplacementCostDate',
                 'class': 'form-control item-input form-element',
             }),
