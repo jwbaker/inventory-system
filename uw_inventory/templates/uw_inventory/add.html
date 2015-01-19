@@ -22,6 +22,16 @@
   {{ block.super }}
   <script type="text/javascript">
     $('#pageSave').click(function(){
+      var checkboxes = $('i.checkbox');
+      for(var i = 0; i < checkboxes.length; i++){
+        var hidden_input = checkboxes[i].getElementsByTagName('input')[0];
+        var checkbox_value = checkboxes[i].className.indexOf('fa-check-square-o') > -1;
+        if(checkbox_value){
+          hidden_input.setAttribute('checked', 'checked');
+        } else{
+          hidden_input.removeAttribute('checked');
+        }
+      }
       $('form#itemForm').submit();
     });
   </script>

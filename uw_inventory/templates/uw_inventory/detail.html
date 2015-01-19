@@ -113,6 +113,12 @@
         saveText = $.datepicker.formatDate('M. d, yy', date);
       } else if(inputControl.is('i.checkbox')){
         saveText = (inputControl.hasClass('fa-check-square-o') ? 'Yes' : 'No');
+        var hidden_input = inputControl.find('input');
+        if(saveText === 'Yes'){
+          hidden_input.attr('checked', 'checked');
+        } else{
+          hidden_input.removeAttr('checked');
+        }
       } else {
         {# We don't want to display placeholder text #}
         saveText = (inputControl[0].value == inputControl.placeholder ? '' : inputControl[0].value);

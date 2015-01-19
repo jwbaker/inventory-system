@@ -26,12 +26,20 @@ class CheckboxInput(forms.Widget):
             'fa-check-square-o' if value else 'fa-square-o'
         )
 
+        input_ctl = '''<input type="checkbox" id="{0}" name="{1}"
+                        class="hidden" {2} />'''.format(
+            widget_id,
+            name,
+            'checked="checked"' if value else ''
+        )
+
         return mark_safe(
-            u'<i class="{0}" id="{1}" name="{2}" value="{3}"></i>'.format(
+            u'<i class="{0}" id="{1}" name="{2}" value="{3}">{4}</i>'.format(
                 widget_class,
                 widget_id,
                 name,
-                value
+                value,
+                input_ctl
             )
         )
 
