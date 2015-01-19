@@ -37,6 +37,7 @@ class InventoryItem(models.Model):
     deleted = models.BooleanField(default=False)
 
     # These fields are supplied by the user
+    csa_cost = models.IntegerField(blank=True, default=None, null=True)
     csa_required = models.BooleanField(default=False)
     csa_special = models.BooleanField(default=False)
     csa_special_date = models.DateField(blank=True, default=None, null=True)

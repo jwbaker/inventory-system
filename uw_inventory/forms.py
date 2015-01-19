@@ -10,6 +10,7 @@ class ItemForm(forms.ModelForm):
         model = InventoryItem
         exclude = ['deleted']
         labels = {
+            'csa_cost': 'CSA certification cost',
             'csa_required': 'CSA required?',
             'csa_special': 'Special CSA inspection?',
             'csa_special_date': 'CSA inspection date',
@@ -19,6 +20,11 @@ class ItemForm(forms.ModelForm):
             'undergraduate': 'Used for undergrad teaching?',
         }
         widgets = {
+            'csa_cost': forms.NumberInput(attrs={
+                'id': 'inputCsaCost',
+                'class': 'form-control form-element',
+                'placeholder': 0,
+            }),
             'csa_required': widgets.CheckboxInput(attrs={
                 'id': 'inputCsaRequired',
                 'class': 'item-input form-element',
