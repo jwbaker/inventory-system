@@ -11,12 +11,17 @@ class ItemForm(forms.ModelForm):
         exclude = ['deleted']
         labels = {
             'csa_required': 'CSA required?',
+            'csa_special': 'Special CSA Inspection?',
             'factory_csa': 'Factory CSA Certification?',
             'replacement_cost_date': 'Estimation date',
         }
         widgets = {
             'csa_required': widgets.CheckboxInput(attrs={
                 'id': 'inputCsaRequired',
+                'class': 'item-input form-element',
+            }),
+            'csa_special': widgets.CheckboxInput(attrs={
+                'id': 'inputCsaSpecial',
                 'class': 'item-input form-element',
             }),
             'description': forms.Textarea(attrs={
