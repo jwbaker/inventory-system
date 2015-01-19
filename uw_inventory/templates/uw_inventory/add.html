@@ -1,7 +1,7 @@
 {% extends 'uw_inventory/item_base.html' %}
 {% load uw_inventory_field_tags %}
 
-{% block page_heading %}New Item{% endblock page_heading %}
+{% block page_heading %}New Inventory Item{% endblock page_heading %}
 
 {% block page_body %}
   <form action="{% url 'uw_inventory.views.inventory_add' %}" method="post" id="itemForm">
