@@ -14,6 +14,7 @@ class ItemForm(forms.ModelForm):
             'csa_special': 'Special CSA inspection?',
             'csa_special_date': 'CSA inspection date',
             'factory_csa': 'Factory CSA certification?',
+            'modified_since_csa': 'Modified since inspection?',
             'replacement_cost_date': 'Estimation date',
         }
         widgets = {
@@ -26,7 +27,7 @@ class ItemForm(forms.ModelForm):
                 'class': 'item-input form-element',
             }),
             'csa_special_date': widgets.DateInput(attrs={
-                'id': 'inputManufactureDate',
+                'id': 'inputCsaSpecialDate',
                 'class': 'form-control item-input form-element',
             }),
             'description': forms.Textarea(attrs={
@@ -43,6 +44,10 @@ class ItemForm(forms.ModelForm):
             'manufacture_date': widgets.DateInput(attrs={
                 'id': 'inputManufactureDate',
                 'class': 'form-control item-input form-element',
+            }),
+            'modified_since_csa': widgets.CheckboxInput(attrs={
+                'id': 'inputModifiedSinceCsa',
+                'class': 'item-input form-element',
             }),
             'name': forms.TextInput(attrs={
                 'id': 'inputName',

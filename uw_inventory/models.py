@@ -43,6 +43,7 @@ class InventoryItem(models.Model):
     description = models.TextField(blank=True, null=True)
     factory_csa = models.BooleanField(default=False)
     manufacture_date = models.DateField(blank=True, default=None, null=True)
+    modified_since_csa = models.BooleanField(default=False)
     name = models.CharField(max_length=200)
     purchase_date = models.DateField(blank=True, default=None, null=True)
     purchase_price = models.IntegerField(blank=True, default=None, null=True)
