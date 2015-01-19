@@ -35,7 +35,7 @@ class InventoryItem(models.Model):
         return ''
 
     # These fields get automatically filled and cannot be edited
-    creation_date = models.DateField(default=datetime.now)
+    creation_date = models.DateTimeField(default=datetime.now)
     deleted = models.BooleanField(default=False)
 
     # These fields are supplied by the user
