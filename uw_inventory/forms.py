@@ -5,6 +5,24 @@ from uw_inventory.models import InventoryItem
 
 
 class ItemForm(forms.ModelForm):
+    FIELD_LIST = [
+        {'Name': 'name',                  'Type': 'text'},
+        {'Name': 'description',           'Type': 'textarea'},
+        {'Name': 'status',                'Type': 'dropdown'},
+        {'Name': 'manufacture_date',      'Type': 'date'},
+        {'Name': 'purchase_price',        'Type': 'currency'},
+        {'Name': 'purchase_date',         'Type': 'date'},
+        {'Name': 'replacement_cost',      'Type': 'currency'},
+        {'Name': 'replacement_cost_date', 'Type': 'date'},
+        {'Name': 'csa_required',          'Type': 'boolean'},
+        {'Name': 'factory_csa',           'Type': 'boolean'},
+        {'Name': 'csa_special',           'Type': 'boolean'},
+        {'Name': 'csa_special_date',      'Type': 'date'},
+        {'Name': 'modified_since_csa',    'Type': 'boolean'},
+        {'Name': 'undergraduate',         'Type': 'boolean'},
+        {'Name': 'csa_cost',              'Type': 'currency'},
+        {'Name': 'lifting_device',        'Type': 'boolean'},
+    ]
 
     class Meta:
         model = InventoryItem
