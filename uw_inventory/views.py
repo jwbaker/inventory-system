@@ -55,7 +55,7 @@ def inventory_detail(request, item_id):
         else:
             messages.error(request,
                            'Something went wrong. Check below for errors')
-        # return HttpResponseRedirect('/list/' + item_id)
+
     else:
         form = ItemForm(instance=inventory_item)
 

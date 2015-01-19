@@ -6,6 +6,7 @@
 {% block page_body %}
   <form action="{% url 'uw_inventory.views.inventory_add' %}" method="post" id="itemForm">
     {% csrf_token %}
+    {% show_field form.creation_date 'hidden' %}
     {% show_field form.name 'text' %}
     {% show_field form.status 'dropdown' %}
     {% show_field form.description 'textarea' %}

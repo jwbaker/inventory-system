@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.db import models
 
 
@@ -33,7 +35,7 @@ class InventoryItem(models.Model):
         return ''
 
     # These fields get automatically filled and cannot be edited
-    creation_date = models.DateField(auto_now_add=True)
+    creation_date = models.DateField(default=datetime.now)
     deleted = models.BooleanField(default=False)
 
     # These fields are supplied by the user

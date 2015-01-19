@@ -31,23 +31,23 @@
         method="post"
         id="itemForm">
     {% csrf_token %}
-    {% show_editable_field form.name form_data.name 'text' %}
-    {% show_static_field 'Creation date' form_data.creation_date %}
-    {% show_editable_field form.description form_data.description 'textarea' %}
-    {% show_editable_field form.status form_data.status 'dropdown' %}
-    {% show_editable_field form.manufacture_date form_data.manufacture_date 'date' %}
-    {% show_editable_field form.purchase_price form_data.purchase_price 'currency' %}
-    {% show_editable_field form.purchase_date form_data.purchase_date 'date' %}
-    {% show_editable_field form.replacement_cost form_data.replacement_cost 'currency' %}
-    {% show_editable_field form.replacement_cost_date form_data.replacement_cost_date 'date' %}
-    {% show_editable_field form.csa_required form_data.csa_required 'boolean' %}
-    {% show_editable_field form.factory_csa form_data.factory_csa 'boolean' %}
-    {% show_editable_field form.csa_special form_data.csa_special 'boolean' %}
-    {% show_editable_field form.csa_special_date form_data.csa_special_date 'date' %}
-    {% show_editable_field form.modified_since_csa form_data.modified_since_csa 'boolean' %}
-    {% show_editable_field form.undergraduate form_data.undergraduate 'boolean' %}
-    {% show_editable_field form.csa_cost form_data.csa_cost 'currency' %}
-    {% show_editable_field form.lifting_device form_data.lifting_device 'boolean' %}
+    {% show_static_field form.creation_date %}
+    {% show_editable_field form.name form.name.value 'text' %}
+    {% show_editable_field form.description form.description.value 'textarea' %}
+    {% show_editable_field form.status form.status.value 'dropdown' %}
+    {% show_editable_field form.manufacture_date form.manufacture_date.value 'date' %}
+    {% show_editable_field form.purchase_price form.purchase_price.value 'currency' %}
+    {% show_editable_field form.purchase_date form.purchase_date.value 'date' %}
+    {% show_editable_field form.replacement_cost form.replacement_cost.value 'currency' %}
+    {% show_editable_field form.replacement_cost_date form.replacement_cost_date.value 'date' %}
+    {% show_editable_field form.csa_required form.csa_required.value 'boolean' %}
+    {% show_editable_field form.factory_csa form.factory_csa.value 'boolean' %}
+    {% show_editable_field form.csa_special form.csa_special.value 'boolean' %}
+    {% show_editable_field form.csa_special_date form.csa_special_date.value 'date' %}
+    {% show_editable_field form.modified_since_csa form.modified_since_csa.value 'boolean' %}
+    {% show_editable_field form.undergraduate form.undergraduate.value 'boolean' %}
+    {% show_editable_field form.csa_cost form.csa_cost.value 'currency' %}
+    {% show_editable_field form.lifting_device form.lifting_device.value 'boolean' %}
   </form>
 {% endblock page_body %}
 

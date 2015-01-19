@@ -24,18 +24,22 @@ def _field_handler(field, tag, **kwargs):
     context['caller'] = tag
     context['field'] = field
 
+    field_label_words = [s.lower().capitalize()
+                         for s in field.label.split()]
+    context['field_id'] = re.sub(
+        r'[^\w]',
+        '',
+        str('input%s' % ''.join(field_label_words))
+    )
     try:
-        field_label_words = [s.lower().capitalize()
-                             for s in field.label.split()]
-        context['field_id'] = re.sub(
-            r'[^\w]',
-            '',
-            str('input%s' % ''.join(field_label_words))
-        )
         context['field_label'] = field.label
-        context['field_required'] = field.field.required
     except:
         context['field_label'] = kwargs.get('field_label', '') or ''
+
+    try:
+        context['field_required'] = field.field.required
+    except:
+        context['field_required'] = False
 
     context['field_type'] = kwargs.get('field_type', '') or ''
     context['field_value'] = kwargs.get('field_value', '') or ''
@@ -67,18 +71,14 @@ def show_editable_field(field, field_value, field_type):
 
 
 @register.inclusion_tag('uw_inventory/field_container.html')
-def show_static_field(field_label, field_value):
+def show_static_field(field):
     '''
     Generates a non-editable form field.
 
     Positional arguments:
-        field_label -- Label to display next to the field. For consistency,
-                        this should be the sentence-cased name of the field
-        field_value -- The current value of the field
+        field -- The Django field object
     '''
-    return _field_handler(None, 'static',
-                          field_label=field_label,
-                          field_value=field_value)
+    return _field_handler(field, 'static', field_value=field.value)
 
 
 @register.inclusion_tag('uw_inventory/field_container.html')
@@ -91,4 +91,5 @@ def show_field(field, field_type):
         field_type -- Used to choose which input control to render
                   Currently only required for 'currency' types
     '''
-    return _field_handler(field, 'field', field_type=field_type)
+    return _field_handler(field, 'field',
+                          field_type=field_type)
