@@ -2,14 +2,27 @@ from django import forms
 from django.utils.safestring import mark_safe
 
 
+def _common_attributes_handler(attrs):
+    context = {}
+    context['id'] = attrs.get('id', '')
+    context['class'] = 'form-element '
+    context['class'] += attrs.get('class', '')
+    return context
+
+
+def _render_static_label(field_id, field_value):
+    return u'''<p class="form-control-static" id="{0}">
+                  {1}
+              </p>'''.format(field_id, field_value)
+
+
 class CurrencyInput(forms.NumberInput):
     def __init__(self, attrs=None):
         if attrs:
-            context = {}
-            context['id'] = attrs.get('id', '')
-            context['class'] = 'form-control form-element '
-            context['class'] += attrs.get('class', '')
+            context = _common_attributes_handler(attrs)
+            context['class'] += 'form-control '
             context['placeholder'] = attrs.get('placeholder', 0)
+
         else:
             context = None
 
@@ -27,16 +40,15 @@ class CurrencyInput(forms.NumberInput):
 
         render_str += u'''<span class="input-group-addon">.00</span>
                         </div>'''
+
         return mark_safe(render_str)
 
 
 class AutocompleteInput(forms.Widget):
     def __init__(self, attrs=None):
         if attrs:
-            context = {}
-            context['id'] = attrs.get('id', '')
-            context['class'] = 'form-control item-input form-element '
-            context['class'] += attrs.get('class', '')
+            context = _common_attributes_handler(attrs)
+            context['class'] += 'form-control item-input '
             context['placeholder'] = attrs.get('placeholder', '')
             context['data-set'] = attrs.get('data-set', None)
         else:
@@ -87,10 +99,8 @@ class AutocompleteInput(forms.Widget):
 class CheckboxInput(forms.Widget):
     def __init__(self, attrs=None):
         if attrs:
-            context = {}
-            context['id'] = attrs.get('id', '')
-            context['class'] = 'item-input form-element '
-            context['class'] += attrs.get('class', '')
+            context = _common_attributes_handler(attrs)
+            context['class'] += 'item-input '
             context['placeholder'] = attrs.get('placeholder', 0)
         else:
             context = None
@@ -136,10 +146,8 @@ class DateInput(forms.DateInput):
 
     def __init__(self, attrs=None):
         if attrs:
-            context = {}
-            context['id'] = attrs.get('id', '')
-            context['class'] = 'form-control item-input form-element '
-            context['class'] += attrs.get('class', '')
+            context = _common_attributes_handler(attrs)
+            context['class'] += 'form-control item-input '
             context['placeholder'] = attrs.get('placeholder', 0)
         else:
             context = None
@@ -150,10 +158,8 @@ class DateInput(forms.DateInput):
 class TextareaInput(forms.Textarea):
     def __init__(self, attrs=None):
         if attrs:
-            context = {}
-            context['id'] = attrs.get('id', '')
-            context['class'] = 'form-control item-input form-element '
-            context['class'] += attrs.get('class', '')
+            context = _common_attributes_handler(attrs)
+            context['class'] += 'form-control item-input '
             context['placeholder'] = attrs.get('placeholder', '')
             context['style'] = 'resize:vertical '
             context['style'] += attrs.get('style', '')
@@ -167,10 +173,8 @@ class TextareaInput(forms.Textarea):
 class TextInput(forms.TextInput):
     def __init__(self, attrs=None):
         if attrs:
-            context = {}
-            context['id'] = attrs.get('id', '')
-            context['class'] = 'form-control item-input form-element '
-            context['class'] += attrs.get('class', '')
+            context = _common_attributes_handler(attrs)
+            context['class'] += 'form-control item-input '
             context['placeholder'] = attrs.get('placeholder', '')
         else:
             context = None
@@ -181,10 +185,8 @@ class TextInput(forms.TextInput):
 class SelectInput(forms.Select):
     def __init__(self, attrs=None):
         if attrs:
-            context = {}
-            context['id'] = attrs.get('id', '')
-            context['class'] = 'form-control item-input form-element '
-            context['class'] += attrs.get('class', '')
+            context = _common_attributes_handler(attrs)
+            context['class'] += 'form-control item-input '
         else:
             context = None
 

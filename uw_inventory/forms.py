@@ -27,7 +27,7 @@ class ItemForm(forms.ModelForm):
 
     class Meta:
         model = InventoryItem
-        exclude = ['deleted']
+        exclude = ['creation_date', 'deleted']
         labels = {
             'csa_cost': 'CSA certification cost',
             'csa_required': 'CSA required?',

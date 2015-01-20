@@ -4,7 +4,7 @@
         method="post"
         id="itemForm">
     {% csrf_token %}
-    {% show_static_field form.creation_date %}
+    {# {% show_static_field form.creation_date %} #}
     {% for field in fields %}
         {% show_editable_field field.field field.field.value field.type %}
     {% endfor %}
