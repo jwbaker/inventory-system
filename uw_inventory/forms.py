@@ -9,6 +9,7 @@ class ItemForm(forms.ModelForm):
         {'Name': 'name',                  'Type': 'text'},
         {'Name': 'description',           'Type': 'textarea'},
         {'Name': 'status',                'Type': 'dropdown'},
+        {'Name': 'location',              'Type': 'text'},
         {'Name': 'manufacture_date',      'Type': 'date'},
         {'Name': 'purchase_price',        'Type': 'currency'},
         {'Name': 'purchase_date',         'Type': 'date'},
@@ -70,6 +71,11 @@ class ItemForm(forms.ModelForm):
             'lifting_device': widgets.CheckboxInput(attrs={
                 'id': 'inputLiftingDevice',
                 'class': 'item-input form-element',
+            }),
+            'location': forms.TextInput(attrs={
+                'id': 'inputLocation',
+                'class': 'form-control item-input form-element',
+                'placeholder': 'Begin typing the location...'
             }),
             'manufacture_date': widgets.DateInput(attrs={
                 'id': 'inputManufactureDate',

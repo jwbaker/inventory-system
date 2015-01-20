@@ -9,4 +9,5 @@ urlpatterns = patterns(
     url(r'^(?P<item_id>\d+)$', views.inventory_detail),
     url(r'^(?P<item_id>\d+)/duplicate$', views.inventory_copy),
     url(r'^(?P<item_id>\d+)/delete$', views.inventory_delete),
+    url(r'locations$', views.locations_list),
 )

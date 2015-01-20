@@ -1,10 +1,12 @@
+import json
+
 from django.contrib import messages
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_protect
 
 from uw_inventory.forms import ItemForm
-from uw_inventory.models import InventoryItem
+from uw_inventory.models import InventoryItem, InventoryItemLocation
 
 
 def _collect_messages(request):
@@ -119,3 +121,23 @@ def inventory_delete(request, item_id):
                          'Deleted')
         dest = '/list/'
     return HttpResponseRedirect(dest)
+
+
+def locations_list(request):
+    if request.is_ajax():
+        query = request.GET.get('term', '')
+        location_results = InventoryItemLocation.objects.filter(
+            name__icontains=query
+        )
+        data = []
+        for location in location_results:
+            location_json = {}
+            location_json['id'] = location.id
+            location_json['label'] = location.name
+            location_json['value'] = location.name
+            data.append(location_json)
+        response = json.dumps(data)
+    else:
+        response = 'fail'
+    mimetype = 'application/json'
+    return HttpResponse(response, mimetype)

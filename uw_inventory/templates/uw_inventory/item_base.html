@@ -7,6 +7,7 @@
       list-style-type: none;
     }
   </style>
+  <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css">
 {% endblock css_includes %}
 
 {% block navbar_right %}
@@ -36,6 +37,9 @@
 {% endblock modal %}
 
 {% block js_includes %}
+  {# Need this for the date formatting on Edit page and for autocomplete widgets #}
+  <script src="https://code.jquery.com/ui/1.11.2/jquery-ui.min.js"></script>
+
   <script type="text/javascript">
     $('i.checkbox').click(function(){
       if(!$(this).hasClass('hidden')){
@@ -72,6 +76,16 @@
 
     $('#confirmExitModalCancel').click(function(){
       $('#confirmExitModal').modal('hide');
+    });
+  </script>
+
+  <script type="text/javascript">
+    $(function(){
+      var cache = {};
+      $('#inputLocation').autocomplete({
+        minLength: 2,
+        source: '{% url 'uw_inventory.views.locations_list' %}'
+      });
     });
   </script>
 {% endblock js_includes %}

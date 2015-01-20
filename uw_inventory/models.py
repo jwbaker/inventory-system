@@ -45,6 +45,7 @@ class InventoryItem(models.Model):
     csa_special_date = models.DateField(blank=True, default=None, null=True)
     description = models.TextField(blank=True, null=True)
     factory_csa = models.BooleanField(default=False)
+    location = models.IntegerField(blank=True, default=None, null=True)
     lifting_device = models.BooleanField(default=False)
     manufacture_date = models.DateField(blank=True, default=None, null=True)
     modified_since_csa = models.BooleanField(default=False)
@@ -65,3 +66,7 @@ class InventoryItem(models.Model):
         null=True
     )
     undergraduate = models.BooleanField(default=False)
+
+
+class InventoryItemLocation(models.Model):
+    name = models.CharField(max_length=20)
