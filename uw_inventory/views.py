@@ -47,7 +47,6 @@ def inventory_list(request):
 @csrf_protect
 def inventory_detail(request, item_id):
     inventory_item = InventoryItem.objects.get(pk=item_id)
-    print vars(inventory_item)
 
     if request.method == 'POST':
         form = ItemForm(request.POST, instance=inventory_item)
@@ -62,6 +61,8 @@ def inventory_detail(request, item_id):
 
     else:
         form = ItemForm(instance=inventory_item)
+
+    # print vars(form.fields)
 
     message_list = _collect_messages(request)
     return render(request, 'uw_inventory/detail.html', {

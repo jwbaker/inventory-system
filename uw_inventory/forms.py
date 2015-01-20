@@ -9,7 +9,7 @@ class ItemForm(forms.ModelForm):
         {'Name': 'name',                  'Type': 'text'},
         {'Name': 'description',           'Type': 'textarea'},
         {'Name': 'status',                'Type': 'dropdown'},
-        {'Name': 'location',              'Type': 'text'},
+        {'Name': 'location',              'Type': 'autocomplete'},
         {'Name': 'manufacture_date',      'Type': 'date'},
         {'Name': 'purchase_price',        'Type': 'currency'},
         {'Name': 'purchase_date',         'Type': 'date'},

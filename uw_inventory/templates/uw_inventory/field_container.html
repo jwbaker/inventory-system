@@ -9,7 +9,11 @@
     {# If we came from a show_static_field or show_editable_field tag #}
     {% if caller == "static" or caller == "edit" %}
       <p class="form-control-static" id="{{ field_id }}">
-        {{ field_value }}
+        {% if field_value_text %}
+          {{ field_value_text }}
+        {% else %}
+          {{ field_value }}
+        {% endif %}
       </p>
     {% endif %}
 

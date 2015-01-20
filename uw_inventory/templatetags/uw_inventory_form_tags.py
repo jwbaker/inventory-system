@@ -5,6 +5,7 @@ register = template.Library()
 
 def _form_handler(form):
     fields = []
+    print form['location']
     for field in form.FIELD_LIST:
         field_obj = form[field.get('Name')]
         fields.append({'field': field_obj, 'type': field.get('Type')})

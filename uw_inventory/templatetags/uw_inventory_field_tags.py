@@ -2,9 +2,14 @@ import re
 
 from django import template
 
-from uw_inventory.models import InventoryItem
+from uw_inventory.models import InventoryItem, InventoryItemLocation
 
 register = template.Library()
+
+
+AUTOCOMPLETE_DATA_CLASSES = {
+    'location': InventoryItemLocation,
+}
 
 
 def _field_handler(field, tag, **kwargs):
@@ -50,6 +55,13 @@ def _field_handler(field, tag, **kwargs):
         )
     elif context['field_type'] == 'boolean':
         context['field_value'] = 'Yes' if context['field_value'] else 'No'
+    elif context['field_type'] == 'autocomplete':
+        if context['field_value']:
+            context['field_value_text'] = AUTOCOMPLETE_DATA_CLASSES[
+                field.name
+            ].objects.get(id=context['field_value']).name
+        else:
+            context['field_value_text'] = ''
 
     return context
 
