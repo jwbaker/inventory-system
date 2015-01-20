@@ -70,6 +70,7 @@ def inventory_detail(request, item_id):
         'form': form,
         'form_data': form.instance,
         'page_messages': message_list,
+        'creation_date': inventory_item.creation_date,
     })
 
 
