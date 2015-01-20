@@ -1,7 +1,7 @@
 from django import forms
 
 from uw_inventory import widgets
-from uw_inventory.models import InventoryItem
+from uw_inventory.models import InventoryItem, InventoryItemLocation
 
 
 class ItemForm(forms.ModelForm):
@@ -75,7 +75,8 @@ class ItemForm(forms.ModelForm):
             'location': widgets.AutocompleteInput(attrs={
                 'id': 'inputLocation',
                 'class': 'form-control item-input form-element',
-                'placeholder': 'Begin typing the location...'
+                'placeholder': 'Begin typing the location...',
+                'data-set': InventoryItemLocation.objects
             }),
             'manufacture_date': widgets.DateInput(attrs={
                 'id': 'inputManufactureDate',

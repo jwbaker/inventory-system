@@ -5,6 +5,12 @@ from django.utils.safestring import mark_safe
 class AutocompleteInput(forms.Widget):
     def render(self, name, value, attrs=None):
         try:
+            data_source = self.attrs['data-set']
+            value_label = data_source.get(pk=value).name
+        except:
+            value_label = ''
+
+        try:
             widget_id = self.attrs['id']
         except:
             widget_id = None
@@ -25,11 +31,12 @@ class AutocompleteInput(forms.Widget):
                                value="{3}" />
                         <input id="{0}"
                                class="{1} hidden autocomplete-hidden"
-                               value="{3}"
-                               name="{4}" />'''.format(
+                               value="{4}"
+                               name="{5}" />'''.format(
                                  widget_id,
                                  widget_class,
                                  widget_placeholder,
+                                 value_label,
                                  value if value else '',
                                  name
                                )
