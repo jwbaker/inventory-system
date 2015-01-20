@@ -2,6 +2,40 @@ from django import forms
 from django.utils.safestring import mark_safe
 
 
+class AutocompleteInput(forms.Widget):
+    def render(self, name, value, attrs=None):
+        try:
+            widget_id = self.attrs['id']
+        except:
+            widget_id = None
+
+        try:
+            widget_class = self.attrs['class']
+        except:
+            widget_class = None
+
+        try:
+            widget_placeholder = self.attrs['placeholder']
+        except:
+            widget_placeholder = None
+
+        input_ctl = u'''<input id="{0}"
+                               class="{1}"
+                               placeholder="{2}"
+                               value="{3}" />
+                        <input id="{0}"
+                               class="{1} hidden autocomplete-hidden"
+                               value="{3}"
+                               name="{4}" />'''.format(
+                                 widget_id,
+                                 widget_class,
+                                 widget_placeholder,
+                                 value if value else '',
+                                 name
+                               )
+        return mark_safe(input_ctl)
+
+
 class CheckboxInput(forms.Widget):
 
     def render(self, name, value, attrs=None):

@@ -6,6 +6,10 @@
     ul.errorlist li{
       list-style-type: none;
     }
+    .autocomplete-hidden{
+      display: none!important;
+      visibility: hidden!important;
+    }
   </style>
   <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css">
 {% endblock css_includes %}
@@ -84,7 +88,11 @@
       var cache = {};
       $('input#inputLocation').autocomplete({
         minLength: 2,
-        source: '{% url 'uw_inventory.views.locations_list' %}'
+        source: '{% url 'uw_inventory.views.locations_list' %}',
+        select: function(event, ui){
+          $('input#inputLocation.autocomplete-hidden').val(ui.item.id)
+          console.log($('input#inputLocation.autocomplete-hidden').val())
+        }
       });
     });
   </script>

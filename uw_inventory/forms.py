@@ -72,7 +72,7 @@ class ItemForm(forms.ModelForm):
                 'id': 'inputLiftingDevice',
                 'class': 'item-input form-element',
             }),
-            'location': forms.TextInput(attrs={
+            'location': widgets.AutocompleteInput(attrs={
                 'id': 'inputLocation',
                 'class': 'form-control item-input form-element',
                 'placeholder': 'Begin typing the location...'

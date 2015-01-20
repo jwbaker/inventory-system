@@ -47,9 +47,11 @@ def inventory_list(request):
 @csrf_protect
 def inventory_detail(request, item_id):
     inventory_item = InventoryItem.objects.get(pk=item_id)
+    print vars(inventory_item)
 
     if request.method == 'POST':
         form = ItemForm(request.POST, instance=inventory_item)
+
         if form.is_valid():
             form.save()
             messages.success(request,
