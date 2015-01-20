@@ -82,7 +82,7 @@
   <script type="text/javascript">
     $(function(){
       var cache = {};
-      $('#inputLocation').autocomplete({
+      $('input#inputLocation').autocomplete({
         minLength: 2,
         source: '{% url 'uw_inventory.views.locations_list' %}'
       });
