@@ -40,82 +40,55 @@ class ItemForm(forms.ModelForm):
             'undergraduate': 'Used for undergrad teaching?',
         }
         widgets = {
-            'csa_cost': forms.NumberInput(attrs={
-                'id': 'inputCsaCost',
-                'class': 'form-control form-element',
-                'placeholder': 0,
+            'csa_cost': widgets.CurrencyInput({'id': 'inputCsaCost'}),
+            'csa_required': widgets.CheckboxInput({
+                'id': 'inputCsaRequired'
             }),
-            'csa_required': widgets.CheckboxInput(attrs={
-                'id': 'inputCsaRequired',
-                'class': 'item-input form-element',
-            }),
-            'csa_special': widgets.CheckboxInput(attrs={
+            'csa_special': widgets.CheckboxInput({
                 'id': 'inputCsaSpecial',
-                'class': 'item-input form-element',
             }),
-            'csa_special_date': widgets.DateInput(attrs={
+            'csa_special_date': widgets.DateInput({
                 'id': 'inputCsaSpecialDate',
-                'class': 'form-control item-input form-element',
             }),
-            'description': forms.Textarea(attrs={
+            'description': widgets.TextareaInput({
                 'id': 'inputDescription',
-                'class': 'form-control item-input form-element',
                 'placeholder': 'Description',
-                'rows': '5',  # Arbitrary number is arbitrary
-                'style': 'resize:vertical',  # Horizontal resizing kills layout
             }),
-            'factory_csa': widgets.CheckboxInput(attrs={
+            'factory_csa': widgets.CheckboxInput({
                 'id': 'inputFactoryCsa',
-                'class': 'item-input form-element',
             }),
-            'lifting_device': widgets.CheckboxInput(attrs={
+            'lifting_device': widgets.CheckboxInput({
                 'id': 'inputLiftingDevice',
-                'class': 'item-input form-element',
             }),
-            'location': widgets.AutocompleteInput(attrs={
+            'location': widgets.AutocompleteInput({
                 'id': 'inputLocation',
-                'class': 'form-control item-input form-element',
                 'placeholder': 'Begin typing the location...',
                 'data-set': InventoryItemLocation.objects
             }),
-            'manufacture_date': widgets.DateInput(attrs={
+            'manufacture_date': widgets.DateInput({
                 'id': 'inputManufactureDate',
-                'class': 'form-control item-input form-element',
             }),
-            'modified_since_csa': widgets.CheckboxInput(attrs={
+            'modified_since_csa': widgets.CheckboxInput({
                 'id': 'inputModifiedSinceCsa',
-                'class': 'item-input form-element',
             }),
-            'name': forms.TextInput(attrs={
+            'name': widgets.TextInput({
                 'id': 'inputName',
-                'class': 'form-control item-input form-element',
                 'placeholder': 'Name',
             }),
-            'purchase_date': widgets.DateInput(attrs={
+            'purchase_date': widgets.DateInput({
                 'id': 'inputPurchaseDate',
-                'class': 'form-control item-input form-element',
             }),
-            'purchase_price': forms.NumberInput(attrs={
-                'id': 'inputStatus',
-                # .item-input will be added to the container div
-                'class': 'form-control form-element',
-                'placeholder': 0,
+            'purchase_price': widgets.CurrencyInput({'id': 'inputStatus'}),
+            'replacement_cost': widgets.CurrencyInput({
+                'id': 'inputReplacementCost'
             }),
-            'replacement_cost': forms.NumberInput(attrs={
-                'id': 'inputReplacementCost',
-                'class': 'form-control form-element',
-                'placeholder': 0,
-            }),
-            'replacement_cost_date': widgets.DateInput(attrs={
+            'replacement_cost_date': widgets.DateInput({
                 'id': 'inputReplacementCostDate',
-                'class': 'form-control item-input form-element',
             }),
-            'status': forms.Select(attrs={
+            'status': widgets.SelectInput({
                 'id': 'inputStatus',
-                'class': 'form-control item-input form-element',
             }),
-            'undergraduate': widgets.CheckboxInput(attrs={
+            'undergraduate': widgets.CheckboxInput({
                 'id': 'inputUndergraduate',
-                'class': 'item-input form-element',
             }),
         }

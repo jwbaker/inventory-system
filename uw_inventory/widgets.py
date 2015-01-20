@@ -2,7 +2,48 @@ from django import forms
 from django.utils.safestring import mark_safe
 
 
+class CurrencyInput(forms.NumberInput):
+    def __init__(self, attrs=None):
+        if attrs:
+            context = {}
+            context['id'] = attrs.get('id', '')
+            context['class'] = 'form-control form-element '
+            context['class'] += attrs.get('class', '')
+            context['placeholder'] = attrs.get('placeholder', 0)
+        else:
+            context = None
+
+        return super(CurrencyInput, self).__init__(attrs=context)
+
+    def render(self, name, value, attrs=None):
+        render_str = u'''<div class="input-group item-input">
+                            <span class="input-group-addon">$</span>'''
+
+        render_str += super(CurrencyInput, self).render(
+            name,
+            value,
+            attrs
+        )
+
+        render_str += u'''<span class="input-group-addon">.00</span>
+                        </div>'''
+        return mark_safe(render_str)
+
+
 class AutocompleteInput(forms.Widget):
+    def __init__(self, attrs=None):
+        if attrs:
+            context = {}
+            context['id'] = attrs.get('id', '')
+            context['class'] = 'form-control item-input form-element '
+            context['class'] += attrs.get('class', '')
+            context['placeholder'] = attrs.get('placeholder', '')
+            context['data-set'] = attrs.get('data-set', None)
+        else:
+            context = None
+
+        return super(AutocompleteInput, self).__init__(attrs=context)
+
     def render(self, name, value, attrs=None):
         try:
             data_source = self.attrs['data-set']
@@ -44,6 +85,17 @@ class AutocompleteInput(forms.Widget):
 
 
 class CheckboxInput(forms.Widget):
+    def __init__(self, attrs=None):
+        if attrs:
+            context = {}
+            context['id'] = attrs.get('id', '')
+            context['class'] = 'item-input form-element '
+            context['class'] += attrs.get('class', '')
+            context['placeholder'] = attrs.get('placeholder', 0)
+        else:
+            context = None
+
+        return super(CheckboxInput, self).__init__(attrs=context)
 
     def render(self, name, value, attrs=None):
         try:
@@ -81,3 +133,59 @@ class CheckboxInput(forms.Widget):
 # We need this class because Django's default date widget is a text box
 class DateInput(forms.DateInput):
     input_type = 'date'
+
+    def __init__(self, attrs=None):
+        if attrs:
+            context = {}
+            context['id'] = attrs.get('id', '')
+            context['class'] = 'form-control item-input form-element '
+            context['class'] += attrs.get('class', '')
+            context['placeholder'] = attrs.get('placeholder', 0)
+        else:
+            context = None
+
+        return super(DateInput, self).__init__(attrs=context)
+
+
+class TextareaInput(forms.Textarea):
+    def __init__(self, attrs=None):
+        if attrs:
+            context = {}
+            context['id'] = attrs.get('id', '')
+            context['class'] = 'form-control item-input form-element '
+            context['class'] += attrs.get('class', '')
+            context['placeholder'] = attrs.get('placeholder', '')
+            context['style'] = 'resize:vertical '
+            context['style'] += attrs.get('style', '')
+            context['rows'] = '5'
+        else:
+            context = None
+
+        return super(TextareaInput, self).__init__(attrs=context)
+
+
+class TextInput(forms.TextInput):
+    def __init__(self, attrs=None):
+        if attrs:
+            context = {}
+            context['id'] = attrs.get('id', '')
+            context['class'] = 'form-control item-input form-element '
+            context['class'] += attrs.get('class', '')
+            context['placeholder'] = attrs.get('placeholder', '')
+        else:
+            context = None
+
+        return super(TextInput, self).__init__(attrs=context)
+
+
+class SelectInput(forms.Select):
+    def __init__(self, attrs=None):
+        if attrs:
+            context = {}
+            context['id'] = attrs.get('id', '')
+            context['class'] = 'form-control item-input form-element '
+            context['class'] += attrs.get('class', '')
+        else:
+            context = None
+
+        return super(SelectInput, self).__init__(attrs=context)

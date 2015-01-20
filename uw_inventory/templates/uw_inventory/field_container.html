@@ -19,12 +19,8 @@
 
     {# If we came from a show_field or show_editable_field tag #}
     {% if caller == "field" or caller == "edit" %}
-      {% ifequal field_type 'currency' %} {# Currency has some special formatting requirements #}
-        {% include 'uw_inventory/fields/currency.html' %}
-      {% else %}
-        {{ field }}
-        {{ field.errors }}
-      {% endifequal %}
+      {{ field }}
+      {{ field.errors }}
     {% endif %}
   </div>
 
