@@ -10,6 +10,12 @@
       display: none!important;
       visibility: hidden!important;
     }
+    .ui-autocomplete {
+      max-height: 100px;
+      overflow-y: auto;
+      /* prevent horizontal scrollbar */
+      overflow-x: hidden;
+    }
   </style>
   <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css">
 {% endblock css_includes %}
@@ -87,11 +93,10 @@
     $(function(){
       var cache = {};
       $('input#inputLocation').autocomplete({
-        minLength: 2,
+        minLength: 1,
         source: '{% url 'uw_inventory.views.locations_list' %}',
         select: function(event, ui){
-          $('input#inputLocation.autocomplete-hidden').val(ui.item.id)
-          console.log($('input#inputLocation.autocomplete-hidden').val())
+          $('input#inputLocation').attr('to-save', ui.item.id)
         }
       });
     });

@@ -62,13 +62,10 @@ def inventory_detail(request, item_id):
     else:
         form = ItemForm(instance=inventory_item)
 
-    # print vars(form.fields)
-
     message_list = _collect_messages(request)
     return render(request, 'uw_inventory/detail.html', {
         'inventory_item': inventory_item,
         'form': form,
-        'form_data': form.instance,
         'page_messages': message_list,
         'creation_date': inventory_item.creation_date,
     })

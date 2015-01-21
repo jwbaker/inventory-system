@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django import forms
 from django.utils.safestring import mark_safe
 
@@ -151,9 +153,22 @@ class DateInput(forms.DateInput):
         return super(DateInput, self).__init__(attrs=context)
 
     def render(self, name, value, attrs=None):
-        render_str = _render_static_label(self.attrs.get('id', ''), value)
+        try:
+            display_value = value.strftime('%b. %d, %Y') if value else ''
+        except AttributeError:
+            display_value = datetime.strptime(
+                                str(value),
+                                '%Y-%m-%d'
+                            ).strftime('%b. %d, %Y')
+        render_str = _render_static_label(
+            self.attrs.get('id', ''),
+            display_value
+        )
         render_str += super(DateInput, self).render(name, value, attrs)
-        render_str += _render_default_value(self.attrs.get('id', ''), value)
+        render_str += _render_default_value(
+            self.attrs.get('id', ''),
+            display_value
+        )
         return mark_safe(render_str)
 
 
