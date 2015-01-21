@@ -14,16 +14,12 @@ class AutocompleteData(models.Model):
 
 # Create your models here.
 class InventoryItem(models.Model):
-    STATUS_STAY = 'SA'
-    STATUS_STORAGE = 'SO'
-    STATUS_SURPLUS = 'SU'
-    STATUS_OTHER = 'OT'
     STATUS_CHOICES = [
-        ('', ''),
-        (STATUS_STAY,    'Stay'),
-        (STATUS_STORAGE, 'Storage'),
-        (STATUS_SURPLUS, 'Surplussed'),
-        (STATUS_OTHER,   'Other'),
+        ('SA', 'Stay'),
+        ('SO', 'Storage'),
+        ('SU', 'Surplussed'),
+        ('LO', 'Lost'),
+        ('DI', 'Disposed')
     ]
 
     @staticmethod
@@ -81,10 +77,8 @@ class InventoryItem(models.Model):
         null=True
     )
     status = models.CharField(
-        blank=True,
         choices=STATUS_CHOICES,
-        default=None,
+        default='SA',
         max_length=2,
-        null=True
     )
     undergraduate = models.BooleanField(default=False)
