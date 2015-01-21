@@ -6,6 +6,12 @@
     </label>
   </div>
   <div class="col-xs-8">
+    {% if date_value %}
+      <p class="form-control-static">
+        {{ date_value }}
+      </p>
+    {% endif %}
+
     {{ field }}
     {{ field.errors }}
   </div>

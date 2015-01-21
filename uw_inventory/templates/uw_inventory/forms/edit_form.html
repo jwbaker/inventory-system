@@ -4,7 +4,7 @@
         method="post"
         id="itemForm">
     {% csrf_token %}
-    {% include 'uw_inventory/field_container.html' with field_label='Creation date' field_value=creation_date caller='static' %}
+    {% include 'uw_inventory/field_container.html' with field_label='Creation date' date_value=creation_date %}
     {% for field in fields %}
         {% show_editable_field field.field field.id %}
     {% endfor %}
