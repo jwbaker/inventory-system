@@ -6,23 +6,23 @@ from uw_inventory.models import InventoryItem, InventoryItemLocation
 
 class ItemForm(forms.ModelForm):
     FIELD_LIST = [
-        {'Name': 'name',                  'Type': 'text'},
-        {'Name': 'description',           'Type': 'textarea'},
-        {'Name': 'status',                'Type': 'dropdown'},
-        {'Name': 'location',              'Type': 'autocomplete'},
-        {'Name': 'manufacture_date',      'Type': 'date'},
-        {'Name': 'purchase_price',        'Type': 'currency'},
-        {'Name': 'purchase_date',         'Type': 'date'},
-        {'Name': 'replacement_cost',      'Type': 'currency'},
-        {'Name': 'replacement_cost_date', 'Type': 'date'},
-        {'Name': 'csa_required',          'Type': 'boolean'},
-        {'Name': 'factory_csa',           'Type': 'boolean'},
-        {'Name': 'csa_special',           'Type': 'boolean'},
-        {'Name': 'csa_special_date',      'Type': 'date'},
-        {'Name': 'modified_since_csa',    'Type': 'boolean'},
-        {'Name': 'undergraduate',         'Type': 'boolean'},
-        {'Name': 'csa_cost',              'Type': 'currency'},
-        {'Name': 'lifting_device',        'Type': 'boolean'},
+        {'Name': 'name'},
+        {'Name': 'description'},
+        {'Name': 'status'},
+        {'Name': 'location'},
+        {'Name': 'manufacture_date'},
+        {'Name': 'purchase_price'},
+        {'Name': 'purchase_date'},
+        {'Name': 'replacement_cost'},
+        {'Name': 'replacement_cost_date'},
+        {'Name': 'csa_required'},
+        {'Name': 'factory_csa'},
+        {'Name': 'csa_special'},
+        {'Name': 'csa_special_date'},
+        {'Name': 'modified_since_csa'},
+        {'Name': 'undergraduate'},
+        {'Name': 'csa_cost'},
+        {'Name': 'lifting_device'},
     ]
 
     class Meta:
@@ -79,7 +79,7 @@ class ItemForm(forms.ModelForm):
                 'id': 'inputPurchaseDate',
             }),
             'purchase_price': widgets.CurrencyInput({
-                'id': 'inputPurchasePruce'
+                'id': 'inputPurchasePrice'
             }),
             'replacement_cost': widgets.CurrencyInput({
                 'id': 'inputReplacementCost'

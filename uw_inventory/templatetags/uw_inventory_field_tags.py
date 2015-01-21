@@ -1,15 +1,6 @@
-import re
-
 from django import template
 
-from uw_inventory.models import InventoryItem, InventoryItemLocation
-
 register = template.Library()
-
-
-AUTOCOMPLETE_DATA_CLASSES = {
-    'location': InventoryItemLocation,
-}
 
 
 def _field_handler(field, tag, **kwargs):
@@ -21,21 +12,12 @@ def _field_handler(field, tag, **kwargs):
         tag -- A string representing the caller
                 Currently supported: 'edit', 'static', 'field'
     Keyword arguments:
-        field_label -- Label to display next to the field. For consistency,
-                        this should be the sentence-cased name of the field
-        field_value -- The current value of the field
+        field_id -- The unique identifier of the field
     '''
     context = {}
     context['caller'] = tag
     context['field'] = field
 
-    field_label_words = [s.lower().capitalize()
-                         for s in field.label.split()]
-    context['field_id'] = re.sub(
-        r'[^\w]',
-        '',
-        str('input%s' % ''.join(field_label_words))
-    )
     try:
         context['field_label'] = field.label
     except:
@@ -46,29 +28,22 @@ def _field_handler(field, tag, **kwargs):
     except:
         context['field_required'] = False
 
-    context['field_type'] = kwargs.get('field_type', '') or ''
-    context['field_value'] = kwargs.get('field_value', '') or ''
-
-    if context['field_type'] == 'boolean':
-        context['field_value'] = 'Yes' if context['field_value'] else 'No'
+    context['field_id'] = kwargs.get('field_id', '')
 
     return context
 
 
 @register.inclusion_tag('uw_inventory/field_container.html')
-def show_editable_field(field, field_value, field_type):
+def show_editable_field(field, field_id):
     '''
     Generates a form field with edit, save, and cancel buttons. Use for 'edit'
 
     Positional arguments:
         field -- The Django field object
-        field_value -- The current value of the field
-        field_type -- Used to choose which input control to render
-                  Currently only required for 'currency' types
+        field_id -- The unique identifier of the field
     '''
     return _field_handler(field, 'edit',
-                          field_value=field_value,
-                          field_type=field_type)
+                          field_id=field_id)
 
 
 @register.inclusion_tag('uw_inventory/field_container.html')
@@ -79,18 +54,15 @@ def show_static_field(field):
     Positional arguments:
         field -- The Django field object
     '''
-    return _field_handler(field, 'static', field_value=field.value)
+    return _field_handler(field, 'static')
 
 
 @register.inclusion_tag('uw_inventory/field_container.html')
-def show_field(field, field_type):
+def show_field(field):
     '''
-    Generated a form control. Use for 'add'
+    Generates a form control. Use for 'add'
 
     Positional arguments:
         field --- The Django field object
-        field_type -- Used to choose which input control to render
-                  Currently only required for 'currency' types
     '''
-    return _field_handler(field, 'field',
-                          field_type=field_type)
+    return _field_handler(field, 'field')

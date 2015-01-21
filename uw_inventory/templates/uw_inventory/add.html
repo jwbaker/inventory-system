@@ -26,6 +26,7 @@
   </script>
 
   <script type="text/javascript">
+    $('p.form-control-static').addClass('hidden')
     var onChangeHandler = function(event){
       {# Empty values aren't considered 'changes' #}
       if(event.target.value === ''){

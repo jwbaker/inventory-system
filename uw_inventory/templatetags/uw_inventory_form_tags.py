@@ -8,7 +8,16 @@ def _form_handler(form, creation_date=None):
     print form['location']
     for field in form.FIELD_LIST:
         field_obj = form[field.get('Name')]
-        fields.append({'field': field_obj, 'type': field.get('Type')})
+        field_name_words = ['input'] + [s.capitalize()
+                                        for s in field.get('Name').split('_')]
+
+        fields.append({
+            'field': field_obj,
+            'id': reduce(
+                    lambda s, r: s+r,
+                    field_name_words
+                )
+        })
 
     context = {'form': form, 'creation_date': creation_date, 'fields': fields}
     return context

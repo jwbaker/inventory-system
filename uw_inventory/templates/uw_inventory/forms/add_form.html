@@ -3,6 +3,6 @@
 <form action="{% url 'uw_inventory.views.inventory_add' %}" method="post" id="itemForm">
     {% csrf_token %}
     {% for field in fields %}
-        {% show_field field.field field.type %}
+        {% show_field field.field %}
     {% endfor %}
 </form>
