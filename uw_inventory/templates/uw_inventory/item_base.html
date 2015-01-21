@@ -94,9 +94,19 @@
       var cache = {};
       $('input#inputLocation').autocomplete({
         minLength: 1,
-        source: '{% url 'uw_inventory.views.locations_list' %}',
+        source: "{% url 'uw_inventory.views.autocomplete_list' 'location' %}",
         select: function(event, ui){
           $('input#inputLocation').attr('to-save', ui.item.id)
+        }
+      });
+    });
+    $(function(){
+      var cache = {};
+      $('input#inputManufacturer').autocomplete({
+        minLength: 1,
+        source: "{% url 'uw_inventory.views.autocomplete_list' 'manufacturer' %}",
+        select: function(event, ui){
+          $('input#inputManufacturer').attr('to-save', ui.item.id)
         }
       });
     });

@@ -6,7 +6,16 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_protect
 
 from uw_inventory.forms import ItemForm
-from uw_inventory.models import InventoryItem, InventoryItemLocation
+from uw_inventory.models import (
+    InventoryItem,
+    InventoryItemLocation,
+    Manufacturer
+)
+
+AUTOCOMPLETE_DATA_SOURCES = {
+    'location': InventoryItemLocation.objects,
+    'manufacturer': Manufacturer.objects
+}
 
 
 def _collect_messages(request):
@@ -124,10 +133,10 @@ def inventory_delete(request, item_id):
     return HttpResponseRedirect(dest)
 
 
-def locations_list(request):
+def autocomplete_list(request, source):
     if request.is_ajax():
         query = request.GET.get('term', '')
-        location_results = InventoryItemLocation.objects.filter(
+        location_results = AUTOCOMPLETE_DATA_SOURCES[source].filter(
             name__icontains=query
         )
         data = []

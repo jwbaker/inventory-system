@@ -7,6 +7,10 @@ class InventoryItemLocation(models.Model):
     name = models.CharField(max_length=20)
 
 
+class Manufacturer(models.Model):
+    name = models.CharField(max_length=255)
+
+
 # Create your models here.
 class InventoryItem(models.Model):
     STATUS_STAY = 'SA'
@@ -57,6 +61,12 @@ class InventoryItem(models.Model):
     )
     lifting_device = models.BooleanField(default=False)
     manufacture_date = models.DateField(blank=True, default=None, null=True)
+    manufacturer = models.ForeignKey(
+        Manufacturer,
+        blank=True,
+        default=None,
+        null=True
+    )
     modified_since_csa = models.BooleanField(default=False)
     name = models.CharField(max_length=200)
     purchase_date = models.DateField(blank=True, default=None, null=True)

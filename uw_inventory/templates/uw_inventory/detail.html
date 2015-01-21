@@ -110,6 +110,7 @@
       } else if(inputControl.is('.ui-autocomplete-input')){
         saveText = (inputControl[0].value == inputControl.placeholder ? '' : inputControl[0].value);
         var toSave;
+        console.log(inputControl[1].value)
         if(saveText === ''){
           toSave = '';
         } else {
