@@ -3,12 +3,13 @@ from datetime import datetime
 from django.db import models
 
 
-class InventoryItemLocation(models.Model):
-    name = models.CharField(max_length=20)
-
-
-class Manufacturer(models.Model):
+class AutocompleteData(models.Model):
+    KIND_CHOICES = [
+        ('location', 'location'),
+        ('manufacturer', 'manufacturer')
+    ]
     name = models.CharField(max_length=255)
+    kind = models.CharField(choices=KIND_CHOICES, max_length=255)
 
 
 # Create your models here.
@@ -54,18 +55,20 @@ class InventoryItem(models.Model):
     description = models.TextField(blank=True, null=True)
     factory_csa = models.BooleanField(default=False)
     location = models.ForeignKey(
-        InventoryItemLocation,
+        AutocompleteData,
         blank=True,
         default=None,
-        null=True
+        null=True,
+        related_name='locations'
     )
     lifting_device = models.BooleanField(default=False)
     manufacture_date = models.DateField(blank=True, default=None, null=True)
     manufacturer = models.ForeignKey(
-        Manufacturer,
+        AutocompleteData,
         blank=True,
         default=None,
-        null=True
+        null=True,
+        related_name='manufacturers'
     )
     modified_since_csa = models.BooleanField(default=False)
     name = models.CharField(max_length=200)

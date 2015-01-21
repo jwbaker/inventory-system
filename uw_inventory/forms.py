@@ -2,9 +2,8 @@ from django import forms
 
 from uw_inventory import widgets
 from uw_inventory.models import (
-    InventoryItem,
-    InventoryItemLocation,
-    Manufacturer
+    AutocompleteData,
+    InventoryItem
 )
 
 
@@ -68,7 +67,7 @@ class ItemForm(forms.ModelForm):
             'location': widgets.AutocompleteInput({
                 'id': 'inputLocation',
                 'placeholder': 'Begin typing the location...',
-                'data-set': InventoryItemLocation.objects
+                'data-set': AutocompleteData.objects
             }),
             'manufacture_date': widgets.DateInput({
                 'id': 'inputManufactureDate',
@@ -76,7 +75,7 @@ class ItemForm(forms.ModelForm):
             'manufacturer': widgets.AutocompleteInput({
                 'id': 'inputManufacturer',
                 'placeholder': 'Begin typing the manufacturer...',
-                'data-set': Manufacturer.objects
+                'data-set': AutocompleteData.objects
             }),
             'modified_since_csa': widgets.CheckboxInput({
                 'id': 'inputModifiedSinceCsa',

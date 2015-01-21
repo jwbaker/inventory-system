@@ -7,15 +7,9 @@ from django.views.decorators.csrf import csrf_protect
 
 from uw_inventory.forms import ItemForm
 from uw_inventory.models import (
-    InventoryItem,
-    InventoryItemLocation,
-    Manufacturer
+    AutocompleteData,
+    InventoryItem
 )
-
-AUTOCOMPLETE_DATA_SOURCES = {
-    'location': InventoryItemLocation.objects,
-    'manufacturer': Manufacturer.objects
-}
 
 
 def _collect_messages(request):
@@ -136,15 +130,16 @@ def inventory_delete(request, item_id):
 def autocomplete_list(request, source):
     if request.is_ajax():
         query = request.GET.get('term', '')
-        location_results = AUTOCOMPLETE_DATA_SOURCES[source].filter(
+        result_set = AutocompleteData.objects.filter(
+            kind=source,
             name__icontains=query
         )
         data = []
-        for location in location_results:
+        for result in result_set:
             location_json = {}
-            location_json['id'] = location.id
-            location_json['label'] = location.name
-            location_json['value'] = location.name
+            location_json['id'] = result.id
+            location_json['label'] = result.name
+            location_json['value'] = result.name
             data.append(location_json)
         response = json.dumps(data)
     else:
