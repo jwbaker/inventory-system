@@ -6,27 +6,12 @@
     </label>
   </div>
   <div class="col-xs-8">
-    {# If we came from a show_static_field or show_editable_field tag #}
-    {% if caller == "static" or caller == "edit" %}
-      <p class="form-control-static" id="{{ field_id }}">
-        {% if field_value_text %}
-          {{ field_value_text }}
-        {% else %}
-          {{ field_value }}
-        {% endif %}
-      </p>
-    {% endif %}
-
-    {# If we came from a show_field or show_editable_field tag #}
-    {% if caller == "field" or caller == "edit" %}
-      {{ field }}
-      {{ field.errors }}
-    {% endif %}
+    {{ field }}
+    {{ field.errors }}
   </div>
 
   {# If we came from a show_editable_field tag #}
   {% if caller == "edit" %}
-    <span class="hidden default-value" for="{{ field_id }}">{{ field_value }}</span>
     <div class="col-xs-1">
       <i class="fa fa-check save hidden" for="{{ field_id }}"></i>
       <i class="fa fa-times cancel hidden" for="{{ field_id }}"></i>

@@ -13,7 +13,7 @@ def _common_attributes_handler(attrs):
 def _render_static_label(field_id, field_value):
     return u'''<p class="form-control-static" id="{0}">
                   {1}
-              </p>'''.format(field_id, field_value)
+              </p>'''.format(field_id, field_value or '')
 
 
 class CurrencyInput(forms.NumberInput):
@@ -29,7 +29,8 @@ class CurrencyInput(forms.NumberInput):
         return super(CurrencyInput, self).__init__(attrs=context)
 
     def render(self, name, value, attrs=None):
-        render_str = u'''<div class="input-group item-input">
+        render_str = _render_static_label(self.attrs.get('id', ''), value)
+        render_str += u'''<div class="input-group item-input">
                             <span class="input-group-addon">$</span>'''
 
         render_str += super(CurrencyInput, self).render(
@@ -57,33 +58,24 @@ class AutocompleteInput(forms.Widget):
         return super(AutocompleteInput, self).__init__(attrs=context)
 
     def render(self, name, value, attrs=None):
+        widget_id = self.attrs.get('id', '')
+        widget_class = self.attrs.get('class', '')
+        widget_placeholder = self.attrs.get('placeholder', '')
+
         try:
             data_source = self.attrs['data-set']
             value_label = data_source.get(pk=value).name
         except:
             value_label = ''
 
-        try:
-            widget_id = self.attrs['id']
-        except:
-            widget_id = None
+        input_ctl = _render_static_label(widget_id, value_label)
 
-        try:
-            widget_class = self.attrs['class']
-        except:
-            widget_class = None
-
-        try:
-            widget_placeholder = self.attrs['placeholder']
-        except:
-            widget_placeholder = None
-
-        input_ctl = u'''<input id="{0}"
+        input_ctl += u'''<input id="{0}"
                                class="{1}"
                                placeholder="{2}"
                                value="{3}" />
                         <input id="{0}"
-                               class="{1} hidden autocomplete-hidden"
+                               class="{1} hidden field-hidden"
                                value="{4}"
                                name="{5}" />'''.format(
                                  widget_id,
@@ -108,21 +100,16 @@ class CheckboxInput(forms.Widget):
         return super(CheckboxInput, self).__init__(attrs=context)
 
     def render(self, name, value, attrs=None):
-        try:
-            widget_id = self.attrs['id']
-        except:
-            widget_id = None
-
-        try:
-            widget_class = self.attrs['class']
-        except:
-            widget_class = ''
+        widget_id = self.attrs.get('id ', None)
+        widget_class = self.attrs.get('class', '')
         widget_class += ' checkbox fa fa-2x'
         widget_class += ' {0}'.format(
             'fa-check-square-o' if value else 'fa-square-o'
         )
 
-        input_ctl = '''<input type="checkbox" id="{0}" name="{1}"
+        input_ctl = _render_static_label(widget_id, 'Yes' if value else 'No')
+
+        input_ctl += u'''<input type="checkbox" id="{0}" name="{1}"
                         class="hidden" {2} />'''.format(
             widget_id,
             name,
@@ -154,6 +141,11 @@ class DateInput(forms.DateInput):
 
         return super(DateInput, self).__init__(attrs=context)
 
+    def render(self, name, value, attrs=None):
+        render_str = _render_static_label(self.attrs.get('id', ''), value)
+        render_str += super(DateInput, self).render(name, value, attrs)
+        return mark_safe(render_str)
+
 
 class TextareaInput(forms.Textarea):
     def __init__(self, attrs=None):
@@ -169,6 +161,11 @@ class TextareaInput(forms.Textarea):
 
         return super(TextareaInput, self).__init__(attrs=context)
 
+    def render(self, name, value, attrs=None):
+        render_str = _render_static_label(self.attrs.get('id', ''), value)
+        render_str += super(TextareaInput, self).render(name, value, attrs)
+        return mark_safe(render_str)
+
 
 class TextInput(forms.TextInput):
     def __init__(self, attrs=None):
@@ -181,13 +178,27 @@ class TextInput(forms.TextInput):
 
         return super(TextInput, self).__init__(attrs=context)
 
+    def render(self, name, value, attrs=None):
+        render_str = _render_static_label(self.attrs.get('id', ''), value)
+        render_str += super(TextInput, self).render(name, value, attrs)
+        return mark_safe(render_str)
+
 
 class SelectInput(forms.Select):
     def __init__(self, attrs=None):
         if attrs:
             context = _common_attributes_handler(attrs)
             context['class'] += 'form-control item-input '
+            context['translator'] = attrs.get('translator', None)
         else:
             context = None
 
         return super(SelectInput, self).__init__(attrs=context)
+
+    def render(self, name, value, attrs=None):
+        render_str = _render_static_label(
+            self.attrs.get('id', ''),
+            self.attrs['translator'](value)
+        )
+        render_str += super(SelectInput, self).render(name, value, attrs)
+        return mark_safe(render_str)

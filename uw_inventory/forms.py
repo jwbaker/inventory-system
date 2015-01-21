@@ -78,7 +78,9 @@ class ItemForm(forms.ModelForm):
             'purchase_date': widgets.DateInput({
                 'id': 'inputPurchaseDate',
             }),
-            'purchase_price': widgets.CurrencyInput({'id': 'inputStatus'}),
+            'purchase_price': widgets.CurrencyInput({
+                'id': 'inputPurchasePruce'
+            }),
             'replacement_cost': widgets.CurrencyInput({
                 'id': 'inputReplacementCost'
             }),
@@ -87,6 +89,7 @@ class ItemForm(forms.ModelForm):
             }),
             'status': widgets.SelectInput({
                 'id': 'inputStatus',
+                'translator': InventoryItem.get_status_display,
             }),
             'undergraduate': widgets.CheckboxInput({
                 'id': 'inputUndergraduate',

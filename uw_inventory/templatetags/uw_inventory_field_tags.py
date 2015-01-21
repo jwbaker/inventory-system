@@ -49,19 +49,8 @@ def _field_handler(field, tag, **kwargs):
     context['field_type'] = kwargs.get('field_type', '') or ''
     context['field_value'] = kwargs.get('field_value', '') or ''
 
-    if context['field_type'] == 'dropdown':
-        context['field_value'] = InventoryItem.get_status_display(
-            context['field_value']
-        )
-    elif context['field_type'] == 'boolean':
+    if context['field_type'] == 'boolean':
         context['field_value'] = 'Yes' if context['field_value'] else 'No'
-    elif context['field_type'] == 'autocomplete':
-        if context['field_value']:
-            context['field_value_text'] = AUTOCOMPLETE_DATA_CLASSES[
-                field.name
-            ].objects.get(id=context['field_value']).name
-        else:
-            context['field_value_text'] = ''
 
     return context
 
