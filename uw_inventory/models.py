@@ -4,6 +4,8 @@ from django.db import models
 
 
 class AutocompleteData(models.Model):
+    class Meta:
+        unique_together = ('name', 'kind',)
     KIND_CHOICES = [
         ('location', 'location'),
         ('manufacturer', 'manufacturer')

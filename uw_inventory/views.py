@@ -1,6 +1,7 @@
 import json
 
 from django.contrib import messages
+from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_protect
@@ -150,10 +151,18 @@ def autocomplete_list(request, source):
 
 @csrf_protect
 def autocomplete_new(request):
+    response = {}
     if request.is_ajax() and request.method == 'POST':
-        request_obj = AutocompleteData(
-            name=request.POST['name'],
-            kind=request.POST['data_set']
-        )
-        request_obj.save()
-    return HttpResponse({})
+        name = request.POST['name'],
+        data_set = request.POST['data_set']
+        try:
+            request_obj = AutocompleteData(
+                name=name,
+                kind=data_set
+            )
+            request_obj.save()
+        except IntegrityError:
+            error = 'The {0} "{1}" already exists.'.format(data_set, name[0])
+            response = json.dumps({'error': error})
+        print response
+    return HttpResponse(response, 'application/json')
