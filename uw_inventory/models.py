@@ -77,6 +77,12 @@ class InventoryItem(models.Model):
         null=True,
         related_name='manufacturers'
     )
+    model_number = models.CharField(
+        blank=True,
+        default=None,
+        max_length=255,
+        null=True,
+    )
     modified_since_csa = models.BooleanField(default=False)
     name = models.CharField(max_length=200)
     purchase_date = models.DateField(blank=True, default=None, null=True)
@@ -86,6 +92,12 @@ class InventoryItem(models.Model):
         blank=True,
         default=None,
         null=True
+    )
+    serial_number = models.CharField(
+        blank=True,
+        default=None,
+        max_length=255,
+        null=True,
     )
     sop_required = models.BooleanField(default=True)
     status = models.CharField(

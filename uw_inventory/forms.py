@@ -14,6 +14,8 @@ class ItemForm(forms.ModelForm):
         {'Name': 'status'},
         {'Name': 'location'},
         {'Name': 'manufacturer'},
+        {'Name': 'model_number'},
+        {'Name': 'serial_number'},
         {'Name': 'manufacture_date'},
         {'Name': 'purchase_price'},
         {'Name': 'purchase_date'},
@@ -84,6 +86,10 @@ class ItemForm(forms.ModelForm):
                 'placeholder': 'Begin typing the manufacturer...',
                 'data-set': AutocompleteData.objects
             }),
+            'model_number': widgets.TextInput({
+                'id': 'inputModelNumber',
+                'placeholder': 'Model number'
+            }),
             'modified_since_csa': widgets.CheckboxInput({
                 'id': 'inputModifiedSinceCsa',
             }),
@@ -102,6 +108,10 @@ class ItemForm(forms.ModelForm):
             }),
             'replacement_cost_date': widgets.DateInput({
                 'id': 'inputReplacementCostDate',
+            }),
+            'serial_number': widgets.TextInput({
+                'id': 'inputSerialNumber',
+                'placeholder': 'Serial number'
             }),
             'sop_required': widgets.CheckboxInput({
                 'id': 'inputSopRequired',
