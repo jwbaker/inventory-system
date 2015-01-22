@@ -84,7 +84,6 @@ def inventory_add(request):
             new_item = form.save()
             return HttpResponseRedirect('/list/%s' % new_item.pk)
         else:
-            print form.errors
             messages.error(request,
                            'Something went wrong. Check below for errors')
     else:
@@ -128,6 +127,7 @@ def inventory_delete(request, item_id):
 
 
 def autocomplete_list(request, source):
+    print request
     if request.is_ajax():
         query = request.GET.get('term', '')
         result_set = AutocompleteData.objects.filter(
@@ -146,3 +146,14 @@ def autocomplete_list(request, source):
         response = 'fail'
     mimetype = 'application/json'
     return HttpResponse(response, mimetype)
+
+
+@csrf_protect
+def autocomplete_new(request):
+    if request.is_ajax() and request.method == 'POST':
+        request_obj = AutocompleteData(
+            name=request.POST['name'],
+            kind=request.POST['data_set']
+        )
+        request_obj.save()
+    return HttpResponse({})

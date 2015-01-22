@@ -82,6 +82,9 @@ class AutocompleteInput(forms.Widget):
                                class="{1}"
                                placeholder="{2}"
                                value="{3}" />
+                        <a class="small autocomplete-add-term" data-set="{5}">
+                            Add option
+                        </a>
                         <input id="{0}"
                                class="{1} hidden field-hidden"
                                value="{4}"

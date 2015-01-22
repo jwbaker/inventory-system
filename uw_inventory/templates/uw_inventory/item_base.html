@@ -44,11 +44,76 @@
 
 {% block modal %}
   {% confirm_modal 'Exit' %}
+  <div class="modal fade" id="autocompleteAddTermModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title"></h4>
+        </div>
+        <div class="modal-body">
+          <form id="autocompleteAddTermForm">
+            {% csrf_token %}
+            <div class="form-group">
+              <label for="termName">Name<span class="text-danger">*</span></label>
+              <input type="text"
+                     class="form-control"
+                     id="autocompleteAddTermName"
+                     name="termName"
+                     placeholder="Name" />
+              <span class="hidden error text-danger">This field is required</span>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="autocompleteAddTermSubmit">Add option</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
 {% endblock modal %}
 
 {% block js_includes %}
   {# Need this for the date formatting on Edit page and for autocomplete widgets #}
   <script src="https://code.jquery.com/ui/1.11.2/jquery-ui.min.js"></script>
+
+  <script type="text/javascript">
+    $('a.autocomplete-add-term').click(function(event){
+      var dataSet = event.target.getAttribute('data-set');
+      $('#autocompleteAddTermModal').find('.modal-title')[0].textContent = "Add new " + dataSet;
+      $('#autocompleteAddTermModal').modal().show();
+    });
+
+    $('#autocompleteAddTermSubmit').click(function(event){
+      var dataSet = $('a.autocomplete-add-term').attr('data-set');
+      var optionName = $('#autocompleteAddTermName').val();
+
+      if(optionName){
+        $('#autocompleteAddTermName').siblings('span.error').addClass('hidden');
+        $.ajax({
+          url: '{% url "uw_inventory.views.autocomplete_new" %}',
+          type: 'POST',
+          data: {
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+            data_set: dataSet,
+            name: optionName
+          },
+          success: function(json){
+            console.log(json);
+            $('#autocompleteAddTermModal').modal().hide();
+          },
+          error: function(xhr, err_msg, err){
+            console.log(xhr);
+            console.log(err_msg);
+            console.log(err);
+          }
+        });
+      } else {
+        $('#autocompleteAddTermName').siblings('span.error').removeClass('hidden');
+      }
+    });
+  </script>
 
   <script type="text/javascript">
     $('i.checkbox').click(function(){

@@ -5,7 +5,6 @@ register = template.Library()
 
 def _form_handler(form, creation_date=None):
     fields = []
-    print form['location']
     for field in form.FIELD_LIST:
         field_obj = form[field.get('Name')]
         field_name_words = ['input'] + [s.capitalize()
