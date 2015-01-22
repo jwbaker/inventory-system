@@ -19,7 +19,7 @@ class ItemForm(forms.ModelForm):
         {'Name': 'purchase_date'},
         {'Name': 'replacement_cost'},
         {'Name': 'replacement_cost_date'},
-        {'Name': 'csa_required'},
+        {'Name': 'csa_not_required'},
         {'Name': 'factory_csa'},
         {'Name': 'csa_special'},
         {'Name': 'csa_special_date'},
@@ -27,6 +27,7 @@ class ItemForm(forms.ModelForm):
         {'Name': 'undergraduate'},
         {'Name': 'csa_cost'},
         {'Name': 'lifting_device'},
+        {'Name': 'lifting_device_inspection_date'},
     ]
 
     class Meta:
@@ -34,19 +35,20 @@ class ItemForm(forms.ModelForm):
         exclude = ['creation_date', 'deleted']
         labels = {
             'csa_cost': 'CSA certification cost',
-            'csa_required': 'CSA required?',
-            'csa_special': 'Special CSA inspection?',
-            'csa_special_date': 'CSA inspection date',
+            'csa_not_required': 'CSA not required?',
+            'csa_special': 'Special CSA inspection required?',
+            'csa_special_date': 'Special CSA inspection date',
             'factory_csa': 'Factory CSA certification?',
             'lifting_device': 'Lifting device?',
-            'modified_since_csa': 'Modified since inspection?',
+            'lifting_device_inspection_date': 'Lifting device inspection date',
+            'modified_since_csa': 'Modified since CSA inspection?',
             'replacement_cost_date': 'Estimation date',
             'undergraduate': 'Used for undergrad teaching?',
         }
         widgets = {
             'csa_cost': widgets.CurrencyInput({'id': 'inputCsaCost'}),
-            'csa_required': widgets.CheckboxInput({
-                'id': 'inputCsaRequired'
+            'csa_not_required': widgets.CheckboxInput({
+                'id': 'inputCsaNotRequired'
             }),
             'csa_special': widgets.CheckboxInput({
                 'id': 'inputCsaSpecial',
@@ -63,6 +65,9 @@ class ItemForm(forms.ModelForm):
             }),
             'lifting_device': widgets.CheckboxInput({
                 'id': 'inputLiftingDevice',
+            }),
+            'lifting_device_inspection_date': widgets.DateInput({
+                'id': 'inputLiftingDeviceInspectionDate',
             }),
             'location': widgets.AutocompleteInput({
                 'id': 'inputLocation',

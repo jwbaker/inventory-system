@@ -45,7 +45,7 @@ class InventoryItem(models.Model):
 
     # These fields are supplied by the user
     csa_cost = models.IntegerField(blank=True, default=None, null=True)
-    csa_required = models.BooleanField(default=False)
+    csa_not_required = models.BooleanField(default=False)
     csa_special = models.BooleanField(default=False)
     csa_special_date = models.DateField(blank=True, default=None, null=True)
     description = models.TextField(blank=True, null=True)
@@ -58,6 +58,11 @@ class InventoryItem(models.Model):
         related_name='locations'
     )
     lifting_device = models.BooleanField(default=False)
+    lifting_device_inspection_date = models.DateField(
+        blank=True,
+        default=None,
+        null=True
+    )
     manufacture_date = models.DateField(blank=True, default=None, null=True)
     manufacturer = models.ForeignKey(
         AutocompleteData,
