@@ -153,8 +153,8 @@ def autocomplete_list(request, source):
 def autocomplete_new(request):
     response = {}
     if request.is_ajax() and request.method == 'POST':
-        name = request.POST['name'],
-        data_set = request.POST['data_set']
+        name = request.POST['termName'][0],
+        data_set = request.POST['dataSet']
         try:
             request_obj = AutocompleteData(
                 name=name,
@@ -164,5 +164,6 @@ def autocomplete_new(request):
         except IntegrityError:
             error = 'The {0} "{1}" already exists.'.format(data_set, name[0])
             response = json.dumps({'error': error})
-        print response
+        else:
+            response = json.dumps({})
     return HttpResponse(response, 'application/json')

@@ -99,11 +99,7 @@
         $.ajax({
           url: '{% url "uw_inventory.views.autocomplete_new" %}',
           type: 'POST',
-          data: {
-            csrfmiddlewaretoken: '{{ csrf_token }}',
-            data_set: dataSet,
-            name: optionName
-          },
+          data: $('#autocompleteAddTermForm').serialize() + "&dataSet=" + dataSet,
           success: function(data){
             if(data.error){
               $('#autocompleteAddTermName').parent().addClass('has-error');
