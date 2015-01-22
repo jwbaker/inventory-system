@@ -52,7 +52,10 @@ class InventoryItem(models.Model):
     csa_special_date = models.DateField(blank=True, default=None, null=True)
     description = models.TextField(blank=True, null=True)
     factory_csa = models.BooleanField(default=False)
-    last_modified = models.DateTimeField(auto_now=True)
+    last_modified = models.DateTimeField(
+        auto_now=True,
+        default=datetime.now
+    )
     location = models.ForeignKey(
         AutocompleteData,
         blank=True,
