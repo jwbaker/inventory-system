@@ -79,6 +79,7 @@
 
   <script type="text/javascript">
     $('a.autocomplete-add-term').click(function(event){
+      $('#autocompleteAddTermName').val('');
       $('span.error').remove();
       $('#autocompleteAddTermName').parent().removeClass('has-error');
 
