@@ -86,6 +86,7 @@
       var dataSet = event.target.getAttribute('data-set');
       $('#autocompleteAddTermModal').find('.modal-title')[0].textContent = "Add new " + dataSet;
       $('#autocompleteAddTermModal').modal().show();
+      $('#autocompleteAddTermName').focus();
     });
 
     $('#autocompleteAddTermSubmit').click(function(event){

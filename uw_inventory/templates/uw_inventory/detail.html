@@ -66,6 +66,7 @@
     var editMenuToggle = function(editTarget){
       {# We could have used a class rather than the for attribute, but this is more semantically meaningful #}
       $('i[for="' + editTarget + '"]').toggleClass('hidden');
+      $('.form-element#' + editTarget).focus();
     }
 
     $('.edit').click(function(){
