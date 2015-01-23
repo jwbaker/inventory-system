@@ -124,3 +124,10 @@ class InventoryItem(models.Model):
         ]
     )
     undergraduate = models.BooleanField(default=False)
+
+    @property
+    def uuid(self):
+        return "{0}-{1}".format(
+            self.creation_date.strftime('%Y%m%d'),
+            self.id
+        )

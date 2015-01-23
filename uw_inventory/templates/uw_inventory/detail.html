@@ -25,7 +25,7 @@
 {% endblock navbar_right %}
 
 {% block page_heading %}
-  <span class="panel-title">Heading</span>
+  <span class="panel-title">{{ inventory_item.uuid }}</span>
   <span class="small pull-right">Last modified: {{ inventory_item.last_modified }}</span>
 {% endblock page_heading %}
 
