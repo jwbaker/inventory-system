@@ -37,4 +37,18 @@
       }
     });
   </script>
+
+  <script type="text/javascript">
+    $('input#inputTechId').change(function(event){
+      var newValue = event.target.value
+      if(newValue.search(new RegExp('^[a-z]{2}-?\\d*$')) === 0){
+        var formattedValue = newValue.substring(0,2).toUpperCase() + '-';
+        formattedValue += newValue.substring(Math.max(1, newValue.indexOf('-')) + 1)
+        event.target.value = formattedValue;
+      } else{
+        $('input#inputTechId').parents('.list-group-item').addClass('list-group-item-danger has-error');
+        $('input#inputTechId').parent().append('<ul class="errorlist"><li>Must be of the form AA-00000</li></ul>');
+      }
+    });
+  </script>
 {% endblock js_includes %}

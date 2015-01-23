@@ -15,6 +15,7 @@ def _common_attributes_handler(attrs):
     context['id'] = attrs.get('id', '')
     context['class'] = 'form-element '
     context['class'] += attrs.get('class', '')
+    context['class'] += ' '
     return context
 
 

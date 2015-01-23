@@ -27,6 +27,9 @@ def _form_handler(form, creation_date=None):
                 )
         })
 
+        if field.get('Legacy'):
+            fields[-1]['legacy'] = True
+
     context = {'form': form, 'creation_date': creation_date, 'fields': fields}
     return context
 

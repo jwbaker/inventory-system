@@ -13,8 +13,15 @@
       </p>
     {% endif %}
 
-    {{ field }}
-    {{ field.errors }}
+    {% if caller == "static" %}
+      <p class="form-control-static">
+        {{ field_value }}
+      </p>
+    {% else %}
+      {{ field }}
+      {{ field.errors }}
+    {% endif %}
+
   </div>
 
   {# If we came from a show_editable_field tag #}

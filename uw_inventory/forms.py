@@ -8,11 +8,11 @@ from uw_inventory.models import (
 
 
 class ItemForm(forms.ModelForm):
-    # This list is used to order the form fields
-    # It doesn't really need to be a dictionary, but we'll leave it in case we
-    # want to add additional data later on
+    # This list provides metdata to the field renderer.
+    # Most of that logic is field order, but legacy fields are also described
     FIELD_LIST = [
         {'Name': 'name'},
+        {'Name': 'tech_id', 'Legacy': True},
         {'Name': 'description'},
         {'Name': 'status'},
         {'Name': 'location'},
@@ -53,6 +53,7 @@ class ItemForm(forms.ModelForm):
             'modified_since_csa': 'Modified since CSA inspection?',
             'replacement_cost_date': 'Estimation date',
             'sop_required': 'SOP required?',
+            'tech_id': 'Technician ID',
             'undergraduate': 'Used for undergrad teaching?',
         }
 
@@ -131,6 +132,9 @@ class ItemForm(forms.ModelForm):
             'status': widgets.SelectInput({
                 'id': 'inputStatus',
                 'translator': InventoryItem.get_status_display,
+            }),
+            'tech_id': widgets.TextInput({
+                'id': 'inputTechId',
             }),
             'undergraduate': widgets.CheckboxInput({
                 'id': 'inputUndergraduate',

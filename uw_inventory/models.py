@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from django.core.validators import RegexValidator
 from django.db import models
 
 
@@ -109,5 +110,17 @@ class InventoryItem(models.Model):
         choices=STATUS_CHOICES,
         default='SA',
         max_length=2,
+    )
+    tech_id = models.CharField(
+        blank=True,
+        default=None,
+        max_length=255,
+        null=True,
+        validators=[
+            RegexValidator(
+                r'[A-Z]{2}-[0-9]*',
+                'Must be of the form AA-0000'
+            )
+        ]
     )
     undergraduate = models.BooleanField(default=False)

@@ -6,6 +6,12 @@
     {% csrf_token %}
     {% include 'uw_inventory/field_container.html' with field_label='Creation date' date_value=creation_date %}
     {% for field in fields %}
-        {% show_editable_field field.field field.id %}
+        {% if field.legacy %}
+            {% if field.field.value %}
+                {% show_static_field field.field %}
+            {% endif %}
+        {% else %}
+            {% show_editable_field field.field field.id %}
+        {% endif %}
     {% endfor %}
 </form>
