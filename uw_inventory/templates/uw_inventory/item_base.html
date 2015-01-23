@@ -139,6 +139,8 @@
         $(this).toggleClass('fa-square-o');
         $(this).toggleClass('fa-check-square-o');
         $(this).attr('value', $(this).hasClass('fa-check-square-o') ? 'Yes' : 'No');
+        {# This custom event will be picked up on the add form and cause special things #}
+        $(this).trigger('classChange');
       }
     });
   </script>

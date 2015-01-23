@@ -26,6 +26,15 @@
     $('select').change(onChangeHandler);
     $('input').change(onChangeHandler);
     $('textarea').change(onChangeHandler);
-    {# Checkboxes don't count yet #}
+    {# Special case for special widgets #}
+    $('i.checkbox').on('classChange', function(event){
+      {# Most checkboxes are unchecked by default, so this would be a change #}
+      pageDirty = $(this).hasClass('fa-check-square-o');
+
+      {# However, sop_required is checked by default #}
+      if($(this).is('#inputSopRequired')){
+        pageDirty = !pageDirty;
+      }
+    });
   </script>
 {% endblock js_includes %}
