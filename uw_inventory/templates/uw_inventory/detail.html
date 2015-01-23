@@ -37,6 +37,7 @@
   {{ block.super }}
 
   <script type="text/javascript">
+  {# An extra message if we're trying to duplicate with unsaved changes #}
   $("#duplicate").parent().click(function(){
     if(pageDirty){
       $('#confirmExitModal').find('.modal-body').append("<p>Unsaved changes will not be duplicated.</p>");
@@ -46,19 +47,17 @@
 
   <script type="text/javascript">
     $('#pageSave').attr('disabled', 'disabled');
+    {# As with the paragraphs in the add page, it's easier to hide the form elements here than with Django #}
     $('.item-input').addClass('hidden');
   </script>
 
   <script type="text/javascript">
-    $('#pageSave').click(function(){
-      $('form#itemForm').submit();
-    });
-  </script>
-  <script type="text/javascript">
+    {# This function performs all the magic of adding and removing edit states #}
     var editClickHandler = function(context){
       var editTarget = context.attr('for');
       var paragraph = $('p#' + editTarget);
       paragraph.toggleClass('hidden');
+      {# We're using broad stroked to render the input elements visible, which will bite us later #}
       paragraph.siblings().toggleClass('hidden');
       editMenuToggle(editTarget);
     }
@@ -66,7 +65,7 @@
     var editMenuToggle = function(editTarget){
       {# We could have used a class rather than the for attribute, but this is more semantically meaningful #}
       $('i[for="' + editTarget + '"]').toggleClass('hidden');
-      $('.form-element#' + editTarget).focus();
+      $('.form-element#' + editTarget).focus(); {# Autofocus for usability goodness #}
     }
 
     $('.edit').click(function(){
@@ -105,21 +104,15 @@
         }
       } else if(inputControl.is('i.checkbox')){
         saveText = (inputControl.hasClass('fa-check-square-o') ? 'Yes' : 'No');
-        var hidden_input = inputControl.find('input');
-        if(saveText === 'Yes'){
-          hidden_input.attr('checked', 'checked');
-        } else{
-          hidden_input.removeAttr('checked');
-        }
       } else if(inputControl.is('.ui-autocomplete-input')){
         saveText = (inputControl[0].value == inputControl.placeholder ? '' : inputControl[0].value);
         var toSave;
-        console.log(inputControl[1].value)
         if(saveText === ''){
           toSave = '';
         } else {
           toSave = inputControl.attr('to-save');
         }
+        {# More magic here, because the autocomplete widget sends the name value but we need the id #}
         inputControl[1].setAttribute('value', toSave);
       } else {
         {# We don't want to display placeholder text #}

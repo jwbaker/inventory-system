@@ -5,6 +5,7 @@ from django.db import models
 
 class AutocompleteData(models.Model):
     class Meta:
+        # We don't want to have two locations (for instance) with the same name
         unique_together = ('name', 'kind',)
     KIND_CHOICES = [
         ('location', 'location'),
@@ -61,6 +62,10 @@ class InventoryItem(models.Model):
         blank=True,
         default=None,
         null=True,
+        # Django complains because we have two fields that foreign key to the
+        # same table. related_name defines the name of the reverse relation.
+        # i.e. InventoryItem.locations.all() returns the set of locations
+        # related to the given InventoryItem instance
         related_name='locations'
     )
     lifting_device = models.BooleanField(default=False)

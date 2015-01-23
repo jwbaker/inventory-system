@@ -3,9 +3,8 @@
 
 {% block css_includes %}
   <style type='text/css'>
-    ul.errorlist li{
-      list-style-type: none;
-    }
+    {# We need this special CSS class because of our indiscriminate hiding/showing of input elements #}
+    {# Adding this class makes the element perma-hidden #}
     .field-hidden{
       display: none!important;
       visibility: hidden!important;
@@ -17,6 +16,7 @@
       overflow-x: hidden;
     }
   </style>
+  <!-- jQuery UI theme for the autocomplete widget -->
   <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css">
 {% endblock css_includes %}
 
@@ -44,6 +44,8 @@
 
 {% block modal %}
   {% confirm_modal 'Exit' %}
+
+  {# There must be a better way to do modals... #}
   <div class="modal fade" id="autocompleteAddTermModal">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -78,18 +80,22 @@
   <script src="https://code.jquery.com/ui/1.11.2/jquery-ui.min.js"></script>
 
   <script type="text/javascript">
+    {# Launch the modal to add an autocomplete term #}
     $('a.autocomplete-add-term').click(function(event){
+      {# Because we're using one modal to add items to all autocomplete fields, #}
+      {# we clear the modal between sessions #}
       $('#autocompleteAddTermName').val('');
-      $('span.error').remove();
-      $('#autocompleteAddTermName').parent().removeClass('has-error');
 
+      {# We also have to set some of the modal's content dynamically #}
       var dataSet = event.target.getAttribute('data-set');
       $('#autocompleteAddTermModal').find('.modal-title')[0].textContent = "Add new " + dataSet;
       $('#autocompleteAddTermModal').modal().show();
       $('#autocompleteAddTermName').focus();
     });
 
+    {# Submit a new autocomplete term #}
     $('#autocompleteAddTermSubmit').click(function(event){
+      {# Because this is an AJAX form, we don't have a page refresh to clean up after us #}
       $('span.error').remove();
       $('#autocompleteAddTermName').parent().removeClass('has-error');
 
@@ -127,14 +133,16 @@
   </script>
 
   <script type="text/javascript">
+    {# Handler for changing the state of our checkbox control #}
     $('i.checkbox').click(function(){
       if(!$(this).hasClass('hidden')){
         $(this).toggleClass('fa-square-o');
         $(this).toggleClass('fa-check-square-o');
-        $(this).attr('value', $(this).hasClass('fa-check-square-o'))
+        $(this).attr('value', $(this).hasClass('fa-check-square-o') ? 'Yes' : 'No');
       }
     });
   </script>
+
   <script type="text/javascript">
     {# Redirect on the cancel button #}
     $('#pageCancel').click(function(){
@@ -166,25 +174,40 @@
   </script>
 
   <script type="text/javascript">
-    $(function(){
-      var cache = {};
-      $('input#inputLocation').autocomplete({
-        minLength: 1,
-        source: "{% url 'uw_inventory.views.autocomplete_list' 'location' %}",
-        select: function(event, ui){
-          $('input#inputLocation').attr('to-save', ui.item.id)
-        }
-      });
+    {# Manually define the autocomplete fields #}
+    $('input#inputLocation').autocomplete({
+      minLength: 1,
+      source: "{% url 'uw_inventory.views.autocomplete_list' 'location' %}",
+      select: function(event, ui){
+        $('input#inputLocation').attr('to-save', ui.item.id)
+      }
     });
-    $(function(){
-      var cache = {};
-      $('input#inputManufacturer').autocomplete({
-        minLength: 1,
-        source: "{% url 'uw_inventory.views.autocomplete_list' 'manufacturer' %}",
-        select: function(event, ui){
-          $('input#inputManufacturer').attr('to-save', ui.item.id)
+
+    $('input#inputManufacturer').autocomplete({
+      minLength: 1,
+      source: "{% url 'uw_inventory.views.autocomplete_list' 'manufacturer' %}",
+      select: function(event, ui){
+        $('input#inputManufacturer').attr('to-save', ui.item.id)
+      }
+    });
+  </script>
+
+  <script type="text/javascript">
+    $('#pageSave').click(function(event){
+      {# Because we're not using real form controls for our checkboxes, #}
+      {# we need to update the value of the real checkbox control #}
+      var checkboxes = $('i.checkbox');
+      for(var i = 0; i < checkboxes.length; i++){
+        var hidden_input = $('input#' + checkboxes[i].id);
+        var checkbox_value = checkboxes[i].getAttribute('value');
+
+        if(checkbox_value === 'Yes'){
+          hidden_input.attr('checked', 'checked');
+        } else{
+          hidden_input.removeAttr('checked');
         }
-      });
+      }
+      $('form#itemForm').submit();
     });
   </script>
 {% endblock js_includes %}

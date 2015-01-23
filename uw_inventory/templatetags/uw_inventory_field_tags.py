@@ -10,7 +10,7 @@ def _field_handler(field, tag, **kwargs):
     Positional arguments:
         field -- The Django field object, or None
         tag -- A string representing the caller
-                Currently supported: 'edit', 'static', 'field'
+                Currently supported: 'edit', 'field'
     Keyword arguments:
         field_id -- The unique identifier of the field
     '''
@@ -36,7 +36,9 @@ def _field_handler(field, tag, **kwargs):
 @register.inclusion_tag('uw_inventory/field_container.html')
 def show_editable_field(field, field_id):
     '''
-    Generates a form field with edit, save, and cancel buttons. Use for 'edit'
+    Generates a form field with edit, save, and cancel buttons.
+
+    Use for fields in the InventoryItem edit form.
 
     Positional arguments:
         field -- The Django field object
@@ -47,20 +49,11 @@ def show_editable_field(field, field_id):
 
 
 @register.inclusion_tag('uw_inventory/field_container.html')
-def show_static_field(field):
-    '''
-    Generates a non-editable form field.
-
-    Positional arguments:
-        field -- The Django field object
-    '''
-    return _field_handler(field, 'static')
-
-
-@register.inclusion_tag('uw_inventory/field_container.html')
 def show_field(field):
     '''
-    Generates a form control. Use for 'add'
+    Generates a form control with no extra fluff.
+
+    Use for fields in the InventoryItem add form.
 
     Positional arguments:
         field --- The Django field object

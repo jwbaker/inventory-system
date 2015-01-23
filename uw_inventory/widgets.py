@@ -5,6 +5,12 @@ from django.utils.safestring import mark_safe
 
 
 def _common_attributes_handler(attrs):
+    '''
+    Packages a context object containing attributes common to all widgets.
+
+    Positional arguments:
+        attrs -- The attrs dictionary of the widget instance
+    '''
     context = {}
     context['id'] = attrs.get('id', '')
     context['class'] = 'form-element '
@@ -13,44 +19,31 @@ def _common_attributes_handler(attrs):
 
 
 def _render_static_label(field_id, field_value):
+    '''
+    Formats the HTML string for the uneditable field value label.
+
+    Positional arguments:
+        field_id -- The unique identifier of the field
+        field_value -- The current value of the field
+    '''
     return u'''<p class="form-control-static" id="{0}">
                   {1}
               </p>'''.format(field_id, field_value or '')
 
 
 def _render_default_value(field_id, field_value):
+    '''
+    Formats an HTML string to contain the default value of the field.
+
+    We use this to check if a change has actually occurred, so we need to store
+    the original value of the field somewhere immutable.
+
+    Positional arguments:
+        field_id -- The unique identifier of the field
+        field_value -- The current value of the field
+    '''
     return u'''<span class="field-hidden default-value" for="{0}">
                 {1}</span>'''.format(field_id, field_value or '')
-
-
-class CurrencyInput(forms.NumberInput):
-    def __init__(self, attrs=None):
-        if attrs:
-            context = _common_attributes_handler(attrs)
-            context['class'] += 'form-control '
-            context['placeholder'] = attrs.get('placeholder', 0)
-
-        else:
-            context = None
-
-        return super(CurrencyInput, self).__init__(attrs=context)
-
-    def render(self, name, value, attrs=None):
-        render_str = _render_static_label(self.attrs.get('id', ''), value)
-        render_str += u'''<div class="input-group item-input">
-                            <span class="input-group-addon">$</span>'''
-
-        render_str += super(CurrencyInput, self).render(
-            name,
-            value,
-            attrs
-        )
-
-        render_str += u'''<span class="input-group-addon">.00</span>
-                        </div>'''
-        render_str += _render_default_value(self.attrs.get('id', ''), value)
-
-        return mark_safe(render_str)
 
 
 class AutocompleteInput(forms.Widget):
@@ -128,7 +121,7 @@ class CheckboxInput(forms.Widget):
                             widget_class,
                             widget_id,
                             name,
-                            value
+                            display_value
                         )
         render_str += u'''<input type="checkbox" id="{0}" name="{1}"
                         class="field-hidden" {2} />'''.format(
@@ -142,7 +135,36 @@ class CheckboxInput(forms.Widget):
         return mark_safe(render_str)
 
 
-# We need this class because Django's default date widget is a text box
+class CurrencyInput(forms.NumberInput):
+    def __init__(self, attrs=None):
+        if attrs:
+            context = _common_attributes_handler(attrs)
+            context['class'] += 'form-control '
+            context['placeholder'] = attrs.get('placeholder', 0)
+
+        else:
+            context = None
+
+        return super(CurrencyInput, self).__init__(attrs=context)
+
+    def render(self, name, value, attrs=None):
+        render_str = _render_static_label(self.attrs.get('id', ''), value)
+        render_str += u'''<div class="input-group item-input">
+                            <span class="input-group-addon">$</span>'''
+
+        render_str += super(CurrencyInput, self).render(
+            name,
+            value,
+            attrs
+        )
+
+        render_str += u'''<span class="input-group-addon">.00</span>
+                        </div>'''
+        render_str += _render_default_value(self.attrs.get('id', ''), value)
+
+        return mark_safe(render_str)
+
+
 class DateInput(forms.DateInput):
     input_type = 'date'
 
@@ -169,6 +191,31 @@ class DateInput(forms.DateInput):
             display_value
         )
         render_str += super(DateInput, self).render(name, value, attrs)
+        render_str += _render_default_value(
+            self.attrs.get('id', ''),
+            display_value
+        )
+        return mark_safe(render_str)
+
+
+class SelectInput(forms.Select):
+    def __init__(self, attrs=None):
+        if attrs:
+            context = _common_attributes_handler(attrs)
+            context['class'] += 'form-control item-input '
+            context['translator'] = attrs.get('translator', None)
+        else:
+            context = None
+
+        return super(SelectInput, self).__init__(attrs=context)
+
+    def render(self, name, value, attrs=None):
+        display_value = self.attrs['translator'](value)
+        render_str = _render_static_label(
+            self.attrs.get('id', ''),
+            display_value
+        )
+        render_str += super(SelectInput, self).render(name, value, attrs)
         render_str += _render_default_value(
             self.attrs.get('id', ''),
             display_value
@@ -212,29 +259,4 @@ class TextInput(forms.TextInput):
         render_str = _render_static_label(self.attrs.get('id', ''), value)
         render_str += super(TextInput, self).render(name, value, attrs)
         render_str += _render_default_value(self.attrs.get('id', ''), value)
-        return mark_safe(render_str)
-
-
-class SelectInput(forms.Select):
-    def __init__(self, attrs=None):
-        if attrs:
-            context = _common_attributes_handler(attrs)
-            context['class'] += 'form-control item-input '
-            context['translator'] = attrs.get('translator', None)
-        else:
-            context = None
-
-        return super(SelectInput, self).__init__(attrs=context)
-
-    def render(self, name, value, attrs=None):
-        display_value = self.attrs['translator'](value)
-        render_str = _render_static_label(
-            self.attrs.get('id', ''),
-            display_value
-        )
-        render_str += super(SelectInput, self).render(name, value, attrs)
-        render_str += _render_default_value(
-            self.attrs.get('id', ''),
-            display_value
-        )
         return mark_safe(render_str)

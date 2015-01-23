@@ -9,24 +9,11 @@
 
 {% block js_includes %}
   {{ block.super }}
-  <script type="text/javascript">
-    $('#pageSave').click(function(){
-      var checkboxes = $('i.checkbox');
-      for(var i = 0; i < checkboxes.length; i++){
-        var hidden_input = checkboxes[i].getElementsByTagName('input')[0];
-        var checkbox_value = checkboxes[i].className.indexOf('fa-check-square-o') > -1;
-        if(checkbox_value){
-          hidden_input.setAttribute('checked', 'checked');
-        } else{
-          hidden_input.removeAttribute('checked');
-        }
-      }
-      $('form#itemForm').submit();
-    });
-  </script>
 
   <script type="text/javascript">
+    {# It's easier to hide the empty paragraph using jQuery than removing it in Django #}
     $('p.form-control-static').addClass('hidden')
+
     var onChangeHandler = function(event){
       {# Empty values aren't considered 'changes' #}
       if(event.target.value === ''){
@@ -39,5 +26,6 @@
     $('select').change(onChangeHandler);
     $('input').change(onChangeHandler);
     $('textarea').change(onChangeHandler);
+    {# Checkboxes don't count yet #}
   </script>
 {% endblock js_includes %}

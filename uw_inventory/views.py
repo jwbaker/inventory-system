@@ -44,7 +44,7 @@ def inventory_list(request):
     inventory_list = InventoryItem.objects.filter(deleted=False)
     return render(request, 'uw_inventory/list.html', {
         'inventory_list': inventory_list,
-        'message_list': message_list,
+        'page_messages': message_list,
     })
 
 
@@ -89,6 +89,7 @@ def inventory_add(request):
                            'Something went wrong. Check below for errors')
     else:
         form = ItemForm()
+
     message_list = _collect_messages(request)
     return render(request, 'uw_inventory/add.html', {
         'form': form,
@@ -128,7 +129,6 @@ def inventory_delete(request, item_id):
 
 
 def autocomplete_list(request, source):
-    print request
     if request.is_ajax():
         query = request.GET.get('term', '')
         result_set = AutocompleteData.objects.filter(

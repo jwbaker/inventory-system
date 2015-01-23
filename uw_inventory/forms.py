@@ -8,6 +8,9 @@ from uw_inventory.models import (
 
 
 class ItemForm(forms.ModelForm):
+    # This list is used to order the form fields
+    # It doesn't really need to be a dictionary, but we'll leave it in case we
+    # want to add additional data later on
     FIELD_LIST = [
         {'Name': 'name'},
         {'Name': 'description'},
@@ -36,6 +39,9 @@ class ItemForm(forms.ModelForm):
     class Meta:
         model = InventoryItem
         exclude = ['creation_date', 'deleted', 'last_modified']
+
+        # The labels are only necessary if sentence-casing the field name
+        # doesn't work, i.e. abbreviations and punctuation
         labels = {
             'csa_cost': 'CSA certification cost',
             'csa_required': 'CSA required?',
@@ -49,8 +55,14 @@ class ItemForm(forms.ModelForm):
             'sop_required': 'SOP required?',
             'undergraduate': 'Used for undergrad teaching?',
         }
+
+        # EVERY field must have a widget defined, and it must be one of our
+        # specially-defined widgets, because we rely on every element having
+        # certains IDs and classes.
         widgets = {
-            'csa_cost': widgets.CurrencyInput({'id': 'inputCsaCost'}),
+            'csa_cost': widgets.CurrencyInput({
+                'id': 'inputCsaCost'
+            }),
             'csa_required': widgets.CheckboxInput({
                 'id': 'inputCsaRequired'
             }),
