@@ -43,6 +43,14 @@ class InventoryItem(models.Model):
         # JavaScript used in the detail page renders None as 'None' (a string)
         return ''
 
+    def save(self, *args, **kwargs):
+        super(InventoryItem, self).save()
+        self.uuid = "{0}-{1}".format(
+            self.creation_date.strftime('%Y%m%d'),
+            self.id
+        )
+        super(InventoryItem, self).save(*args, **kwargs)
+
     # These fields get automatically filled and cannot be edited
     creation_date = models.DateField(default=datetime.now)
     deleted = models.BooleanField(default=False)
@@ -124,10 +132,4 @@ class InventoryItem(models.Model):
         ]
     )
     undergraduate = models.BooleanField(default=False)
-
-    @property
-    def uuid(self):
-        return "{0}-{1}".format(
-            self.creation_date.strftime('%Y%m%d'),
-            self.id
-        )
+    uuid = models.CharField(max_length=255, null=True)
