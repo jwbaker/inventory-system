@@ -18,6 +18,12 @@ class AutocompleteData(models.Model):
 
 # Create your models here.
 class InventoryItem(models.Model):
+    class Meta:
+        permissions = (
+            ('view_item',         'Can view inventory items'),
+            ('view_deleted_item', 'Can view deleted inventory items'),
+        )
+
     STATUS_CHOICES = [
         ('SA', 'Stay'),
         ('SO', 'Storage'),
