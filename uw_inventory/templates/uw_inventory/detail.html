@@ -40,104 +40,106 @@
 {% block js_includes %}
   {{ block.super }}
 
-  <script type="text/javascript">
-  {# An extra message if we're trying to duplicate with unsaved changes #}
-  $("#duplicate").parent().click(function(){
-    if(pageDirty){
-      $('#confirmExitModal').find('.modal-body').append("<p>Unsaved changes will not be duplicated.</p>");
-    }
-  });
-  </script>
-
-  <script type="text/javascript">
-    $('#pageSave').attr('disabled', 'disabled');
-    {# As with the paragraphs in the add page, it's easier to hide the form elements here than with Django #}
-    $('.item-input').addClass('hidden');
-  </script>
-
-  <script type="text/javascript">
-    {# This function performs all the magic of adding and removing edit states #}
-    var editClickHandler = function(context){
-      var editTarget = context.attr('for');
-      var paragraph = $('p#' + editTarget);
-      paragraph.toggleClass('hidden');
-      {# We're using broad stroked to render the input elements visible, which will bite us later #}
-      paragraph.siblings().toggleClass('hidden');
-      editMenuToggle(editTarget);
-    }
-
-    var editMenuToggle = function(editTarget){
-      {# We could have used a class rather than the for attribute, but this is more semantically meaningful #}
-      $('i[for="' + editTarget + '"]').toggleClass('hidden');
-      $('.form-element#' + editTarget).focus(); {# Autofocus for usability goodness #}
-    }
-
-    $('.edit').click(function(){
-      editClickHandler($(this));
+  {% if perms.uw_inventory.change_inventoryitem %}
+    <script type="text/javascript">
+    {# An extra message if we're trying to duplicate with unsaved changes #}
+    $("#duplicate").parent().click(function(){
+      if(pageDirty){
+        $('#confirmExitModal').find('.modal-body').append("<p>Unsaved changes will not be duplicated.</p>");
+      }
     });
+    </script>
 
-    $('.cancel').click(function(){
-      editClickHandler($(this));
-    });
+    <script type="text/javascript">
+      $('#pageSave').attr('disabled', 'disabled');
+      {# As with the paragraphs in the add page, it's easier to hide the form elements here than with Django #}
+      $('.item-input').addClass('hidden');
+    </script>
 
-    $('.save').click(function(){
-      var paragraph = $('p#' + $(this).attr('for'));
+    <script type="text/javascript">
+      {# This function performs all the magic of adding and removing edit states #}
+      var editClickHandler = function(context){
+        var editTarget = context.attr('for');
+        var paragraph = $('p#' + editTarget);
+        paragraph.toggleClass('hidden');
+        {# We're using broad stroked to render the input elements visible, which will bite us later #}
+        paragraph.siblings().toggleClass('hidden');
+        editMenuToggle(editTarget);
+      }
 
-      {# This line looks up from the pragraph for the parent div, then down for the input element #}
-      var inputControl = paragraph.closest('div').find('.form-element');
-      var original = inputControl.parents('div.form-group').find('span.default-value')[0].textContent.trim();
-      var saveText; {# This will eventually go in the "saved" <p> tag text #}
+      var editMenuToggle = function(editTarget){
+        {# We could have used a class rather than the for attribute, but this is more semantically meaningful #}
+        $('i[for="' + editTarget + '"]').toggleClass('hidden');
+        $('.form-element#' + editTarget).focus(); {# Autofocus for usability goodness #}
+      }
 
-      if(inputControl.is('select')){
-        {# inputControl was formerly the select box itself, but we need the selected option #}
-        inputControl = inputControl.find('option:selected');
+      $('.edit').click(function(){
+        editClickHandler($(this));
+      });
 
-        saveText = inputControl[0].text;
-      } else if(inputControl.is('input[type="date"]')){
-        {# Need to do this because sending the string alone into the Date constructor will #}
-        {#   interpret the data as UTC, but we want it to be Eastern time #}
-        var dateStr = inputControl[0].value;
-        if(dateStr){
-          var dateArr = dateStr.split('-');
-          var date = new Date(dateArr[0], dateArr[1] - 1, dateArr[2]);
+      $('.cancel').click(function(){
+        editClickHandler($(this));
+      });
 
-          {# Keeps a consistent formatting on the date. We could do this with native JS, but this is cleaner #}
-          saveText = $.datepicker.formatDate('M. d, yy', date);
-        } else{
-          saveText = '';
-        }
-      } else if(inputControl.is('i.checkbox')){
-        saveText = (inputControl.hasClass('fa-check-square-o') ? 'Yes' : 'No');
-      } else if(inputControl.is('.ui-autocomplete-input')){
-        saveText = (inputControl[0].value == inputControl.placeholder ? '' : inputControl[0].value);
-        var toSave;
-        if(saveText === ''){
-          toSave = '';
+      $('.save').click(function(){
+        var paragraph = $('p#' + $(this).attr('for'));
+
+        {# This line looks up from the pragraph for the parent div, then down for the input element #}
+        var inputControl = paragraph.closest('div').find('.form-element');
+        var original = inputControl.parents('div.form-group').find('span.default-value')[0].textContent.trim();
+        var saveText; {# This will eventually go in the "saved" <p> tag text #}
+
+        if(inputControl.is('select')){
+          {# inputControl was formerly the select box itself, but we need the selected option #}
+          inputControl = inputControl.find('option:selected');
+
+          saveText = inputControl[0].text;
+        } else if(inputControl.is('input[type="date"]')){
+          {# Need to do this because sending the string alone into the Date constructor will #}
+          {#   interpret the data as UTC, but we want it to be Eastern time #}
+          var dateStr = inputControl[0].value;
+          if(dateStr){
+            var dateArr = dateStr.split('-');
+            var date = new Date(dateArr[0], dateArr[1] - 1, dateArr[2]);
+
+            {# Keeps a consistent formatting on the date. We could do this with native JS, but this is cleaner #}
+            saveText = $.datepicker.formatDate('M. d, yy', date);
+          } else{
+            saveText = '';
+          }
+        } else if(inputControl.is('i.checkbox')){
+          saveText = (inputControl.hasClass('fa-check-square-o') ? 'Yes' : 'No');
+        } else if(inputControl.is('.ui-autocomplete-input')){
+          saveText = (inputControl[0].value == inputControl.placeholder ? '' : inputControl[0].value);
+          var toSave;
+          if(saveText === ''){
+            toSave = '';
+          } else {
+            toSave = inputControl.attr('to-save');
+          }
+          {# More magic here, because the autocomplete widget sends the name value but we need the id #}
+          inputControl[1].setAttribute('value', toSave);
         } else {
-          toSave = inputControl.attr('to-save');
+          {# We don't want to display placeholder text #}
+          saveText = (inputControl[0].value == inputControl.placeholder ? '' : inputControl[0].value);
         }
-        {# More magic here, because the autocomplete widget sends the name value but we need the id #}
-        inputControl[1].setAttribute('value', toSave);
-      } else {
-        {# We don't want to display placeholder text #}
-        saveText = (inputControl[0].value == inputControl.placeholder ? '' : inputControl[0].value);
-      }
 
-      pageDirty = (saveText !== original) {# Here, blank values are considered a change #}
-      
-      if(pageDirty){ {# Have we made a change? #}
-        $('#pageEditWarning').removeClass('hidden');
-        $('#pageSave').removeAttr('disabled');
-        inputControl.parents('div.form-group').addClass('list-group-item-warning has-warning');
-      } else{ {# Are we back to original? #}
-        $('#pageEditWarning').addClass('hidden');
-        $('#pageSave').prop('disabled', 'disabled');
-        inputControl.parents('div.form-group').removeClass('list-group-item-warning has-warning');
-      }
+        pageDirty = (saveText !== original) {# Here, blank values are considered a change #}
+        
+        if(pageDirty){ {# Have we made a change? #}
+          $('#pageEditWarning').removeClass('hidden');
+          $('#pageSave').removeAttr('disabled');
+          inputControl.parents('div.form-group').addClass('list-group-item-warning has-warning');
+        } else{ {# Are we back to original? #}
+          $('#pageEditWarning').addClass('hidden');
+          $('#pageSave').prop('disabled', 'disabled');
+          inputControl.parents('div.form-group').removeClass('list-group-item-warning has-warning');
+        }
 
-      paragraph[0].textContent = saveText;
+        paragraph[0].textContent = saveText;
 
-      editClickHandler($(this));
-    });
-  </script>
+        editClickHandler($(this));
+      });
+    </script>
+  {% endif %}
 {% endblock js_includes %}

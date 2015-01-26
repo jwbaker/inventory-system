@@ -81,137 +81,141 @@
   {# Need this for the date formatting on Edit page and for autocomplete widgets #}
   <script src="https://code.jquery.com/ui/1.11.2/jquery-ui.min.js"></script>
 
-  <script type="text/javascript">
-    {# Launch the modal to add an autocomplete term #}
-    $('a.autocomplete-add-term').click(function(event){
-      {# Because we're using one modal to add items to all autocomplete fields, #}
-      {# we clear the modal between sessions #}
-      $('#autocompleteAddTermName').val('');
+  {% if perms.uw_inventory.add_autocompletedata %}
+    <script type="text/javascript">
+      {# Launch the modal to add an autocomplete term #}
+      $('a.autocomplete-add-term').click(function(event){
+        {# Because we're using one modal to add items to all autocomplete fields, #}
+        {# we clear the modal between sessions #}
+        $('#autocompleteAddTermName').val('');
 
-      {# We also have to set some of the modal's content dynamically #}
-      var dataSet = event.target.getAttribute('data-set');
-      $('#autocompleteAddTermModal').find('.modal-title')[0].textContent = "Add new " + dataSet;
-      $('#autocompleteAddTermModal').modal().show();
-      $('#autocompleteAddTermName').focus();
-    });
+        {# We also have to set some of the modal's content dynamically #}
+        var dataSet = event.target.getAttribute('data-set');
+        $('#autocompleteAddTermModal').find('.modal-title')[0].textContent = "Add new " + dataSet;
+        $('#autocompleteAddTermModal').modal().show();
+        $('#autocompleteAddTermName').focus();
+      });
 
-    {# Submit a new autocomplete term #}
-    $('#autocompleteAddTermSubmit').click(function(event){
-      {# Because this is an AJAX form, we don't have a page refresh to clean up after us #}
-      $('span.error').remove();
-      $('#autocompleteAddTermName').parent().removeClass('has-error');
+      {# Submit a new autocomplete term #}
+      $('#autocompleteAddTermSubmit').click(function(event){
+        {# Because this is an AJAX form, we don't have a page refresh to clean up after us #}
+        $('span.error').remove();
+        $('#autocompleteAddTermName').parent().removeClass('has-error');
 
-      var dataSet = $('a.autocomplete-add-term').attr('data-set');
-      var optionName = $('#autocompleteAddTermName').val();
+        var dataSet = $('a.autocomplete-add-term').attr('data-set');
+        var optionName = $('#autocompleteAddTermName').val();
 
-      if(optionName){
-        $.ajax({
-          url: '{% url "uw_inventory.views.autocomplete_new" %}',
-          type: 'POST',
-          data: $('#autocompleteAddTermForm').serialize() + "&dataSet=" + dataSet,
-          success: function(data){
-            if(data.error){
-              $('#autocompleteAddTermName').parent().addClass('has-error');
-              $('#autocompleteAddTermName').parent().append(
-                '<span class="error text-danger">'+ data.error +'</span>'
-              );
-            } else {
-              $('#autocompleteAddTermModal').modal().hide();
+        if(optionName){
+          $.ajax({
+            url: '{% url "uw_inventory.views.autocomplete_new" %}',
+            type: 'POST',
+            data: $('#autocompleteAddTermForm').serialize() + "&dataSet=" + dataSet,
+            success: function(data){
+              if(data.error){
+                $('#autocompleteAddTermName').parent().addClass('has-error');
+                $('#autocompleteAddTermName').parent().append(
+                  '<span class="error text-danger">'+ data.error +'</span>'
+                );
+              } else {
+                $('#autocompleteAddTermModal').modal().hide();
+              }
+            },
+            error: function(xhr, err_msg, err){
+              console.log(xhr);
+              console.log(err_msg);
+              console.log(err);
             }
-          },
-          error: function(xhr, err_msg, err){
-            console.log(xhr);
-            console.log(err_msg);
-            console.log(err);
-          }
-        });
-      } else {
-        $('#autocompleteAddTermName').parent().append(
-                '<span class="error text-danger">This field is required</span>'
-              );
-        $('#autocompleteAddTermName').parent().addClass('has-error');
-      }
-    });
-  </script>
-
-  <script type="text/javascript">
-    {# Handler for changing the state of our checkbox control #}
-    $('i.checkbox').click(function(){
-      if(!$(this).hasClass('hidden')){
-        $(this).toggleClass('fa-square-o');
-        $(this).toggleClass('fa-check-square-o');
-        $(this).attr('value', $(this).hasClass('fa-check-square-o') ? 'Yes' : 'No');
-        {# This custom event will be picked up on the add form and cause special things #}
-        $(this).trigger('classChange');
-      }
-    });
-  </script>
-
-  <script type="text/javascript">
-    {# Redirect on the cancel button #}
-    $('#pageCancel').click(function(){
-      window.location = {% url 'uw_inventory.views.inventory_list' %};
-    });
-  </script>
-
-  <script type="text/javascript">
-    {# We want to confirm user intent if they try to navigate away with unsaved changes #}
-    var pageDirty = false;
-    var targetDestination;
-    $('.navigate').parent().click(function(event){
-      if(pageDirty){
-        event.preventDefault();
-        event.stopPropagation();
-        targetDestination = event.target.href;
-        $('#confirmExitModal').modal('show');
-      }
-    });
-
-    $('#confirmExitModalContinue').click(function(){
-      $('#confirmExitModal').modal('hide');
-      window.location = targetDestination || {% url 'uw_inventory.views.inventory_list' %};
-    });
-
-    $('#confirmExitModalCancel').click(function(){
-      $('#confirmExitModal').modal('hide');
-    });
-  </script>
-
-  <script type="text/javascript">
-    {# Manually define the autocomplete fields #}
-    $('input#inputLocation').autocomplete({
-      minLength: 1,
-      source: "{% url 'uw_inventory.views.autocomplete_list' 'location' %}",
-      select: function(event, ui){
-        $('input#inputLocation').attr('to-save', ui.item.id)
-      }
-    });
-
-    $('input#inputManufacturer').autocomplete({
-      minLength: 1,
-      source: "{% url 'uw_inventory.views.autocomplete_list' 'manufacturer' %}",
-      select: function(event, ui){
-        $('input#inputManufacturer').attr('to-save', ui.item.id)
-      }
-    });
-  </script>
-
-  <script type="text/javascript">
-    $('#pageSave').click(function(event){
-      {# Because we're not using real form controls for our checkboxes, #}
-      {# we need to update the value of the real checkbox control #}
-      var checkboxes = $('i.checkbox');
-      for(var i = 0; i < checkboxes.length; i++){
-        var hidden_input = $('input#' + checkboxes[i].id);
-        var checkbox_value = checkboxes[i].getAttribute('value');
-
-        if(checkbox_value === 'Yes'){
-          hidden_input.attr('checked', 'checked');
-        } else{
-          hidden_input.removeAttr('checked');
+          });
+        } else {
+          $('#autocompleteAddTermName').parent().append(
+                  '<span class="error text-danger">This field is required</span>'
+                );
+          $('#autocompleteAddTermName').parent().addClass('has-error');
         }
-      }
-      $('form#itemForm').submit();
-    });
-  </script>
+      });
+    </script>
+  {% endif %}
+
+  {% if perms.uw_inventory.change_inventoryitem or perms.uw_inventory.add_inventoryitem %}
+    <script type="text/javascript">
+      {# Handler for changing the state of our checkbox control #}
+      $('i.checkbox').click(function(){
+        if(!$(this).hasClass('hidden')){
+          $(this).toggleClass('fa-square-o');
+          $(this).toggleClass('fa-check-square-o');
+          $(this).attr('value', $(this).hasClass('fa-check-square-o') ? 'Yes' : 'No');
+          {# This custom event will be picked up on the add form and cause special things #}
+          $(this).trigger('classChange');
+        }
+      });
+    </script>
+
+    <script type="text/javascript">
+      {# Redirect on the cancel button #}
+      $('#pageCancel').click(function(){
+        window.location = {% url 'uw_inventory.views.inventory_list' %};
+      });
+    </script>
+
+    <script type="text/javascript">
+      {# We want to confirm user intent if they try to navigate away with unsaved changes #}
+      var pageDirty = false;
+      var targetDestination;
+      $('.navigate').parent().click(function(event){
+        if(pageDirty){
+          event.preventDefault();
+          event.stopPropagation();
+          targetDestination = event.target.href;
+          $('#confirmExitModal').modal('show');
+        }
+      });
+
+      $('#confirmExitModalContinue').click(function(){
+        $('#confirmExitModal').modal('hide');
+        window.location = targetDestination || {% url 'uw_inventory.views.inventory_list' %};
+      });
+
+      $('#confirmExitModalCancel').click(function(){
+        $('#confirmExitModal').modal('hide');
+      });
+    </script>
+
+    <script type="text/javascript">
+      {# Manually define the autocomplete fields #}
+      $('input#inputLocation').autocomplete({
+        minLength: 1,
+        source: "{% url 'uw_inventory.views.autocomplete_list' 'location' %}",
+        select: function(event, ui){
+          $('input#inputLocation').attr('to-save', ui.item.id)
+        }
+      });
+
+      $('input#inputManufacturer').autocomplete({
+        minLength: 1,
+        source: "{% url 'uw_inventory.views.autocomplete_list' 'manufacturer' %}",
+        select: function(event, ui){
+          $('input#inputManufacturer').attr('to-save', ui.item.id)
+        }
+      });
+    </script>
+
+    <script type="text/javascript">
+      $('#pageSave').click(function(event){
+        {# Because we're not using real form controls for our checkboxes, #}
+        {# we need to update the value of the real checkbox control #}
+        var checkboxes = $('i.checkbox');
+        for(var i = 0; i < checkboxes.length; i++){
+          var hidden_input = $('input#' + checkboxes[i].id);
+          var checkbox_value = checkboxes[i].getAttribute('value');
+
+          if(checkbox_value === 'Yes'){
+            hidden_input.attr('checked', 'checked');
+          } else{
+            hidden_input.removeAttr('checked');
+          }
+        }
+        $('form#itemForm').submit();
+      });
+    </script>
+  {% endif %}
 {% endblock js_includes %}
