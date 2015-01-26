@@ -80,7 +80,7 @@ def inventory_detail(request, item_id):
 
 
 @csrf_protect
-@permission_required('uw_inventory.add_item')
+@permission_required('uw_inventory.add_inventoryitem')
 def inventory_add(request):
     if request.method == 'POST':
         form = ItemForm(request.POST)
@@ -102,7 +102,7 @@ def inventory_add(request):
     })
 
 
-@permission_required('uw_inventory.add_item')
+@permission_required('uw_inventory.add_inventoryitem')
 def inventory_copy(request, item_id):
     item = InventoryItem.objects.get(pk=item_id)
     item.pk = None
@@ -118,7 +118,7 @@ def inventory_copy(request, item_id):
     return HttpResponseRedirect('/list/%s' % item.pk)
 
 
-@permission_required('uw_inventory.change_item')
+@permission_required('uw_inventory.change_inventoryitem')
 def inventory_delete(request, item_id):
     item = InventoryItem.objects.get(pk=item_id)
     item.deleted = True
@@ -135,7 +135,7 @@ def inventory_delete(request, item_id):
     return HttpResponseRedirect(dest)
 
 
-@permission_required('uw_inventory.change_item')
+@permission_required('uw_inventory.change_inventoryitem')
 def autocomplete_list(request, source):
     if request.is_ajax():
         query = request.GET.get('term', '')
@@ -158,7 +158,7 @@ def autocomplete_list(request, source):
 
 
 @csrf_protect
-@permission_required('uw_inventory.add_item')
+@permission_required('uw_inventory.add_autocompletedata')
 def autocomplete_new(request):
     response = {}
     if request.is_ajax() and request.method == 'POST':

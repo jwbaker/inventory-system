@@ -12,16 +12,20 @@
 
 {% block navbar_right %}
   {{ block.super }}
-  <li>
-    <a href="{% url 'uw_inventory.views.inventory_copy' inventory_item.id %}">
-      <i class="fa fa-files-o navigate" id="duplicate"></i>
-    </a>
-  </li>
-  <li>
-    <a href="{% url 'uw_inventory.views.inventory_delete' inventory_item.id %}">
-      <i class="fa fa-trash navigate"></i>
-    </a>
-  </li>
+  {% if perms.uw_inventory.add_inventoryitem %}  
+    <li>
+      <a href="{% url 'uw_inventory.views.inventory_copy' inventory_item.id %}">
+        <i class="fa fa-files-o navigate" id="duplicate"></i>
+      </a>
+    </li>
+  {% endif %}
+  {% if perms.uw_inventory.change_inventoryitem %}  
+    <li>
+      <a href="{% url 'uw_inventory.views.inventory_delete' inventory_item.id %}">
+        <i class="fa fa-trash navigate"></i>
+      </a>
+    </li>
+  {% endif %}
 {% endblock navbar_right %}
 
 {% block page_heading %}

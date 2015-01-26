@@ -21,12 +21,14 @@
 {% endblock css_includes %}
 
 {% block navbar_right %}
-  <li>
-    <button class="btn navbar-btn btn-success" id="pageSave">Save</button>
-  </li>
-  <li>
-    <button class="btn navbar-btn btn-danger" id="pageCancel">Cancel</button>
-  </li>
+  {% if perms.uw_inventory.change_inventoryitem or perms.uw_inventory.add_inventoryitem %}
+    <li>
+      <button class="btn navbar-btn btn-success" id="pageSave">Save</button>
+    </li>
+    <li>
+      <button class="btn navbar-btn btn-danger" id="pageCancel">Cancel</button>
+    </li>
+  {% endif %}
   {{ block.super }}
 {% endblock navbar_right %}
 
