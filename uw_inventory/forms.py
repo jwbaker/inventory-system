@@ -38,7 +38,7 @@ class ItemForm(forms.ModelForm):
 
     class Meta:
         model = InventoryItem
-        exclude = ['creation_date', 'deleted', 'last_modified']
+        exclude = ['creation_date', 'deleted', 'last_modified', 'uuid']
 
         # The labels are only necessary if sentence-casing the field name
         # doesn't work, i.e. abbreviations and punctuation
