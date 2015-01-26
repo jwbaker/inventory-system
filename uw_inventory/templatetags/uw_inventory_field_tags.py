@@ -13,6 +13,7 @@ def _field_handler(field, tag, **kwargs):
                 Currently supported: 'edit', 'static' 'field'
     Keyword arguments:
         field_id -- The unique identifier of the field
+        permissions -- The Django permissions object of the current user
     '''
     context = {}
     context['caller'] = tag
@@ -29,12 +30,13 @@ def _field_handler(field, tag, **kwargs):
         context['field_required'] = False
 
     context['field_id'] = kwargs.get('field_id', '')
+    context['perms'] = kwargs.get('permissions', None)
 
     return context
 
 
 @register.inclusion_tag('uw_inventory/field_container.html')
-def show_editable_field(field, field_id):
+def show_editable_field(field, field_id, permissions):
     '''
     Generates a form field with edit, save, and cancel buttons.
 
@@ -43,9 +45,11 @@ def show_editable_field(field, field_id):
     Positional arguments:
         field -- The Django field object
         field_id -- The unique identifier of the field
+        permissions -- The Django permissions object of the current user
     '''
     return _field_handler(field, 'edit',
-                          field_id=field_id)
+                          field_id=field_id,
+                          permissions=permissions)
 
 
 @register.inclusion_tag('uw_inventory/field_container.html')

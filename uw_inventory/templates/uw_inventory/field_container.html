@@ -25,7 +25,7 @@
   </div>
 
   {# If we came from a show_editable_field tag #}
-  {% if caller == "edit" %}
+  {% if caller == "edit" and perms.uw_inventory.change_inventoryitem %}
     <div class="col-xs-1">
       <i class="fa fa-check save hidden" for="{{ field_id }}"></i>
       <i class="fa fa-times cancel hidden" for="{{ field_id }}"></i>
