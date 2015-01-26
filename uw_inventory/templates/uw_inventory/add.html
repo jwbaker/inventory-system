@@ -41,7 +41,9 @@
   <script type="text/javascript">
     $('input#inputTechId').change(function(event){
       var newValue = event.target.value
+      {# Custom validation of Tech_ID field #}
       if(newValue.search(new RegExp('^[a-z]{2}-?\\d*$')) === 0){
+        {# If the value is plausibly similar, we massage it into the right form #}
         var formattedValue = newValue.substring(0,2).toUpperCase() + '-';
         formattedValue += newValue.substring(Math.max(1, newValue.indexOf('-')) + 1)
         event.target.value = formattedValue;

@@ -43,12 +43,15 @@ class InventoryItem(models.Model):
         # JavaScript used in the detail page renders None as 'None' (a string)
         return ''
 
+    # save method is overriden so we can generate the UUID automatically
     def save(self, *args, **kwargs):
         super(InventoryItem, self).save()
-        self.uuid = "{0}-{1}".format(
-            self.creation_date.strftime('%Y%m%d'),
-            self.id
-        )
+        if not self.uuid:  # No sense generating it twice
+            self.uuid = "{0}-{1}".format(
+                self.creation_date.strftime('%Y%m%d'),
+                self.id
+            )
+        # Double save so we can include a unique record ID in the UUID
         super(InventoryItem, self).save(*args, **kwargs)
 
     # These fields get automatically filled and cannot be edited
@@ -89,6 +92,7 @@ class InventoryItem(models.Model):
         blank=True,
         default=None,
         null=True,
+        # See the comment on InventoryItem.location field
         related_name='manufacturers'
     )
     model_number = models.CharField(
@@ -132,4 +136,10 @@ class InventoryItem(models.Model):
         ]
     )
     undergraduate = models.BooleanField(default=False)
-    uuid = models.CharField(max_length=255, null=True)
+    uuid = models.CharField(
+        max_length=255,
+        # In reality this should *never* be null, but the only sane way to have
+        # this field include the database ID is to do a preliminary save first,
+        # but we have to insert a null value for that to happen
+        null=True
+    )
