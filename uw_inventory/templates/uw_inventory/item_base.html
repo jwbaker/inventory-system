@@ -133,7 +133,7 @@
         var targetID;
 
         switch(dataSet){
-          case 'technician':
+          case 'technician': case 'owner':
             targetID = 'autocompleteAddUserTerm'; break;
           default:
             targetID = 'autocompleteAddTerm'; break;
@@ -273,6 +273,14 @@
         source: "{% url 'uw_inventory.views.autocomplete_list' 'technician' %}",
         select: function(event, ui){
           $('input#inputTechnician').attr('to-save', ui.item.id)
+        }
+      });
+
+      $('input#inputOwner').autocomplete({
+        minLength: 1,
+        source: "{% url 'uw_inventory.views.autocomplete_list' 'owner' %}",
+        select: function(event, ui){
+          $('input#inputOwner').attr('to-save', ui.item.id)
         }
       });
     </script>

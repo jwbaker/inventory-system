@@ -18,6 +18,7 @@ class ItemForm(forms.ModelForm):
         {'Name': 'status'},
         {'Name': 'location'},
         {'Name': 'technician'},
+        {'Name': 'owner'},
         {'Name': 'manufacturer'},
         {'Name': 'model_number'},
         {'Name': 'serial_number'},
@@ -112,6 +113,11 @@ class ItemForm(forms.ModelForm):
             'name': widgets.TextInput({
                 'id': 'inputName',
                 'placeholder': 'Name',
+            }),
+            'owner': widgets.AutocompleteInput({
+                'id': 'inputOwner',
+                'placeholder': 'Begin typing the name or UWID...',
+                'data-set': User.objects,
             }),
             'purchase_date': widgets.DateInput({
                 'id': 'inputPurchaseDate',

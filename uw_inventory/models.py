@@ -111,6 +111,14 @@ class InventoryItem(models.Model):
     )
     modified_since_csa = models.BooleanField(default=False)
     name = models.CharField(max_length=200)
+    owner = models.ForeignKey(
+        User,
+        blank=True,
+        default=None,
+        null=True,
+        # See the comment on InventoryItem.location field
+        related_name='owners'
+    )
     purchase_date = models.DateField(blank=True, default=None, null=True)
     purchase_price = models.IntegerField(blank=True, default=None, null=True)
     replacement_cost = models.IntegerField(blank=True, default=None, null=True)

@@ -167,7 +167,7 @@ def autocomplete_list(request, source):
         query = request.GET.get('term', '')
         data = []
 
-        if source in ['technician']:
+        if source in ['technician', 'owner']:
             result_set = User.objects.filter(
                 Q(username__icontains=query) |
                 Q(first_name__icontains=query) |
