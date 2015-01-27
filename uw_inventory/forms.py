@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth.models import User
 
 from uw_inventory import widgets
 from uw_inventory.models import (
@@ -16,6 +17,7 @@ class ItemForm(forms.ModelForm):
         {'Name': 'description'},
         {'Name': 'status'},
         {'Name': 'location'},
+        {'Name': 'technician'},
         {'Name': 'manufacturer'},
         {'Name': 'model_number'},
         {'Name': 'serial_number'},
@@ -141,6 +143,11 @@ class ItemForm(forms.ModelForm):
             }),
             'tech_id': widgets.TextInput({
                 'id': 'inputTechId',
+            }),
+            'technician': widgets.AutocompleteInput({
+                'id': 'inputTechnician',
+                'placeholder': 'Begin typing the name or UWID...',
+                'data-set': User.objects,
             }),
             'undergraduate': widgets.CheckboxInput({
                 'id': 'inputUndergraduate',

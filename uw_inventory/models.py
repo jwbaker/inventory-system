@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 from django.db import models
 
@@ -149,6 +150,14 @@ class InventoryItem(models.Model):
                 'Must be of the form AA-0000'
             )
         ]
+    )
+    technician = models.ForeignKey(
+        User,
+        blank=True,
+        default=None,
+        null=True,
+        # See the comment on InventoryItem.location field
+        related_name='technicians'
     )
     undergraduate = models.BooleanField(default=False)
     uuid = models.CharField(

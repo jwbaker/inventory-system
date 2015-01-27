@@ -205,6 +205,14 @@
           $('input#inputSupplier').attr('to-save', ui.item.id)
         }
       });
+
+      $('input#inputTechnician').autocomplete({
+        minLength: 1,
+        source: "{% url 'uw_inventory.views.autocomplete_list' 'technician' %}",
+        select: function(event, ui){
+          $('input#inputTechnician').attr('to-save', ui.item.id)
+        }
+      });
     </script>
 
     <script type="text/javascript">

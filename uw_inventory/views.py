@@ -1,7 +1,9 @@
 import json
 
 from django.contrib import messages
+from django.contrib.auth.models import User
 from django.db import IntegrityError
+from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_protect
@@ -135,21 +137,51 @@ def inventory_delete(request, item_id):
     return HttpResponseRedirect(dest)
 
 
+def _json_builder_user(obj):
+    if obj.first_name and obj.last_name:
+        label = '{0} {1}'.format(
+            obj.first_name,
+            obj.last_name
+        )
+    else:
+        label = obj.username
+    return {
+        'id': obj.id,
+        'label': label,
+        'value': label,
+    }
+
+
+def _json_builder_autocomplete(obj):
+    return {
+        'id': obj.id,
+        'label': obj.name,
+        'value': obj.name,
+    }
+
+
 @permission_required('uw_inventory.change_inventoryitem')
 def autocomplete_list(request, source):
     if request.is_ajax():
         query = request.GET.get('term', '')
-        result_set = AutocompleteData.objects.filter(
-            kind=source,
-            name__icontains=query
-        )
         data = []
+
+        if source in ['technician']:
+            result_set = User.objects.filter(
+                Q(username__icontains=query) |
+                Q(first_name__icontains=query) |
+                Q(last_name__icontains=query)
+            )
+            json_builder = _json_builder_user
+        else:
+            result_set = AutocompleteData.objects.filter(
+                kind=source,
+                name__icontains=query
+            )
+            json_builder = _json_builder_autocomplete
+
         for result in result_set:
-            location_json = {}
-            location_json['id'] = result.id
-            location_json['label'] = result.name
-            location_json['value'] = result.name
-            data.append(location_json)
+            data.append(json_builder(result))
         response = json.dumps(data)
     else:
         response = 'fail'
