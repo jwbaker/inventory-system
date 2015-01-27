@@ -16,18 +16,18 @@ def confirm_modal(modal_name):
         'buttons': [
             {
                 'class': 'default',
-                'id': 'confirm%sModalCancel' % modal_name,
+                'id': 'confirm{0}ModalCancel'.format(modal_name),
                 'text': 'Cancel'
             },
             {
                 'class': 'danger',
-                'id': 'confirm%sModalContinue' % modal_name,
+                'id': 'confirm{0}ModalContinue'.format(modal_name),
                 'position': 'left',
                 'text': 'Continue',
             },
 
         ],
-        'id': 'confirm%sModal' % modal_name,
+        'id': 'confirm{0}Modal'.format(modal_name),
         'title': 'Confirm',
         'body': '''This page has unsaved changes.
                     Are you sure you want to leave?'''
