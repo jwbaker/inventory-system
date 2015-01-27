@@ -194,7 +194,7 @@ def autocomplete_list(request, source):
 def autocomplete_new(request):
     response = {}
     if request.is_ajax() and request.method == 'POST':
-        name = request.POST['termName'][0],
+        name = request.POST['termName']
         data_set = request.POST['dataSet']
         try:
             request_obj = AutocompleteData(
