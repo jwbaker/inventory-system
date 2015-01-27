@@ -139,9 +139,10 @@ def inventory_delete(request, item_id):
 
 def _json_builder_user(obj):
     if obj.first_name and obj.last_name:
-        label = '{0} {1}'.format(
+        label = '{0} {1} ({2})'.format(
             obj.first_name,
-            obj.last_name
+            obj.last_name,
+            obj.username
         )
     else:
         label = obj.username
@@ -197,13 +198,20 @@ def autocomplete_new(request):
         name = request.POST['termName']
         data_set = request.POST['dataSet']
         try:
-            request_obj = AutocompleteData(
-                name=name,
-                kind=data_set
-            )
+            if data_set == 'user':
+                request_obj = User(
+                    username=name,
+                    first_name=request.POST['termFirstName'],
+                    last_name=request.POST['termLastName']
+                )
+            else:
+                request_obj = AutocompleteData(
+                    name=name,
+                    kind=data_set
+                )
             request_obj.save()
         except IntegrityError:
-            error = 'The {0} "{1}" already exists.'.format(data_set, name[0])
+            error = 'The {0} "{1}" already exists.'.format(data_set, name)
             response = json.dumps({'error': error})
         else:
             response = json.dumps({})
