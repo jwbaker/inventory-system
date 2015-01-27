@@ -10,7 +10,8 @@ class AutocompleteData(models.Model):
         unique_together = ('name', 'kind',)
     KIND_CHOICES = [
         ('location', 'location'),
-        ('manufacturer', 'manufacturer')
+        ('manufacturer', 'manufacturer'),
+        ('supplier', 'supplier'),
     ]
     name = models.CharField(max_length=255)
     kind = models.CharField(choices=KIND_CHOICES, max_length=255)
@@ -128,6 +129,14 @@ class InventoryItem(models.Model):
         choices=STATUS_CHOICES,
         default='SA',
         max_length=2,
+    )
+    supplier = models.ForeignKey(
+        AutocompleteData,
+        blank=True,
+        default=None,
+        null=True,
+        # See the comment on InventoryItem.location field
+        related_name='suppliers'
     )
     tech_id = models.CharField(
         blank=True,

@@ -197,6 +197,14 @@
           $('input#inputManufacturer').attr('to-save', ui.item.id)
         }
       });
+
+      $('input#inputSupplier').autocomplete({
+        minLength: 1,
+        source: "{% url 'uw_inventory.views.autocomplete_list' 'supplier' %}",
+        select: function(event, ui){
+          $('input#inputSupplier').attr('to-save', ui.item.id)
+        }
+      });
     </script>
 
     <script type="text/javascript">

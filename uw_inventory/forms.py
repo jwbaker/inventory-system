@@ -20,6 +20,7 @@ class ItemForm(forms.ModelForm):
         {'Name': 'model_number'},
         {'Name': 'serial_number'},
         {'Name': 'manufacture_date'},
+        {'Name': 'supplier'},
         {'Name': 'purchase_price'},
         {'Name': 'purchase_date'},
         {'Name': 'replacement_cost'},
@@ -132,6 +133,11 @@ class ItemForm(forms.ModelForm):
             'status': widgets.SelectInput({
                 'id': 'inputStatus',
                 'translator': InventoryItem.get_status_display,
+            }),
+            'supplier': widgets.AutocompleteInput({
+                'id': 'inputSupplier',
+                'placeholder': 'Begin typing the supplier...',
+                'data-set': AutocompleteData.objects,
             }),
             'tech_id': widgets.TextInput({
                 'id': 'inputTechId',
