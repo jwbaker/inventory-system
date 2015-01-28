@@ -4,7 +4,7 @@ register = template.Library()
 
 
 def _form_handler(form, form_id, target_view,
-                  permissions=None,
+                  can_edit=False,
                   shown_excluded_fields=None):
     '''
     Packages up a context object for displaying InventoryItem forms
@@ -32,13 +32,14 @@ def _form_handler(form, form_id, target_view,
 
         if field.get('Legacy'):
             fields[-1]['legacy'] = True
+
     context = {
         'form': form,
         'form_id': form_id,
         'target_view': target_view,
         'shown_excluded_fields': shown_excluded_fields,
         'fields': fields,
-        'perms': permissions,
+        'can_edit': can_edit,
     }
     return context
 
@@ -52,3 +53,23 @@ def add_form(form, form_id, target_view):
         form -- The Django form object
     '''
     return _form_handler(form, form_id, target_view)
+
+
+@register.inclusion_tag('uw_forms/edit_form.html')
+def edit_form(form, form_id, target_view, can_edit, shown_excluded_fields):
+    '''
+    Generates the context data for the InventoryItem edit form.
+
+    Positional arguments:
+        form -- The Django form object
+        permissions -- The Django permissions object of the current user
+        creation_date -- A Python datetime.datetime object corresponding to
+                         the creation date of the record
+    '''
+    return _form_handler(
+        form,
+        form_id,
+        target_view,
+        can_edit,
+        shown_excluded_fields
+    )

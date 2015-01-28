@@ -77,7 +77,9 @@ def inventory_detail(request, item_id):
         'inventory_item': inventory_item,
         'form': form,
         'page_messages': message_list,
-        'creation_date': inventory_item.creation_date,
+        'shown_excluded_fields': [
+            {'label': 'Creation date', 'value': inventory_item.creation_date}
+        ]
     })
 
 
