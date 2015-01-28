@@ -55,15 +55,13 @@
             {% if user %}
               {% user_context_menu user %}
             {% endif %}
-              {% block navbar_right %}
-              {% endblock navbar_right %}
-              {% if perms.uw_inventory.add_inventoryitem %}
-                <li>
-                  <a href="{% url 'uw_inventory.views.inventory_add' %}">
-                    <i class="fa fa-plus-circle navigate"></i>
-                  </a>
-                </li>
-              {% endif %}
+            {% if perms.uw_inventory.add_inventoryitem %}
+              <li>
+                <a href="{% url 'uw_inventory.views.inventory_add' %}">
+                  <i class="fa fa-plus-circle navigate"></i>
+                </a>
+              </li>
+            {% endif %}
           </ul>
         </div><!--/.nav-collapse -->
       </div>

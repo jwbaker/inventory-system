@@ -14,28 +14,36 @@
   <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css">
 {% endblock css_includes %}
 
-{% block navbar_right %}
-  {% if perms.uw_inventory.change_inventoryitem or perms.uw_inventory.add_inventoryitem %}
-    <li>
-      <button class="btn navbar-btn btn-success" id="pageSave">Save</button>
-    </li>
-    <li>
-      <button class="btn navbar-btn btn-danger" id="pageCancel">Cancel</button>
-    </li>
-  {% endif %}
-  {{ block.super }}
-{% endblock navbar_right %}
-
 {% block content %}
-    <div class="row">
-    <div class="col-xs-8 col-xs-offset-2">
+  <div class="row">
+    <div class="col-xs-7 col-xs-offset-2">
       <div class="panel panel-default">
         <div class="panel-heading">{% block page_heading %}{% endblock page_heading %}</div>
             {% block page_body %}
             {% endblock page_body %}
         </div>
     </div>
-  </div>
+    {% if perms.uw_inventory.change_inventoryitem or perms.uw_inventory.add_inventoryitem %}
+      <div class="col-xs-1">
+        <nav class="affix panel panel-default" data-spy="affix">
+          <div class="panel-body">
+            <ul class="nav">
+              <li>
+                <button class="btn navbar-btn btn-success nav-justified" id="pageSave"><i class="fa fa-floppy-o"></i> Save</button>
+              </li>
+              <li>
+                <button class="btn navbar-btn btn-danger nav-justified" id="pageCancel"><i class="fa fa-times-circle"></i> Cancel</button>
+              </li>
+            </ul>
+          </div>
+          <ul class="list-group">
+            {% block gutter_nav %}
+            {% endblock gutter_nav %}
+          </ul>
+        </nav>
+      </div>
+    </div>
+    {% endif %}
 {% endblock content %}
 
 {% block modal %}

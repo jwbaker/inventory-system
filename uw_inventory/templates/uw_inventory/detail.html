@@ -10,23 +10,22 @@
     </div>
 {% endblock messages %}
 
-{% block navbar_right %}
-  {{ block.super }}
+{% block gutter_nav %}
   {% if perms.uw_inventory.add_inventoryitem %}  
-    <li>
+    <li class="list-group-item">
       <a href="{% url 'uw_inventory.views.inventory_copy' inventory_item.id %}">
-        <i class="fa fa-files-o navigate" id="duplicate"></i>
+        <i class="fa fa-files-o navigate" id="duplicate"></i> Duplicate
       </a>
     </li>
   {% endif %}
   {% if perms.uw_inventory.change_inventoryitem %}  
-    <li>
+    <li class="list-group-item">
       <a href="{% url 'uw_inventory.views.inventory_delete' inventory_item.id %}">
-        <i class="fa fa-trash navigate"></i>
+        <i class="fa fa-trash navigate"></i> Delete
       </a>
     </li>
   {% endif %}
-{% endblock navbar_right %}
+{% endblock gutter_nav %}
 
 {% block page_heading %}
   <span class="panel-title">{{ inventory_item.uuid }}</span>
