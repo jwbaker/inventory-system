@@ -1,10 +1,11 @@
 {% extends 'uw_inventory/item_base.html' %}
-{% load uw_inventory_form_tags %}
+{# {% load uw_inventory_form_tags %} #}
+{% load uw_forms_form_tags %}
 
 {% block page_heading %}New Inventory Item{% endblock page_heading %}
 
 {% block page_body %}
-  {% add_form form %}
+  {% add_form form 'itemForm' 'uw_inventory.views.inventory_add' %}
 {% endblock page_body %}
 
 {% block js_includes %}

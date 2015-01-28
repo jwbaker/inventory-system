@@ -3,7 +3,9 @@ from django import template
 register = template.Library()
 
 
-def _form_handler(form, permissions=None, creation_date=None):
+def _form_handler(form, form_id, target_view,
+                  permissions=None,
+                  shown_excluded_fields=None):
     '''
     Packages up a context object for displaying InventoryItem forms
 
@@ -30,25 +32,23 @@ def _form_handler(form, permissions=None, creation_date=None):
 
         if field.get('Legacy'):
             fields[-1]['legacy'] = True
-
     context = {
         'form': form,
-        'creation_date': creation_date,
+        'form_id': form_id,
+        'target_view': target_view,
+        'shown_excluded_fields': shown_excluded_fields,
         'fields': fields,
         'perms': permissions,
     }
     return context
 
 
-@register.inclusion_tag('uw_inventory/forms/edit_form.html')
-def edit_form(form, creation_date, permissions):
+@register.inclusion_tag('uw_forms/add_form.html')
+def add_form(form, form_id, target_view):
     '''
-    Generates the context data for the InventoryItem edit form.
+    Generates the context data for the InventoryItem add form.
 
     Positional arguments:
         form -- The Django form object
-        permissions -- The Django permissions object of the current user
-        creation_date -- A Python datetime.datetime object corresponding to
-                         the creation date of the record
     '''
-    return _form_handler(form, permissions, creation_date)
+    return _form_handler(form, form_id, target_view)
