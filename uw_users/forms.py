@@ -10,13 +10,13 @@ class UserForm(forms.ModelForm):
         {'Name': 'last_name'}
     ]
 
+    INSTANCE_MEMBER = 'username'
+
     class Meta:
         model = User
-        exclude = [
-            'date_joined',
-            'last_login',
-            'password',
-            'username'
+        fields = [
+            'first_name',
+            'last_name',
         ]
         widgets = {
             'first_name': widgets.TextInput({
