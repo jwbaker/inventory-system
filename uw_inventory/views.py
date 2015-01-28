@@ -29,8 +29,6 @@ def _collect_messages(request):
 
     Positional arguments:
         request - The request object passed to the view
-
-    Returns: An array of message objects
     '''
     storage = messages.get_messages(request)
     message_list = []
@@ -41,6 +39,42 @@ def _collect_messages(request):
             'class': 'danger' if ('error' in msg_class) else msg_class,
         })
     return message_list
+
+
+def _json_builder_user(user):
+    '''
+    Converts a user into a JSON object for autocomplete consumption
+
+    Positional arguments:
+        user -- the Django User object
+    '''
+    if user.first_name and user.last_name:
+        label = '{0} {1} ({2})'.format(
+            user.first_name,
+            user.last_name,
+            user.username
+        )
+    else:
+        label = user.username
+    return {
+        'id': user.id,
+        'label': label,
+        'value': label,
+    }
+
+
+def _json_builder_autocomplete(obj):
+    '''
+    Converts a term record into a JSON object for autocomplete consumption
+
+    Positional arguments:
+        obj -- the AutocompleteData object
+    '''
+    return {
+        'id': obj.id,
+        'label': obj.name,
+        'value': obj.name,
+    }
 
 
 @permission_required('uw_inventory.view_item')
@@ -137,30 +171,6 @@ def inventory_delete(request, item_id):
                          'Deleted')
         dest = '/list/'
     return HttpResponseRedirect(dest)
-
-
-def _json_builder_user(obj):
-    if obj.first_name and obj.last_name:
-        label = '{0} {1} ({2})'.format(
-            obj.first_name,
-            obj.last_name,
-            obj.username
-        )
-    else:
-        label = obj.username
-    return {
-        'id': obj.id,
-        'label': label,
-        'value': label,
-    }
-
-
-def _json_builder_autocomplete(obj):
-    return {
-        'id': obj.id,
-        'label': obj.name,
-        'value': obj.name,
-    }
 
 
 @permission_required('uw_inventory.change_inventoryitem')

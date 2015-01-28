@@ -7,13 +7,18 @@ def _form_handler(form, form_id, target_view,
                   can_edit=False,
                   shown_excluded_fields=None):
     '''
-    Packages up a context object for displaying InventoryItem forms
+    Packages up a context object for displaying forms
 
     Positional arguments:
         form -- The Django form object
-        permissions -- The Django permissions object of the current user
-        creation_date -- A Python datetime.datetime object corresponding to
-                         the creation date of the record
+        form_id -- A unique identifier for the form
+        target_view -- A string representing the form target view
+                        Passed to URL template tag
+        can_edit -- The Django permissions attribute determining if the user
+                    can edit the model this form is based on. Default False
+        shown_excluded_fields -- A list of dictionaries representing otherwise-
+                                 excluded fields to display with the form.
+                                 Format: [{'label', 'value'}]
     '''
     fields = []
     for field in form.FIELD_LIST:
@@ -31,6 +36,7 @@ def _form_handler(form, form_id, target_view,
         })
 
         if field.get('Legacy'):
+            # Negative list slicing is SO COOL
             fields[-1]['legacy'] = True
 
     context = {
@@ -47,10 +53,13 @@ def _form_handler(form, form_id, target_view,
 @register.inclusion_tag('uw_forms/add_form.html')
 def add_form(form, form_id, target_view):
     '''
-    Generates the context data for the InventoryItem add form.
+    Generates the context data for a model add form.
 
     Positional arguments:
         form -- The Django form object
+        form_id -- A unique identifier for the form
+        target_view -- A string representing the form target view
+                        Passed to URL template tag
     '''
     return _form_handler(form, form_id, target_view)
 
@@ -58,13 +67,18 @@ def add_form(form, form_id, target_view):
 @register.inclusion_tag('uw_forms/edit_form.html')
 def edit_form(form, form_id, target_view, can_edit, shown_excluded_fields):
     '''
-    Generates the context data for the InventoryItem edit form.
+    Generates the context data for a model display page/edit form.
 
     Positional arguments:
         form -- The Django form object
-        permissions -- The Django permissions object of the current user
-        creation_date -- A Python datetime.datetime object corresponding to
-                         the creation date of the record
+        form_id -- A unique identifier for the form
+        target_view -- A string representing the form target view
+                        Passed to URL template tag
+        can_edit -- The Django permissions attribute determining if the user
+                    can edit the model this form is based on. Default False
+        shown_excluded_fields -- A list of dictionaries representing otherwise-
+                                 excluded fields to display with the form.
+                                 Format: [{'label', 'value'}]
     '''
     return _form_handler(
         form,

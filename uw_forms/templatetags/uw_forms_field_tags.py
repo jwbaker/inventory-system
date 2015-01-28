@@ -13,7 +13,10 @@ def _field_handler(field, tag, **kwargs):
                 Currently supported: 'edit', 'static' 'field'
     Keyword arguments:
         field_id -- The unique identifier of the field
-        permissions -- The Django permissions object of the current user
+        field_label -- If field is None, provide the label for the form field
+        field_value -- If field is None, provide the value of the field_value
+        can_edit -- The Django permissions attribute determining if the user
+                    can edit the model this form is based on
     '''
     context = {}
     context['caller'] = tag
@@ -45,12 +48,12 @@ def show_editable_field(field, can_edit):
     '''
     Generates a form field with edit, save, and cancel buttons.
 
-    Use for fields in the InventoryItem edit form.
+    Use for fields in edit forms.
 
     Positional arguments:
         field -- The Django field object
-        field_id -- The unique identifier of the field
-        permissions -- The Django permissions object of the current user
+        can_edit -- The Django permissions attribute determining if the user
+                    can edit the model this form is based on
     '''
     return _field_handler(field['field'], 'edit',
                           field_id=field['id'],
@@ -70,6 +73,13 @@ def show_static_field(field):
 
 @register.inclusion_tag('uw_forms/field_container.html')
 def show_excluded_field(field_label, field_value):
+    '''
+    Generates a special static field widget for excluded fields.
+
+    Positional arguments:
+        field_label -- A label for the field
+        field_value -- The value of the field
+    '''
     return _field_handler(None, 'static',
                           field_label=field_label,
                           field_value=field_value)
@@ -80,7 +90,7 @@ def show_field(field):
     '''
     Generates a form control with no extra fluff.
 
-    Use for fields in the InventoryItem add form.
+    Use for fields in add forms.
 
     Positional arguments:
         field --- The Django field object
