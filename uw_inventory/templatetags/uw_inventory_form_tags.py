@@ -41,7 +41,7 @@ def _form_handler(form, permissions=None, creation_date=None):
 
 
 @register.inclusion_tag('uw_inventory/forms/edit_form.html')
-def edit_form(form, permissions, creation_date):
+def edit_form(form, creation_date, permissions):
     '''
     Generates the context data for the InventoryItem edit form.
 
@@ -51,7 +51,7 @@ def edit_form(form, permissions, creation_date):
         creation_date -- A Python datetime.datetime object corresponding to
                          the creation date of the record
     '''
-    return _form_handler(form, creation_date)
+    return _form_handler(form, permissions, creation_date)
 
 
 @register.inclusion_tag('uw_inventory/forms/add_form.html')

@@ -6,13 +6,6 @@
     </label>
   </div>
   <div class="col-xs-8">
-    {# Special magic to show creation_date, which is otherwise excluded from forms #}
-    {% if date_value %}
-      <p class="form-control-static">
-        {{ date_value }}
-      </p>
-    {% endif %}
-
     {% if caller == "static" %}
       <p class="form-control-static">
         {{ field_value }}

@@ -4,7 +4,7 @@
         method="post"
         id="itemForm">
     {% csrf_token %}
-    {% include 'uw_forms/field_container.html' with field_label='Creation date' date_value=creation_date %}
+    {% show_excluded_field 'Creation date' creation_date %}
     {% for field in fields %}
         {% if field.legacy %}
             {% if field.field.value %}

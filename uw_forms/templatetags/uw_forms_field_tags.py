@@ -18,16 +18,20 @@ def _field_handler(field, tag, **kwargs):
     context = {}
     context['caller'] = tag
     context['field'] = field
-    context['field_value'] = field.value or ''
+
+    try:
+        context['field_value'] = field.value
+    except AttributeError:
+        context['field_value'] = kwargs.get('field_value', '')
 
     try:
         context['field_label'] = field.label
-    except:
+    except AttributeError:
         context['field_label'] = kwargs.get('field_label', '') or ''
 
     try:
         context['field_required'] = field.field.required
-    except:
+    except AttributeError:
         context['field_required'] = False
 
     context['field_id'] = kwargs.get('field_id', '')
@@ -62,6 +66,13 @@ def show_static_field(field):
         field -- The Django field object
     '''
     return _field_handler(field['field'], 'static')
+
+
+@register.inclusion_tag('uw_forms/field_container.html')
+def show_excluded_field(field_label, field_value):
+    return _field_handler(None, 'static',
+                          field_label=field_label,
+                          field_value=field_value)
 
 
 @register.inclusion_tag('uw_forms/field_container.html')
