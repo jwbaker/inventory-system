@@ -65,7 +65,8 @@ def add_form(form, form_id, target_view):
 
 
 @register.inclusion_tag('uw_forms/edit_form.html')
-def edit_form(form, form_id, target_view, can_edit, shown_excluded_fields):
+def edit_form(form, form_id, target_view, can_edit,
+              shown_excluded_fields=None):
     '''
     Generates the context data for a model display page/edit form.
 

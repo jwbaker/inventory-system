@@ -2,7 +2,7 @@
 
 <form action="{% url target_view form.instance.id %}"
         method="post"
-        id="itemForm">
+        id="{{ form_id }}">
     {% csrf_token %}
     {% for field in shown_excluded_fields %}
         {% show_excluded_field field.label field.value %}

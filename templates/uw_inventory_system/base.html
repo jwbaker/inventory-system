@@ -28,6 +28,12 @@
       body{
         padding-top: 70px;
       }
+      {# We need this special CSS class because of our indiscriminate hiding/showing of input elements #}
+      {# Adding this class makes the element perma-hidden #}
+      .field-hidden{
+        display: none!important;
+        visibility: hidden!important;
+      }
     </style>
 
   </head>
