@@ -1,6 +1,6 @@
 {% load uw_forms_field_tags %}
 
-<form action="{% url target_view form.instance.id %}"
+<form action="{% url target_view instance %}"
         method="post"
         id="{{ form_id }}">
     {% csrf_token %}

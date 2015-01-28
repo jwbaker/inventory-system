@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.http import HttpResponseForbidden
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, render
 
 from uw_users.forms import UserForm
 
@@ -55,8 +55,3 @@ def user_detail(request, username):
         })
     else:
         return HttpResponseForbidden()
-
-
-def user_pk_redirect(request, id):
-    user = get_object_or_404(User, id=id)
-    return user_detail(request, user.username)

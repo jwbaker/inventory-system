@@ -30,9 +30,9 @@ def _form_handler(form, form_id, target_view,
             'field': field_obj,
             # reduce function accumulates the array into a single string
             'id': reduce(
-                    lambda s, r: s+r,
-                    field_name_words
-                )
+                lambda s, r: s + r,
+                field_name_words
+            )
         })
 
         if field.get('Legacy'):
@@ -46,6 +46,8 @@ def _form_handler(form, form_id, target_view,
         'shown_excluded_fields': shown_excluded_fields,
         'fields': fields,
         'can_edit': can_edit,
+        'instance': getattr(form.instance, form.INSTANCE_MEMBER) or
+        form.instance.id
     }
     return context
 

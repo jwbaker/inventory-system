@@ -40,6 +40,8 @@ class ItemForm(forms.ModelForm):
         {'Name': 'lifting_device_inspection_date'},
     ]
 
+    INSTANCE_MEMBER = 'id'
+
     class Meta:
         model = InventoryItem
         exclude = ['creation_date', 'deleted', 'last_modified', 'uuid']
