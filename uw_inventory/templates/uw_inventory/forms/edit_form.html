@@ -8,10 +8,10 @@
     {% for field in fields %}
         {% if field.legacy %}
             {% if field.field.value %}
-                {% show_static_field field.field %}
+                {% show_static_field field %}
             {% endif %}
         {% else %}
-            {% show_editable_field field.field field.id perms.uw_inventory.change_inventoryitem %}
+            {% show_editable_field field perms.uw_inventory.change_inventoryitem %}
         {% endif %}
     {% endfor %}
 </form>

@@ -37,7 +37,7 @@ def _field_handler(field, tag, **kwargs):
 
 
 @register.inclusion_tag('uw_forms/field_container.html')
-def show_editable_field(field, field_id, can_edit):
+def show_editable_field(field, can_edit):
     '''
     Generates a form field with edit, save, and cancel buttons.
 
@@ -48,8 +48,8 @@ def show_editable_field(field, field_id, can_edit):
         field_id -- The unique identifier of the field
         permissions -- The Django permissions object of the current user
     '''
-    return _field_handler(field, 'edit',
-                          field_id=field_id,
+    return _field_handler(field['field'], 'edit',
+                          field_id=field['id'],
                           can_edit=can_edit)
 
 
@@ -61,7 +61,7 @@ def show_static_field(field):
     Positional arguments:
         field -- The Django field object
     '''
-    return _field_handler(field, 'static')
+    return _field_handler(field['field'], 'static')
 
 
 @register.inclusion_tag('uw_forms/field_container.html')
@@ -74,4 +74,4 @@ def show_field(field):
     Positional arguments:
         field --- The Django field object
     '''
-    return _field_handler(field, 'field')
+    return _field_handler(field['field'], 'field')
