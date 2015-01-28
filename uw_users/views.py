@@ -52,6 +52,9 @@ def user_detail(request, username):
             'form': form,
             'can_edit': True,
             'page_messages': message_list,
+            'shown_excluded_fields': [
+                {'label': 'Joined', 'value': user.date_joined}
+            ]
         })
     else:
         return HttpResponseForbidden()

@@ -1,4 +1,4 @@
-{% extends 'uw_inventory_system/base.html' %}
+{% extends 'uw_users/user_base.html' %}
 {% load uw_forms_form_tags %}
 
 {% block navbar_right %}
@@ -11,9 +11,14 @@
   {{ block.super }}
 {% endblock navbar_right %}
 
-{% block content %}
-  {% edit_form form 'userForm' 'uw_users.views.user_detail' can_edit %}
-{% endblock content %}
+{% block page_heading %}
+  <span class="panel-title">{{ user.username }}</span>
+  <span class="small pull-right">Last active: {{ user.last_login }}</span>
+{% endblock page_heading %}
+
+{% block page_body %}
+  {% edit_form form 'userForm' 'uw_users.views.user_detail' can_edit shown_excluded_fields %}
+{% endblock page_body %}
 
 {% block js_includes %}
   <script type="text/javascript">
