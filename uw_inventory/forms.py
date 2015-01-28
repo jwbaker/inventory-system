@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 
-from uw_inventory import widgets
+from uw_forms import widgets
 from uw_inventory.models import (
     AutocompleteData,
     InventoryItem

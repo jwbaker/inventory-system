@@ -18,6 +18,7 @@ def _field_handler(field, tag, **kwargs):
     context = {}
     context['caller'] = tag
     context['field'] = field
+    context['field_value'] = field.value or ''
 
     try:
         context['field_label'] = field.label
@@ -30,13 +31,13 @@ def _field_handler(field, tag, **kwargs):
         context['field_required'] = False
 
     context['field_id'] = kwargs.get('field_id', '')
-    context['perms'] = kwargs.get('permissions', None)
+    context['can_edit'] = kwargs.get('can_edit', False)
 
     return context
 
 
-@register.inclusion_tag('uw_inventory/field_container.html')
-def show_editable_field(field, field_id, permissions):
+@register.inclusion_tag('uw_forms/field_container.html')
+def show_editable_field(field, field_id, can_edit):
     '''
     Generates a form field with edit, save, and cancel buttons.
 
@@ -49,10 +50,10 @@ def show_editable_field(field, field_id, permissions):
     '''
     return _field_handler(field, 'edit',
                           field_id=field_id,
-                          permissions=permissions)
+                          can_edit=can_edit)
 
 
-@register.inclusion_tag('uw_inventory/field_container.html')
+@register.inclusion_tag('uw_forms/field_container.html')
 def show_static_field(field):
     '''
     Generates a non-editable form field.
@@ -63,7 +64,7 @@ def show_static_field(field):
     return _field_handler(field, 'static')
 
 
-@register.inclusion_tag('uw_inventory/field_container.html')
+@register.inclusion_tag('uw_forms/field_container.html')
 def show_field(field):
     '''
     Generates a form control with no extra fluff.

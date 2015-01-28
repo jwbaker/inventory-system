@@ -38,6 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'uw_inventory',
     'uw_users',
+    'uw_forms',
     'autofixture',
 )
 
