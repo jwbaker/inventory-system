@@ -59,8 +59,4 @@ def user_detail(request, username):
 
 def user_pk_redirect(request, id):
     user = get_object_or_404(User, id=id)
-    return redirect(
-        'uw_users.views.user_detail',
-        username=user.username,
-        permanent=True
-    )
+    return user_detail(request, user.username)

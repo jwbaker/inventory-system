@@ -12,7 +12,12 @@ class UserForm(forms.ModelForm):
 
     class Meta:
         model = User
-        exclude = ['username', 'password']
+        exclude = [
+            'date_joined',
+            'last_login',
+            'password',
+            'username'
+        ]
         widgets = {
             'first_name': widgets.TextInput({
                 'id': 'inputFirstName',
