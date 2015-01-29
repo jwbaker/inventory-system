@@ -2,8 +2,8 @@
 {% load uw_forms_form_tags %}
 
 {% block page_heading %}
-  <span class="panel-title">{{ user.username }}</span>
-  <span class="small pull-right">Last active: {{ user.last_login }}</span>
+  <span class="panel-title">{{ page_user.username }}</span>
+  <span class="small pull-right">Last active: {{ page_user.last_login }}</span>
 {% endblock page_heading %}
 
 {% block page_body %}

@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, render
 
@@ -30,8 +31,12 @@ def _collect_messages(request):
     return message_list
 
 
+@login_required
 def user_detail(request, username):
-    if request.user.username == username:
+    if (
+            request.user.username == username or
+            request.user.has_perm('change_user')
+       ):
         user = get_object_or_404(User, username=username)
 
         if request.method == 'POST':
@@ -48,7 +53,7 @@ def user_detail(request, username):
             form = UserForm(instance=user)
         message_list = _collect_messages(request)
         return render(request, 'uw_users/user_detail.html', {
-            'user': user,
+            'page_user': user,
             'form': form,
             'can_edit': True,
             'page_messages': message_list,
