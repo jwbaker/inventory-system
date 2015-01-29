@@ -1,15 +1,5 @@
-{% extends 'uw_users/user_base.html' %}
+{% extends 'uw_forms/form_base.html' %}
 {% load uw_forms_form_tags %}
-
-{% block navbar_right %}
-  <li>
-    <button class="btn navbar-btn btn-success" id="pageSave">Save</button>
-  </li>
-  <li>
-    <button class="btn navbar-btn btn-danger" id="pageCancel">Cancel</button>
-  </li>
-  {{ block.super }}
-{% endblock navbar_right %}
 
 {% block page_heading %}
   <span class="panel-title">{{ user.username }}</span>
@@ -21,6 +11,7 @@
 {% endblock page_body %}
 
 {% block js_includes %}
+  {{ block.super }}
   <script type="text/javascript">
     $('#pageSave').attr('disabled', 'disabled');
     {# As with the paragraphs in the add page, it's easier to hide the form elements here than with Django #}
@@ -110,25 +101,6 @@
       paragraph[0].textContent = saveText;
 
       editClickHandler($(this));
-    });
-  </script>
-
-  <script type="text/javascript">
-    $('#pageSave').click(function(event){
-      {# Because we're not using real form controls for our checkboxes, #}
-      {# we need to update the value of the real checkbox control #}
-      var checkboxes = $('i.checkbox');
-      for(var i = 0; i < checkboxes.length; i++){
-        var hidden_input = $('input#' + checkboxes[i].id);
-        var checkbox_value = checkboxes[i].getAttribute('value');
-
-        if(checkbox_value === 'Yes'){
-          hidden_input.attr('checked', 'checked');
-        } else{
-          hidden_input.removeAttr('checked');
-        }
-      }
-      $('form#userForm').submit();
     });
   </script>
 {% endblock js_includes %}

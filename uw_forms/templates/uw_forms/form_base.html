@@ -1,0 +1,76 @@
+{% extends 'uw_inventory_system/base.html' %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-xs-7 col-xs-offset-2">
+      <div class="panel panel-default">
+        <div class="panel-heading">{% block page_heading %}{% endblock page_heading %}</div>
+            {% block page_body %}
+            {% endblock page_body %}
+        </div>
+    </div>
+    {% if can_edit or can_add %}
+      <div class="col-xs-1">
+        <nav class="affix panel panel-default" data-spy="affix">
+          <div class="panel-body">
+            <ul class="nav">
+              <li>
+                <button class="btn btn-success navbar-btn nav-justified" id="pageSave"><i class="fa fa-floppy-o"></i> Save</button>
+              </li>
+              <li>
+                <button class="btn btn-danger navbar-btn nav-justified" id="pageCancel"><i class="fa fa-times-circle"></i> Cancel</button>
+              </li>
+            </ul>
+          </div>
+          <ul class="list-group">
+            {% block gutter_nav %}
+            {% endblock gutter_nav %}
+          </ul>
+        </nav>
+      </div>
+    </div>
+    {% endif %}
+{% endblock content %}
+
+{% block js_includes %}
+  {% if can_edit or can_add %}
+    <script type="text/javascript">
+      {# Handler for changing the state of our checkbox control #}
+      $('i.checkbox').click(function(){
+        if(!$(this).hasClass('hidden')){
+          $(this).toggleClass('fa-square-o');
+          $(this).toggleClass('fa-check-square-o');
+          $(this).attr('value', $(this).hasClass('fa-check-square-o') ? 'Yes' : 'No');
+          {# This custom event will be picked up on the add form and cause special things #}
+          $(this).trigger('classChange');
+        }
+      });
+    </script>
+
+    <script type="text/javascript">
+      {# Redirect on the cancel button #}
+      $('#pageCancel').click(function(){
+        window.location = {% url 'uw_inventory.views.inventory_list' %};
+      });
+    </script>
+
+    <script type="text/javascript">
+      $('#pageSave').click(function(event){
+        {# Because we're not using real form controls for our checkboxes, #}
+        {# we need to update the value of the real checkbox control #}
+        var checkboxes = $('i.checkbox');
+        for(var i = 0; i < checkboxes.length; i++){
+          var hidden_input = $('input#' + checkboxes[i].id);
+          var checkbox_value = checkboxes[i].getAttribute('value');
+
+          if(checkbox_value === 'Yes'){
+            hidden_input.attr('checked', 'checked');
+          } else{
+            hidden_input.removeAttr('checked');
+          }
+        }
+        $('form#{{ form_id }}').submit();
+      });
+    </script>
+  {% endif %}
+{% endblock js_includes %}

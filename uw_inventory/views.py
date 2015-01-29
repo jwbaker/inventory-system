@@ -113,7 +113,9 @@ def inventory_detail(request, item_id):
         'page_messages': message_list,
         'shown_excluded_fields': [
             {'label': 'Creation date', 'value': inventory_item.creation_date}
-        ]
+        ],
+        'can_edit': request.user.has_perm('change_inventoryitem'),
+        'form_id': 'itemForm'
     })
 
 
@@ -137,6 +139,8 @@ def inventory_add(request):
     return render(request, 'uw_inventory/add.html', {
         'form': form,
         'page_messages': message_list,
+        'can_add': request.user.has_perm('add_inventoryitem'),
+        'form_id': 'itemForm'
     })
 
 
