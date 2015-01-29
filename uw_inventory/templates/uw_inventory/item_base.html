@@ -1,5 +1,6 @@
 {% extends 'uw_forms/form_base.html' %}
 {% load uw_inventory_modal_tags %}
+{% load uw_inventory_model_tags %}
 {% load uw_forms_form_tags %}
 
 {% block css_includes %}
@@ -14,6 +15,10 @@
   <!-- jQuery UI theme for the autocomplete widget -->
   <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css">
 {% endblock css_includes %}
+
+{% block page_body %}
+  {% show_notes inventory_item.note_set.all %}
+{% endblock page_body %}
 
 {% block modal %}
   {% confirm_modal 'Exit' %}

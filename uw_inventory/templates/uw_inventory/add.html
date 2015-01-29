@@ -5,6 +5,7 @@
 
 {% block page_body %}
   {% add_form form 'itemForm' 'uw_inventory.views.inventory_add' %}
+  {{ block.super }}
 {% endblock page_body %}
 
 {% block js_includes %}

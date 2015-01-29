@@ -143,7 +143,8 @@ def inventory_add(request):
         'form': form,
         'page_messages': message_list,
         'can_add': request.user.has_perm('add_inventoryitem'),
-        'form_id': 'itemForm'
+        'form_id': 'itemForm',
+        'note_form': NoteForm(),
     })
 
 
