@@ -140,7 +140,7 @@
 
         {# We also have to set some of the modal's content dynamically #}
         $('#' + targetID + 'Modal').find('.modal-title')[0].textContent = "Add new " + dataSet;
-        $('#' + targetID + 'Modal').modal().show();
+        $('#' + targetID + 'Modal').modal('show');
         $('#' + targetID + 'Name').focus();
       });
 
@@ -165,7 +165,7 @@
                   '<span class="error text-danger">'+ data.error +'</span>'
                 );
               } else {
-                $('#' + targetID + 'Modal').modal().hide();
+                $('#' + targetID + 'Modal').modal('hide');
               }
             },
             error: function(xhr, err_msg, err){
