@@ -5,6 +5,9 @@
       </a>
       <ul class="dropdown-menu" role="menu">
           <li><a href="{% url 'uw_users.views.user_detail' user.username %}">My account</a></li>
+          {% if 'user_list' in perms %}
+            <li><a href="{% url 'uw_users.views.user_list' %}">All users</a></li>
+          {% endif %}
 
           {% if 'admin' in perms %}
               <li class="divider"></li>

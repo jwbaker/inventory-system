@@ -4,6 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, render
 
+from django_cas.decorators import permission_required
+
 from uw_users.forms import UserForm
 
 
@@ -64,3 +66,13 @@ def user_detail(request, username):
         })
     else:
         return HttpResponseForbidden()
+
+
+@permission_required('change_user')
+def user_list(request):
+    user_list = User.objects.all()
+    message_list = _collect_messages(request)
+    return render(request, 'uw_users/user_list.html', {
+        'user_list': user_list,
+        'page_messages': message_list,
+    })

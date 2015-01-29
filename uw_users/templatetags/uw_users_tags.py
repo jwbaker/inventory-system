@@ -13,4 +13,7 @@ def user_context_menu(user):
     if user.is_staff:
         context['perms'].append('admin')
 
+    if user.has_perm('change_user'):
+        context['perms'].append('user_list')
+
     return context
