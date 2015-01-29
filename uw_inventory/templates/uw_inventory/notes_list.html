@@ -1,0 +1,16 @@
+<div class="form-group list-group-item clearfix">
+  <div class="col-xs-2">
+    <label class="control-label">Notes</label>
+  </div>
+  <div class="col-xs-10" id="notes-list">
+    {% for note in note_set %}
+      {% include 'uw_inventory/note_detail.html' with note=note %}
+    {% endfor %}
+
+    <div class="panel panel-default" align="center">
+      <a href="#" data-toggle="modal" data-target="#newNoteModal">
+        <i class="fa fa-plus-circle fa-2x addNote"></i>
+      </a>
+    </div>
+  </div>
+</div>

@@ -39,6 +39,11 @@ def _form_handler(form, form_id, target_view,
             # Negative list slicing is SO COOL
             fields[-1]['legacy'] = True
 
+    try:
+        instance = getattr(form.instance, form.INSTANCE_MEMBER)
+    except AttributeError:
+        instance = form.instance.id
+
     context = {
         'form': form,
         'form_id': form_id,
@@ -46,14 +51,13 @@ def _form_handler(form, form_id, target_view,
         'shown_excluded_fields': shown_excluded_fields,
         'fields': fields,
         'can_edit': can_edit,
-        'instance': getattr(form.instance, form.INSTANCE_MEMBER) or
-        form.instance.id
+        'instance': instance
     }
     return context
 
 
 @register.inclusion_tag('uw_forms/add_form.html')
-def add_form(form, form_id, target_view):
+def add_form(form, form_id, target_view=None):
     '''
     Generates the context data for a model add form.
 

@@ -1,0 +1,12 @@
+<div class="panel panel-default item-note">
+  <div class="panel-heading">
+    <h4 class="panel-title">{{ note.title }}</h4>
+    <small>
+      <strong>{{ note.author.get_name_display }}</strong> @ 
+      <em>{{ note.creation_date }}</em>
+    </small>
+  </div>
+  <div class="panel-body">
+    {{ note.body }}
+  </div>
+</div>

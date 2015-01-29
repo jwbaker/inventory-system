@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 
 from django.contrib import messages
@@ -10,10 +11,11 @@ from django.views.decorators.csrf import csrf_protect
 
 from django_cas.decorators import permission_required
 
-from uw_inventory.forms import ItemForm
+from uw_inventory.forms import ItemForm, NoteForm
 from uw_inventory.models import (
     AutocompleteData,
-    InventoryItem
+    InventoryItem,
+    Note
 )
 
 
@@ -115,7 +117,8 @@ def inventory_detail(request, item_id):
             {'label': 'Creation date', 'value': inventory_item.creation_date}
         ],
         'can_edit': request.user.has_perm('change_inventoryitem'),
-        'form_id': 'itemForm'
+        'form_id': 'itemForm',
+        'note_form': NoteForm()
     })
 
 
@@ -232,3 +235,18 @@ def autocomplete_new(request):
         else:
             response = json.dumps({})
     return HttpResponse(response, 'application/json')
+
+
+@csrf_protect
+@permission_required('change_inventoryitem')
+def note_new(request):
+    if request.is_ajax() and request.method == 'POST':
+        note_obj = Note(
+                title=request.POST['title'],
+                body=request.POST['body'],
+                author=request.user,
+                creation_date=datetime.now
+            )
+        return render(request, 'uw_inventory/note_detail.html', {
+                'note': note_obj
+            })

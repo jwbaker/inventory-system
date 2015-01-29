@@ -18,7 +18,6 @@ class AutocompleteData(models.Model):
     kind = models.CharField(choices=KIND_CHOICES, max_length=255)
 
 
-# Create your models here.
 class InventoryItem(models.Model):
     class Meta:
         permissions = (
@@ -175,3 +174,11 @@ class InventoryItem(models.Model):
         # but we have to insert a null value for that to happen
         null=True
     )
+
+
+class Note(models.Model):
+    author = models.ForeignKey(User)
+    body = models.TextField(blank=True, null=True)
+    creation_date = models.DateTimeField(default=datetime.now)
+    title = models.CharField(max_length=255)
+    inventory_item = models.ForeignKey(InventoryItem)

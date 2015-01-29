@@ -1,5 +1,6 @@
 {% extends 'uw_inventory/item_base.html' %}
 {% load uw_forms_form_tags %}
+{% load uw_inventory_model_tags %}
 
 {% block messages %}
    {{ block.super }}
@@ -34,6 +35,7 @@
 
 {% block page_body %}
   {% edit_form form 'itemForm' 'uw_inventory.views.inventory_detail' perms.uw_inventory.change_inventoryitem shown_excluded_fields %}
+  {% show_notes inventory_item.note_set.all %}
 {% endblock page_body %}
 
 {% block js_includes %}

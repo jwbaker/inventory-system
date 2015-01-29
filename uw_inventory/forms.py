@@ -4,7 +4,8 @@ from django.contrib.auth.models import User
 from uw_forms import widgets
 from uw_inventory.models import (
     AutocompleteData,
-    InventoryItem
+    InventoryItem,
+    Note,
 )
 
 
@@ -159,5 +160,29 @@ class ItemForm(forms.ModelForm):
             }),
             'undergraduate': widgets.CheckboxInput({
                 'id': 'inputUndergraduate',
+            }),
+        }
+
+
+class NoteForm(forms.ModelForm):
+    FIELD_LIST = [
+        {'Name': 'title'},
+        {'Name': 'body'},
+    ]
+
+    class Meta:
+        model = Note
+        fields = ['title', 'body']
+
+        widgets = {
+            'body': forms.Textarea({
+                'id': 'inputBody',
+                'class': 'form-control',
+                'placeholder': 'Note'
+            }),
+            'title': forms.TextInput({
+                'id': 'inputTitle',
+                'class': 'form-control',
+                'placeholder': 'Title'
             }),
         }
