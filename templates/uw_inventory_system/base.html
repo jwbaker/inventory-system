@@ -106,6 +106,27 @@
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
 
+    <script type="text/javascript">
+    Date.prototype.djangoFormat = function(){
+      var year = this.getFullYear();
+      var month = this.getMonth() + 1; {# Date.prototype.getMonth return 0-11 #}
+      var day = this.getDate();
+
+      var hours = this.getHours();
+      var minutes = this.getMinutes();
+      var seconds = this.getSeconds();
+
+      {# Do leading zeroes #}
+      if(month < 10) month = "0" + month;
+      if(day < 10) day = "0" + day;
+      if(hours < 10) hours = "0" + hours;
+      if(minutes < 10) minutes = "0" + minutes;
+      if(seconds < 10) seconds = "0" + seconds;
+
+      return year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds;
+    }
+    </script>
+
     {% block js_includes %}
     {% endblock js_includes %}
   </body>

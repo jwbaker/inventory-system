@@ -5,7 +5,8 @@ register = template.Library()
 
 def _form_handler(form, form_id, target_view,
                   can_edit=False,
-                  shown_excluded_fields=None):
+                  shown_excluded_fields=None,
+                  inline_formsets=None):
     '''
     Packages up a context object for displaying forms
 
@@ -51,7 +52,8 @@ def _form_handler(form, form_id, target_view,
         'shown_excluded_fields': shown_excluded_fields,
         'fields': fields,
         'can_edit': can_edit,
-        'instance': instance
+        'instance': instance,
+        'formset': inline_formsets,
     }
     return context
 
@@ -72,7 +74,8 @@ def add_form(form, form_id, target_view=None):
 
 @register.inclusion_tag('uw_forms/edit_form.html')
 def edit_form(form, form_id, target_view, can_edit,
-              shown_excluded_fields=None):
+              shown_excluded_fields=None,
+              inline_formsets=None):
     '''
     Generates the context data for a model display page/edit form.
 
@@ -92,5 +95,6 @@ def edit_form(form, form_id, target_view, can_edit,
         form_id,
         target_view,
         can_edit,
-        shown_excluded_fields
+        shown_excluded_fields,
+        inline_formsets
     )

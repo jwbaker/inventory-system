@@ -198,7 +198,17 @@
   {% endif %}
 
   <script type="text/javascript">
+  var unsavedNotes = []
   $('#newNoteSubmit').click(function(event){
+    var noteHTML = $(this).parent().siblings('.modal-body').find('form');
+    console.log((new Date()).djangoFormat())
+    var noteJSON = {
+      'title': noteHTML.find('#inputTitle').val(),
+      'body': noteHTML.find('#inputBody').val(),
+      'creation_date': (new Date()).djangoFormat(), {# Date.prorotype.djangoFormat is defined in base.html #}
+      'author_id': {{ request.user.id }}
+    }
+
     $.ajax({
       url: '{% url "uw_inventory.views.note_new" %}',
       type: 'POST',
@@ -209,6 +219,18 @@
         $('#newNoteModal').find('input.form-control').val('');
         $('#newNoteModal').find('textarea').val('');
         $('#newNoteModal').modal('hide');
+
+        var count = $('#notes-form-container').children().length;
+        var template = $('#note-template').html();
+        var compiledTemplate = template.replace(/__prefix__/g, count)
+        $('div#notes-form-container').append(compiledTemplate);
+
+        $('#note-' + count).find('[name="note_set-' + count + '-title"]').val(noteJSON.title)
+        $('#note-' + count).find('[name="note_set-' + count + '-body"]').val(noteJSON.body)
+        $('#note-' + count).find('[name="note_set-' + count + '-creation_date"]').val(noteJSON.creation_date);
+        $('#note-' + count).find('[name="note_set-' + count + '-author"]').val(noteJSON.author_id);
+
+        $('#id_note_set-TOTAL_FORMS').attr('value', count+1);
       },
       error: function(xhr, msg, err){
         console.log(xhr);
@@ -217,6 +239,12 @@
       }
     });
   });
+  </script>
+
+  <script type="text/html" id="note-template">
+    <div id="note-__prefix__" class="field-hidden">
+      {{ note_formset.empty_form }}
+    </div>     
   </script>
 
   {% if perms.uw_inventory.change_inventoryitem or perms.uw_inventory.add_inventoryitem %}

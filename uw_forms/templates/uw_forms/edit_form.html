@@ -4,6 +4,7 @@
         method="post"
         id="{{ form_id }}">
     {% csrf_token %}
+    {{ formset.management_form }}
     {% for field in shown_excluded_fields %}
         {% show_excluded_field field.label field.value %}
     {% endfor %}
@@ -17,4 +18,7 @@
             {% show_editable_field field can_edit %}
         {% endif %}
     {% endfor %}
+    <div id="notes-form-container">
+        
+    </div>
 </form>

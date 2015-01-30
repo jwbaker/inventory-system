@@ -186,3 +186,8 @@ class NoteForm(forms.ModelForm):
                 'placeholder': 'Title'
             }),
         }
+
+
+class NoteCreateForm(NoteForm):
+    class Meta(NoteForm.Meta):
+        fields = ['title', 'body', 'creation_date', 'author']

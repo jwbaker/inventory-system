@@ -33,7 +33,7 @@
 {% endblock page_heading %}
 
 {% block page_body %}
-  {% edit_form form 'itemForm' 'uw_inventory.views.inventory_detail' perms.uw_inventory.change_inventoryitem shown_excluded_fields %}
+  {% edit_form form 'itemForm' 'uw_inventory.views.inventory_detail' perms.uw_inventory.change_inventoryitem shown_excluded_fields note_formset %}
   {{ block.super }}
 {% endblock page_body %}
 
@@ -51,9 +51,11 @@
     </script>
 
     <script type="text/javascript">
-      $('#pageSave').attr('disabled', 'disabled');
+      // $('#pageSave').attr('disabled', 'disabled');
       {# As with the paragraphs in the add page, it's easier to hide the form elements here than with Django #}
       $('.item-input').addClass('hidden');
+
+      
     </script>
 
     <script type="text/javascript">

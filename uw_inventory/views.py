@@ -5,13 +5,14 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.db.models import Q
+from django.forms.models import inlineformset_factory
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_protect
 
 from django_cas.decorators import permission_required
 
-from uw_inventory.forms import ItemForm, NoteForm
+from uw_inventory.forms import ItemForm, NoteForm, NoteCreateForm
 from uw_inventory.models import (
     AutocompleteData,
     InventoryItem,
@@ -93,12 +94,21 @@ def inventory_list(request):
 @permission_required('uw_inventory.view_item')
 def inventory_detail(request, item_id):
     inventory_item = InventoryItem.objects.get(pk=item_id)
+    NoteCreateFormset = inlineformset_factory(
+        InventoryItem,
+        Note,
+        form=NoteCreateForm,
+        extra=0,
+        can_delete=False
+    )
 
     if request.method == 'POST':
         form = ItemForm(request.POST, instance=inventory_item)
+        note_formset = NoteCreateFormset(request.POST, instance=inventory_item)
 
-        if form.is_valid():
+        if form.is_valid() and note_formset.is_valid():
             form.save()
+            note_formset.save()
             messages.success(request,
                              'Item saved successfully')
         else:
@@ -118,7 +128,8 @@ def inventory_detail(request, item_id):
         ],
         'can_edit': request.user.has_perm('change_inventoryitem'),
         'form_id': 'itemForm',
-        'note_form': NoteForm()
+        'note_form': NoteForm(),
+        'note_formset': NoteCreateFormset()
     })
 
 
@@ -249,5 +260,6 @@ def note_new(request):
                 creation_date=datetime.now
             )
         return render(request, 'uw_inventory/note_detail.html', {
-                'note': note_obj
-            })
+            'note': note_obj,
+            'saved': False,
+        })

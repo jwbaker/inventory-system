@@ -4,7 +4,7 @@
   </div>
   <div class="col-xs-10" id="notes-list">
     {% for note in note_set %}
-      {% include 'uw_inventory/note_detail.html' with note=note %}
+      {% include 'uw_inventory/note_detail.html' with note=note saved=True %}
     {% endfor %}
 
     <div class="panel panel-default" align="center">

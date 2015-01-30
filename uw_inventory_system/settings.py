@@ -68,6 +68,17 @@ WSGI_APPLICATION = 'uw_inventory_system.wsgi.application'
 # Allows us to have our global base template in the project root directory
 TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
 
+TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.contrib.auth.context_processors.auth",
+    "django.core.context_processors.debug",
+    "django.core.context_processors.i18n",
+    "django.core.context_processors.media",
+    "django.core.context_processors.static",
+    "django.core.context_processors.tz",
+    "django.contrib.messages.context_processors.messages",
+    'django.core.context_processors.request',
+)
+
 # We want messages to be per-user, so store them in SessionStorage
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
