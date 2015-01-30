@@ -201,7 +201,13 @@
   var unsavedNotes = []
   $('#newNoteSubmit').click(function(event){
     var noteHTML = $(this).parent().siblings('.modal-body').find('form');
-    console.log((new Date()).djangoFormat())
+    noteHTML.find('.form-errors').remove();
+    
+    if(!noteHTML.find('#inputTitle').val()){
+      noteHTML.find('#inputTitle').after('<ul class="form-errors"><li>This field is required.</li></ul>');
+      return;
+    }
+
     var noteJSON = {
       'title': noteHTML.find('#inputTitle').val(),
       'body': noteHTML.find('#inputBody').val(),
