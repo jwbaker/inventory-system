@@ -136,13 +136,27 @@ def inventory_detail(request, item_id):
 @csrf_protect
 @permission_required('uw_inventory.add_inventoryitem')
 def inventory_add(request):
+    NoteCreateFormset = inlineformset_factory(
+        InventoryItem,
+        Note,
+        form=NoteCreateForm,
+        extra=0,
+        can_delete=False
+    )
+
     if request.method == 'POST':
         form = ItemForm(request.POST)
+
         if form.is_valid():
-            messages.success(request,
-                             'Inventory item saved successfully')
             new_item = form.save()
-            return HttpResponseRedirect('/list/%s' % new_item.pk)
+            note_formset = NoteCreateFormset(request.POST, instance=new_item)
+            if note_formset.is_valid():
+                note_formset.save()
+                messages.success(request,
+                                 'Inventory item saved successfully')
+                return HttpResponseRedirect('/list/%s' % new_item.pk)
+            else:
+                messages.error(request, 'Fatal formset badness')
         else:
             messages.error(request,
                            'Something went wrong. Check below for errors')
@@ -156,6 +170,7 @@ def inventory_add(request):
         'can_add': request.user.has_perm('add_inventoryitem'),
         'form_id': 'itemForm',
         'note_form': NoteForm(),
+        'note_formset': NoteCreateFormset()
     })
 
 

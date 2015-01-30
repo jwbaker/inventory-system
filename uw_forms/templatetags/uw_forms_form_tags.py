@@ -59,7 +59,7 @@ def _form_handler(form, form_id, target_view,
 
 
 @register.inclusion_tag('uw_forms/add_form.html')
-def add_form(form, form_id, target_view=None):
+def add_form(form, form_id, target_view=None, inline_formsets=None):
     '''
     Generates the context data for a model add form.
 
@@ -69,7 +69,7 @@ def add_form(form, form_id, target_view=None):
         target_view -- A string representing the form target view
                         Passed to URL template tag
     '''
-    return _form_handler(form, form_id, target_view)
+    return _form_handler(form, form_id, target_view, inline_formsets=inline_formsets)
 
 
 @register.inclusion_tag('uw_forms/edit_form.html')
