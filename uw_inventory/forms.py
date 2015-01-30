@@ -143,7 +143,7 @@ class ItemForm(forms.ModelForm):
             }),
             'status': widgets.SelectInput({
                 'id': 'inputStatus',
-                'translator': InventoryItem.get_status_display,
+                'translator': InventoryItem.get_status,
             }),
             'supplier': widgets.AutocompleteInput({
                 'id': 'inputSupplier',

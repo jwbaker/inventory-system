@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from django.contrib.auth.models import User
+from django.core import serializers
 from django.core.validators import RegexValidator
 from django.db import models
 
@@ -34,7 +35,7 @@ class InventoryItem(models.Model):
     ]
 
     @staticmethod
-    def get_status_display(status_key):
+    def get_status(status_key):
         '''
         Looks up the display text of a given status key.
 
@@ -49,6 +50,9 @@ class InventoryItem(models.Model):
         # We return '' rather than None because the combination of Django and
         # JavaScript used in the detail page renders None as 'None' (a string)
         return ''
+
+    def get_notes_as_json(self):
+        return serializers.serialize('json', self.note_set.all())
 
     # save method is overriden so we can generate the UUID automatically
     def save(self, *args, **kwargs):

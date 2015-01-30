@@ -27,6 +27,8 @@
         <td>Manufacturer</td>
         <td>Model</td>
         <td>Description</td>
+        <td>Technician</td>
+        <td>Owner</td>
         <td>Technician ID</td>
         <td>Status</td>
         <td>Serial Number</td>
@@ -45,6 +47,7 @@
         <td>SOP Required?</td>
         <td>Lifting Device?</td>
         <td>Lifting Device Inspection Date</td>
+        <td>Notes</td>
       </thead>
       <tbody>
         {% for item in inventory_list %}
@@ -58,8 +61,10 @@
             <td>{{ item.manufacturer }}</td>
             <td>{{ item.model_number }}</td>
             <td>{{ item.description }}</td>
+            <td>{{ item.technician }}</td>
+            <td>{{item.owner }}</td>
             <td>{{ item.tech_id }}</td>
-            <td>{{ item.status }}</td>
+            <td>{{ item.get_status_display }}</td>
             <td>{{ item.serial_number }}</td>
             <td>{{ item.manufacture_date }}</td>
             <td>{{ item.purchase_price }}</td>
@@ -76,6 +81,7 @@
             <td>{{ item.sop_required }}</td>
             <td>{{ item.lifting_device }}</td>
             <td>{{ item.lifting_device_inspection_date }}</td>
+            <td>{{ item.get_notes_as_json }}</td>
           </tr>
         {% endfor %}
       </tbody>
@@ -94,7 +100,7 @@
         {# This is how we can search on invisible columns - DataTables magic! #}
         'columnDefs': [
           {
-            'targets': [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
+            'targets': [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25],
             'visible': false,
           }
         ]
