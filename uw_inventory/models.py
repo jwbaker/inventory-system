@@ -51,8 +51,15 @@ class InventoryItem(models.Model):
         # JavaScript used in the detail page renders None as 'None' (a string)
         return ''
 
-    def get_notes_as_json(self):
-        return serializers.serialize('json', self.note_set.all())
+    def get_notes_as_string(self):
+        '''
+        Packages the InventoryItem's notes into a space-delimited string.
+
+        Use this method on the List page to make searching against notes as
+        natural as possible.
+        '''
+        return ' '.join([str(f.title) + ' ' + str(f.body) for f in
+                        [n for n in self.note_set.all()]])
 
     # save method is overriden so we can generate the UUID automatically
     def save(self, *args, **kwargs):
