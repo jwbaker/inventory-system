@@ -123,6 +123,11 @@
 {% block js_includes %}
   {# Need this for the date formatting on Edit page and for autocomplete widgets #}
   <script src="https://code.jquery.com/ui/1.11.2/jquery-ui.min.js"></script>
+
+  <script type="text/javascript">
+    var pageDirty = false;
+  </script>
+
   {{ block.super }}
   {% if perms.uw_inventory.add_autocompletedata %}
     <script type="text/javascript">
@@ -222,10 +227,6 @@
       success: function(data){
         $('#notes-list').prepend(data);
 
-        $('#newNoteModal').find('input.form-control').val('');
-        $('#newNoteModal').find('textarea').val('');
-        $('#newNoteModal').modal('hide');
-
         var count = $('#notes-form-container').children().length;
         var template = $('#note-template').html();
         var compiledTemplate = template.replace(/__prefix__/g, count)
@@ -237,6 +238,14 @@
         $('#note-' + count).find('[name="note_set-' + count + '-author"]').val(noteJSON.author_id);
 
         $('#id_note_set-TOTAL_FORMS').attr('value', count+1);
+
+        pageDirty = true;
+        $('#pageEditWarning').removeClass('hidden');
+        $('#pageSave').removeAttr('disabled');
+
+        $('#newNoteModal').find('input.form-control').val('');
+        $('#newNoteModal').find('textarea').val('');
+        $('#newNoteModal').modal('hide');
       },
       error: function(xhr, msg, err){
         console.log(xhr);
@@ -256,7 +265,6 @@
   {% if perms.uw_inventory.change_inventoryitem or perms.uw_inventory.add_inventoryitem %}
     <script type="text/javascript">
       {# We want to confirm user intent if they try to navigate away with unsaved changes #}
-      var pageDirty = false;
       var targetDestination;
       $('.navigate').parent().click(function(event){
         if(pageDirty){
