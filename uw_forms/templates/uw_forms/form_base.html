@@ -2,7 +2,11 @@
 
 {% block content %}
   <div class="row">
-    <div class="col-xs-7 col-xs-offset-2">
+    {% if can_edit or can_add %}
+      <div class="col-xs-7 col-xs-offset-2">
+    {% else %}
+      <div class="col-xs-8 col-xs-offset-2">
+    {% endif %}
       <div class="panel panel-default">
         <div class="panel-heading">{% block page_heading %}{% endblock page_heading %}</div>
             {% block page_body %}
