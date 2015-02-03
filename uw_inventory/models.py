@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from django.contrib.auth.models import User
-from django.core import serializers
 from django.core.validators import RegexValidator
 from django.db import models
 
@@ -17,6 +16,19 @@ class AutocompleteData(models.Model):
     ]
     name = models.CharField(max_length=255)
     kind = models.CharField(choices=KIND_CHOICES, max_length=255)
+
+
+class ItemFile(models.Model):
+    description = models.TextField(blank=True, null=True)
+    file = models.FileField()
+    inventory_item = models.ForeignKey(
+        # Using quotes evaluates this reference lazily, which lets us have
+        # this circular reference
+        'InventoryItem',
+        blank=True,
+        default=None,
+        null=True
+    )
 
 
 class InventoryItem(models.Model):
@@ -142,6 +154,12 @@ class InventoryItem(models.Model):
         default=None,
         max_length=255,
         null=True,
+    )
+    sop_file = models.ForeignKey(
+        ItemFile,
+        blank=True,
+        default=None,
+        null=True
     )
     sop_required = models.BooleanField(default=True)
     status = models.CharField(
