@@ -262,6 +262,12 @@
     </div>     
   </script>
 
+  <script type="text/html" id="file-template">
+    <div id="file-__prefix__">
+      {{ formsets.file.empty_form }}
+    </div>     
+  </script>
+
   {% if perms.uw_inventory.change_inventoryitem or perms.uw_inventory.add_inventoryitem %}
     <script type="text/javascript">
       {# We want to confirm user intent if they try to navigate away with unsaved changes #}
@@ -326,6 +332,12 @@
           $('input#inputOwner').attr('to-save', ui.item.id)
         }
       });
+    </script>
+
+    <script type="text/javascript">
+    var compiledTemplate = $("#file-template").html().replace(/__prefix__/g, 0);
+    $('div#sop-form-container').append(compiledTemplate);
+    $('#id_files-TOTAL_FORMS').attr('value', 1);
     </script>
   {% endif %}
 {% endblock js_includes %}

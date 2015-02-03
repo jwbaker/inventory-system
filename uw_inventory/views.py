@@ -151,6 +151,13 @@ def inventory_add(request):
         extra=0,
         can_delete=False
     )
+    FileUploadFormset = inlineformset_factory(
+        InventoryItem,
+        ItemFile,
+        form=FileForm,
+        extra=0,
+        can_delete=False
+    )
 
     if request.method == 'POST':
         form = ItemForm(request.POST, request.FILES)
@@ -162,9 +169,19 @@ def inventory_add(request):
                 prefix='notes',
                 instance=new_item
             )
+            file_formset = FileUploadFormset(
+                request.POST,
+                request.FILES,
+                prefix='files',
+                instance=new_item
+            )
 
-            if note_formset.is_valid():
+            if note_formset.is_valid() and file_formset.is_valid():
                 note_formset.save()
+                saved_files = file_formset.save()
+                new_item.sop_file_id = saved_files[0].id
+                new_item.save()
+
                 messages.success(request,
                                  'Inventory item saved successfully')
                 return HttpResponseRedirect('/list/%s' % new_item.pk)
@@ -188,6 +205,7 @@ def inventory_add(request):
         },
         'formsets': {
             'note': NoteCreateFormset(prefix='notes'),
+            'file': FileUploadFormset(prefix='files')
         }
     })
 
