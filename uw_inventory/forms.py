@@ -156,6 +156,7 @@ class ItemForm(forms.ModelForm):
             }),
             'sop_file':  widgets.FileInput({
                 'id': 'inputSopFile',
+                'data-set': ItemFile.objects
             }),
             'sop_required': widgets.CheckboxInput({
                 'id': 'inputSopRequired',

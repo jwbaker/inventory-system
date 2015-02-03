@@ -204,14 +204,22 @@ class FileInput(forms.FileInput):
         if attrs:
             context = _common_attributes_handler(attrs)
             context['class'] += 'item-input '
+            context['data-set'] = attrs.get('data-set', None)
         else:
             context = None
         return super(FileInput, self).__init__(attrs=context)
 
     def render(self, name, value, attrs=None):
-        render_str = '''
-        <div id="sop-form-container"></div>
-        '''
+        if value:
+            file_obj = self.attrs['data-set'].get(id=value)
+            render_str = _render_static_label(
+                self.attrs.get('id', ''),
+                file_obj.file.name
+            )
+        else:
+            render_str = '''
+            <div id="sop-form-container"></div>
+            '''
         return mark_safe(render_str)
 
 
