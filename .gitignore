@@ -55,3 +55,6 @@ target/
 
 # Database files
 *.sqlite3
+
+# Files directory
+files/

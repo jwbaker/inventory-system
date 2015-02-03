@@ -20,7 +20,7 @@ class AutocompleteData(models.Model):
 
 class ItemFile(models.Model):
     description = models.TextField(blank=True, null=True)
-    file = models.FileField()
+    file = models.FileField(upload_to='files/')
     inventory_item = models.ForeignKey(
         # Using quotes evaluates this reference lazily, which lets us have
         # this circular reference
