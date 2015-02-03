@@ -1,13 +1,19 @@
 {% load uw_forms_field_tags %}
 
-<form {% if target_view %}action="{% url target_view %}"{% endif %} method="post" id="{{ form_id }}">
-    {% csrf_token %}
-    {{ formset.management_form }}
-    {% for field in fields %}
-        {% show_field field %}
-    {% endfor %}
+<form 
+      {% if target_view %}action="{% url target_view %}"{% endif %}
+      method="post"
+      id="{{ form_id }}"
+      enctype="multipart/form-data">
+  {% csrf_token %}
+  {% for key,fs in formsets.items %}
+    {{ fs.management_form }}
+  {% endfor %}
+  {% for field in fields %}
+      {% show_field field %}
+  {% endfor %}
 
-    <div id="notes-form-container">
-        
-    </div>
+  <div id="notes-form-container">
+      
+  </div>
 </form>

@@ -107,7 +107,7 @@
           <div class="container col-xs-10 col-xs-offset-1">
             <form id="newNoteForm">
               {% csrf_token %}
-              {{ note_form }}
+              {{ forms.note }}
             </form>
           </div>
         </div>
@@ -232,12 +232,12 @@
         var compiledTemplate = template.replace(/__prefix__/g, count)
         $('div#notes-form-container').append(compiledTemplate);
 
-        $('#note-' + count).find('[name="note_set-' + count + '-title"]').val(noteJSON.title)
-        $('#note-' + count).find('[name="note_set-' + count + '-body"]').val(noteJSON.body)
-        $('#note-' + count).find('[name="note_set-' + count + '-creation_date"]').val(noteJSON.creation_date);
-        $('#note-' + count).find('[name="note_set-' + count + '-author"]').val(noteJSON.author_id);
+        $('#note-' + count).find('[name="notes-' + count + '-title"]').val(noteJSON.title)
+        $('#note-' + count).find('[name="notes-' + count + '-body"]').val(noteJSON.body)
+        $('#note-' + count).find('[name="notes-' + count + '-creation_date"]').val(noteJSON.creation_date);
+        $('#note-' + count).find('[name="notes-' + count + '-author"]').val(noteJSON.author_id);
 
-        $('#id_note_set-TOTAL_FORMS').attr('value', count+1);
+        $('#id_notes-TOTAL_FORMS').attr('value', count+1);
 
         pageDirty = true;
         $('#pageEditWarning').removeClass('hidden');
@@ -258,7 +258,7 @@
 
   <script type="text/html" id="note-template">
     <div id="note-__prefix__" class="field-hidden">
-      {{ note_formset.empty_form }}
+      {{ formsets.note.empty_form }}
     </div>     
   </script>
 

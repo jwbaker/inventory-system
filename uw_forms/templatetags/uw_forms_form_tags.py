@@ -53,7 +53,7 @@ def _form_handler(form, form_id, target_view,
         'fields': fields,
         'can_edit': can_edit,
         'instance': instance,
-        'formset': inline_formsets,
+        'formsets': inline_formsets,
     }
     return context
 
@@ -69,7 +69,12 @@ def add_form(form, form_id, target_view=None, inline_formsets=None):
         target_view -- A string representing the form target view
                         Passed to URL template tag
     '''
-    return _form_handler(form, form_id, target_view, inline_formsets=inline_formsets)
+    return _form_handler(
+        form,
+        form_id,
+        target_view,
+        inline_formsets=inline_formsets
+    )
 
 
 @register.inclusion_tag('uw_forms/edit_form.html')

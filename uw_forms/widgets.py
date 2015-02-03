@@ -199,6 +199,22 @@ class DateInput(forms.DateInput):
         return mark_safe(render_str)
 
 
+class FileInput(forms.FileInput):
+    def __init__(self, attrs=None):
+        if attrs:
+            context = _common_attributes_handler(attrs)
+            context['class'] += 'item-input '
+        else:
+            context = None
+        return super(FileInput, self).__init__(attrs=context)
+
+    def render(self, name, value, attrs=None):
+        render_str = '''
+        <div id="sop-form-container"></div>
+        '''
+        return mark_safe(render_str)
+
+
 class SelectInput(forms.Select):
     def __init__(self, attrs=None):
         if attrs:

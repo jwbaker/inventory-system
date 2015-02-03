@@ -4,7 +4,7 @@
 {% block page_heading %}New Inventory Item{% endblock page_heading %}
 
 {% block page_body %}
-  {% add_form form 'itemForm' 'uw_inventory.views.inventory_add' note_formset %}
+  {% add_form form 'itemForm' 'uw_inventory.views.inventory_add' formsets %}
   {{ block.super }}
 {% endblock page_body %}
 

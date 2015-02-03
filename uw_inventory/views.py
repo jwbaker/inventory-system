@@ -12,10 +12,16 @@ from django.views.decorators.csrf import csrf_protect
 
 from django_cas.decorators import permission_required
 
-from uw_inventory.forms import ItemForm, NoteForm, NoteCreateForm
+from uw_inventory.forms import (
+    FileForm,
+    ItemForm,
+    NoteForm,
+    NoteCreateForm
+)
 from uw_inventory.models import (
     AutocompleteData,
     InventoryItem,
+    ItemFile,
     Note
 )
 
@@ -103,7 +109,7 @@ def inventory_detail(request, item_id):
     )
 
     if request.method == 'POST':
-        form = ItemForm(request.POST, instance=inventory_item)
+        form = ItemForm(request.POST, request.FILES, instance=inventory_item)
         note_formset = NoteCreateFormset(request.POST, instance=inventory_item)
 
         if form.is_valid() and note_formset.is_valid():
@@ -129,7 +135,9 @@ def inventory_detail(request, item_id):
         'can_edit': request.user.has_perm('change_inventoryitem'),
         'form_id': 'itemForm',
         'note_form': NoteForm(),
-        'note_formset': NoteCreateFormset()
+        'formsets': {
+            'note': NoteCreateFormset()
+        }
     })
 
 
@@ -145,11 +153,16 @@ def inventory_add(request):
     )
 
     if request.method == 'POST':
-        form = ItemForm(request.POST)
+        form = ItemForm(request.POST, request.FILES)
 
         if form.is_valid():
-            new_item = form.save()
-            note_formset = NoteCreateFormset(request.POST, instance=new_item)
+            new_item = form.save(commit=False)
+            note_formset = NoteCreateFormset(
+                request.POST,
+                prefix='notes',
+                instance=new_item
+            )
+
             if note_formset.is_valid():
                 note_formset.save()
                 messages.success(request,
@@ -169,8 +182,13 @@ def inventory_add(request):
         'page_messages': message_list,
         'can_add': request.user.has_perm('add_inventoryitem'),
         'form_id': 'itemForm',
-        'note_form': NoteForm(),
-        'note_formset': NoteCreateFormset()
+        'forms': {
+            'file': FileForm(),
+            'note': NoteForm(),
+        },
+        'formsets': {
+            'note': NoteCreateFormset(prefix='notes'),
+        }
     })
 
 
