@@ -203,57 +203,57 @@
   {% endif %}
 
   <script type="text/javascript">
-  var unsavedNotes = []
-  $('#newNoteSubmit').click(function(event){
-    var noteHTML = $(this).parent().siblings('.modal-body').find('form');
-    noteHTML.find('.form-errors').remove();
-    
-    if(!noteHTML.find('#inputTitle').val()){
-      noteHTML.find('#inputTitle').after('<ul class="form-errors"><li>This field is required.</li></ul>');
-      return;
-    }
-
-    var noteJSON = {
-      'title': noteHTML.find('#inputTitle').val(),
-      'body': noteHTML.find('#inputBody').val(),
-      'creation_date': (new Date()).djangoFormat(), {# Date.prorotype.djangoFormat is defined in base.html #}
-      'author_id': {{ request.user.id }}
-    }
-
-    $.ajax({
-      url: '{% url "uw_inventory.views.note_new" %}',
-      type: 'POST',
-      data: $('#newNoteForm').serialize(),
-      success: function(data){
-        $('#notes-list').prepend(data);
-
-        var count = $('#notes-form-container').children().length;
-        var template = $('#note-template').html();
-        var compiledTemplate = template.replace(/__prefix__/g, count)
-        $('div#notes-form-container').append(compiledTemplate);
-
-        $('#note-' + count).find('[name="notes-' + count + '-title"]').val(noteJSON.title)
-        $('#note-' + count).find('[name="notes-' + count + '-body"]').val(noteJSON.body)
-        $('#note-' + count).find('[name="notes-' + count + '-creation_date"]').val(noteJSON.creation_date);
-        $('#note-' + count).find('[name="notes-' + count + '-author"]').val(noteJSON.author_id);
-
-        $('#id_notes-TOTAL_FORMS').attr('value', count+1);
-
-        pageDirty = true;
-        $('#pageEditWarning').removeClass('hidden');
-        $('#pageSave').removeAttr('disabled');
-
-        $('#newNoteModal').find('input.form-control').val('');
-        $('#newNoteModal').find('textarea').val('');
-        $('#newNoteModal').modal('hide');
-      },
-      error: function(xhr, msg, err){
-        console.log(xhr);
-        console.log(msg);
-        console.log(err);
+    var unsavedNotes = []
+    $('#newNoteSubmit').click(function(event){
+      var noteHTML = $(this).parent().siblings('.modal-body').find('form');
+      noteHTML.find('.form-errors').remove();
+      
+      if(!noteHTML.find('#inputTitle').val()){
+        noteHTML.find('#inputTitle').after('<ul class="form-errors"><li>This field is required.</li></ul>');
+        return;
       }
+
+      var noteJSON = {
+        'title': noteHTML.find('#inputTitle').val(),
+        'body': noteHTML.find('#inputBody').val(),
+        'creation_date': (new Date()).djangoFormat(), {# Date.prorotype.djangoFormat is defined in base.html #}
+        'author_id': {{ request.user.id }}
+      }
+
+      $.ajax({
+        url: '{% url "uw_inventory.views.note_new" %}',
+        type: 'POST',
+        data: $('#newNoteForm').serialize(),
+        success: function(data){
+          $('#notes-list').prepend(data);
+
+          var count = $('#notes-form-container').children().length;
+          var template = $('#note-template').html();
+          var compiledTemplate = template.replace(/__prefix__/g, count)
+          $('div#notes-form-container').append(compiledTemplate);
+
+          $('#note-' + count).find('[name="notes-' + count + '-title"]').val(noteJSON.title)
+          $('#note-' + count).find('[name="notes-' + count + '-body"]').val(noteJSON.body)
+          $('#note-' + count).find('[name="notes-' + count + '-creation_date"]').val(noteJSON.creation_date);
+          $('#note-' + count).find('[name="notes-' + count + '-author"]').val(noteJSON.author_id);
+
+          $('#id_notes-TOTAL_FORMS').attr('value', count+1);
+
+          pageDirty = true;
+          $('#pageEditWarning').removeClass('hidden');
+          $('#pageSave').removeAttr('disabled');
+
+          $('#newNoteModal').find('input.form-control').val('');
+          $('#newNoteModal').find('textarea').val('');
+          $('#newNoteModal').modal('hide');
+        },
+        error: function(xhr, msg, err){
+          console.log(xhr);
+          console.log(msg);
+          console.log(err);
+        }
+      });
     });
-  });
   </script>
 
   <script type="text/html" id="note-template">
@@ -264,8 +264,23 @@
 
   <script type="text/html" id="file-template">
     <div id="file-__prefix__">
-      {{ formsets.file.empty_form }}
+      {{ formsets.file.empty_form.as_p }}
     </div>     
+  </script>
+
+  <script type="text/html" id="file-table-row-template">
+    <tr>
+      <td class="hidden file-description"></td>
+      <td class="hidden file-size"></td>
+      <td class="hidden">
+        <i class="fa fa-gear file-edit"></i>
+      </td>
+      <td colspan="2">__form__</td>
+      <td>
+        <i class="fa fa-check file-save"></i>
+        <i class="fa fa-times file-cancel"></i>
+      </td>
+    </tr>
   </script>
 
   {% if perms.uw_inventory.change_inventoryitem or perms.uw_inventory.add_inventoryitem %}
@@ -335,9 +350,56 @@
     </script>
 
     <script type="text/javascript">
-    var compiledTemplate = $("#file-template").html().replace(/__prefix__/g, 0);
-    $('div#sop-form-container').append(compiledTemplate);
-    $('#id_files-TOTAL_FORMS').attr('value', 1);
+      var compiledTemplate = $("#file-template").html().replace(/__prefix__/g, 0);
+      $('div#sop-form-container').append(compiledTemplate);
+      $('#id_files-TOTAL_FORMS').attr('value', 1);
+    </script>
+
+    <script type="text/javascript">
+      $('#add-file').click(function(){
+        var count = $('#id_files-TOTAL_FORMS').attr('value');
+        var compiledTemplate = $("#file-template").html().replace(/__prefix__/g, count);
+        $('#file-table tr:last').before($('#file-table-row-template').html().replace(/__form__/g, compiledTemplate));
+        $('#id_files-TOTAL_FORMS').attr('value', count+1);
+      });
+
+      $('#file-table').on('click', 'i.file-cancel', function(){
+        $(this).closest('tr').children().toggleClass('hidden');
+      });
+
+      $('#file-table').on('click', 'i.file-save', function(){
+        var row = $(this).closest('tr');
+        var description = row.find('#inputDescription').val();
+        var fileSize;
+
+        try{
+          fileSize = row.find('[type="file"]')[0].files[0].size;
+
+          if(fileSize >= 1000000000){
+            fileSize = (fileSize/1000000000).toFixed(2) + ' G';
+          } else if(fileSize >= 1000000){
+            fileSize = (fileSize/1000000).toFixed(2) + ' M';
+          } else if(fileSize >= 1000){
+            fileSize = (fileSize/1000).toFixed(2) + ' K';
+          } else{
+            fileSize = fileSize.toFixed(2) + ' ';
+          }
+
+          fileSize += 'B';
+        } catch(e){
+          fileSize = 'N/A';
+        }
+
+        row.find('.file-description').html(description);
+        row.find('.file-size').html(fileSize);
+        row.children().toggleClass('hidden');
+        row.addClass('warning');
+      });
+
+      $('#file-table').on('click', 'i.file-edit', function(){
+        var row = $(this).closest('tr');
+        row.children().toggleClass('hidden');
+      });
     </script>
   {% endif %}
 {% endblock js_includes %}

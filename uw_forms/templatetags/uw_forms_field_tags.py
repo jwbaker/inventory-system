@@ -96,3 +96,8 @@ def show_field(field):
         field --- The Django field object
     '''
     return _field_handler(field['field'], 'field')
+
+
+@register.inclusion_tag('uw_forms/file_list.html')
+def show_files(file_set):
+    return {'files': file_set}

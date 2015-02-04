@@ -107,6 +107,13 @@ def inventory_detail(request, item_id):
         extra=0,
         can_delete=False
     )
+    FileUploadFormset = inlineformset_factory(
+        InventoryItem,
+        ItemFile,
+        form=FileForm,
+        extra=0,
+        can_delete=False
+    )
 
     if request.method == 'POST':
         form = ItemForm(request.POST, request.FILES, instance=inventory_item)
@@ -136,7 +143,8 @@ def inventory_detail(request, item_id):
         'form_id': 'itemForm',
         'note_form': NoteForm(),
         'formsets': {
-            'note': NoteCreateFormset()
+            'note': NoteCreateFormset(),
+            'file': FileUploadFormset(prefix='files'),
         }
     })
 
@@ -205,7 +213,7 @@ def inventory_add(request):
         },
         'formsets': {
             'note': NoteCreateFormset(prefix='notes'),
-            'file': FileUploadFormset(prefix='files')
+            'file': FileUploadFormset(prefix='files'),
         }
     })
 

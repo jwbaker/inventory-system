@@ -18,7 +18,8 @@ class FileForm(forms.ModelForm):
             'description': forms.Textarea({
                 'id': 'inputDescription',
                 'class': 'form-control',
-                'placeholder': 'Description'
+                'placeholder': 'Description',
+                'rows': 2,
             }),
         }
 

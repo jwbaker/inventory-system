@@ -1,0 +1,32 @@
+<div class="form-group list-group-item clearfix">
+  <div class="col-xs-2">
+    <label class="control-label">Files</label>
+  </div>
+  <div class="col-xs-10" id="notes-list">
+    <table id="file-table" class="table table-condensed">
+      <thead>
+        <td>Description</td>
+        <td>Size</td>
+        <td></td>
+      </thead>
+      <tbody>
+        {% for file in file_set %}
+          <tr>
+            <td>
+              <a href="">{{ file.description }}</a>
+            </td>
+            <td>{{ file.size }}</td>
+            <td><i class="fa fa-gear"></i></td>
+          </tr>
+        {% endfor %}
+        <tr>
+          <td colspan="3" align="center">
+            <a id="file-add">
+              <i class="fa fa-plus-circle"></i>
+            </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
