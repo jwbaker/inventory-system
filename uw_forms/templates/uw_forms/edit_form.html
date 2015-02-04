@@ -21,7 +21,7 @@
           {% show_editable_field field can_edit %}
       {% endif %}
   {% endfor %}
-  {% show_files form.instance.file_set %}
+  {% show_files form.instance.itemfile_set.all %}
   <div id="notes-form-container">
       
   </div>

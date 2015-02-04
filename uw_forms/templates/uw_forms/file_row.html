@@ -1,3 +1,11 @@
 <tr>
-    <td colspan="3">{{ form }}</td>
+  <td class="file-description">
+    {% if file.description %}
+      {{ file.description }}
+    {% else %}
+      {{ file.file }}
+    {% endif %}
+  </td>
+  <td class="file-size">{{ file.size }}</td>
+  <td></td>
 </tr>

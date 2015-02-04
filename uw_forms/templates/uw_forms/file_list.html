@@ -11,7 +11,7 @@
       </thead>
       <tbody>
         {% for file in files %}
-          {# {% include 'uw_forms/file_row.html' with file=file %} #}
+          {% include 'uw_forms/file_row.html' with file=file %}
         {% endfor %}
         <tr>
           <td align="center" colspan="3">

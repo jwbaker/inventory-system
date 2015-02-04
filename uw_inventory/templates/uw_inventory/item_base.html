@@ -360,7 +360,7 @@
         var count = $('#id_files-TOTAL_FORMS').attr('value');
         var compiledTemplate = $("#file-template").html().replace(/__prefix__/g, count);
         $('#file-table tr:last').before($('#file-table-row-template').html().replace(/__form__/g, compiledTemplate));
-        $('#id_files-TOTAL_FORMS').attr('value', count+1);
+        $('#id_files-TOTAL_FORMS').attr('value', parseInt(count, 10)+1);
       });
 
       $('#file-table').on('click', 'i.file-cancel', function(){

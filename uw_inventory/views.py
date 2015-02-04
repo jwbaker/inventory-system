@@ -118,10 +118,21 @@ def inventory_detail(request, item_id):
     if request.method == 'POST':
         form = ItemForm(request.POST, request.FILES, instance=inventory_item)
         note_formset = NoteCreateFormset(request.POST, instance=inventory_item)
+        file_formset = FileUploadFormset(
+            request.POST,
+            request.FILES,
+            prefix='files',
+            instance=inventory_item
+        )
 
-        if form.is_valid() and note_formset.is_valid():
+        if (
+          form.is_valid() and
+          note_formset.is_valid() and
+          file_formset.is_valid()
+        ):
             form.save()
             note_formset.save()
+            file_formset.save()
             messages.success(request,
                              'Item saved successfully')
         else:
