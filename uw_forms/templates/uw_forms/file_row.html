@@ -6,6 +6,6 @@
       {{ file.file }}
     {% endif %}
   </td>
-  <td class="file-size">{{ file.size }}</td>
+  <td class="file-size">{{ file.file.size|filesizeformat }}</td>
   <td></td>
 </tr>
