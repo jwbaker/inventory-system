@@ -1,15 +1,6 @@
 {% extends 'uw_inventory/item_base.html' %}
 {% load uw_forms_form_tags %}
 
-{% block messages %}
-   {{ block.super }}
-    <div class="alert alert-warning hidden" 
-         id="pageEditWarning" 
-         role="alert">
-      This page has unsaved changes
-    </div>
-{% endblock messages %}
-
 {% block gutter_nav %}
   {% if perms.uw_inventory.add_inventoryitem %}  
     <li class="list-group-item">

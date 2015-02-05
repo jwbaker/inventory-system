@@ -1,5 +1,19 @@
 {% extends 'uw_inventory_system/base.html' %}
 
+{% block messages %}
+   {{ block.super }}
+    {# Because of how long the InventoryItem form is, it makes more sense to have #}
+    {# the 'Unsaved changes' notification scroll with you, so we fix its position. #}
+    {# Because of rendering weirdness though, it's behind everything. A stupidly large #}
+    {# z-index solves this problem handily #}
+    <div class="alert alert-warning hidden" 
+         id="pageEditWarning" 
+         role="alert"
+         style="position:fixed;z-index:100000000000000">
+      This page has unsaved changes
+    </div>
+{% endblock messages %}
+
 {% block content %}
   <div class="row">
     {% if can_edit or can_add %}
