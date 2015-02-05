@@ -1,10 +1,12 @@
+{% load uw_forms_format_tags %}
+
 <tr>
   <td class="file-description">
     <a href="">
       {% if file.description %}
         {{ file.description }}
       {% else %}
-        {{ file.file }}
+        {{ file.file.name|filename }}
       {% endif %}
     </a>
   </td>

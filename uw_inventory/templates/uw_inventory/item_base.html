@@ -222,7 +222,7 @@
       var noteJSON = {
         'title': noteHTML.find('#inputTitle').val(),
         'body': noteHTML.find('#inputBody').val(),
-        'creation_date': (new Date()).djangoFormat(), {# Date.prorotype.djangoFormat is defined in base.html #}
+        'creation_date': (new Date()).djangoFormat(), {# Date.prototype.djangoFormat is defined in base.html #}
         'author_id': {{ request.user.id }}
       }
 
@@ -368,7 +368,8 @@
 
       $('#file-table').on('click', 'i.file-save', function(){
         var row = $(this).closest('tr');
-        var description = row.find('#inputDescription').val();
+        var description = row.find('#inputDescription').val() ||
+                          row.find('[type="file"]').val().match(/[^\\]*\..*/)[0];
         var fileSize;
 
         try{
