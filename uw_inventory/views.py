@@ -198,10 +198,9 @@ def inventory_add(request):
             )
 
             if note_formset.is_valid() and file_formset.is_valid():
-                note_formset.save()
-                saved_files = file_formset.save()
-                new_item.sop_file_id = saved_files[0].id
                 new_item.save()
+                note_formset.save()
+                file_formset.save()
 
                 messages.success(request,
                                  'Inventory item saved successfully')

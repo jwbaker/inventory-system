@@ -355,12 +355,6 @@
     </script>
 
     <script type="text/javascript">
-      var compiledTemplate = $("#file-template").html().replace(/__prefix__/g, 0);
-      $('div#sop-form-container').append(compiledTemplate);
-      $('#id_files-TOTAL_FORMS').attr('value', 1);
-    </script>
-
-    <script type="text/javascript">
       $('#add-file').click(function(){
         var count = $('#id_files-TOTAL_FORMS').attr('value');
         var compiledTemplate = $("#file-template").html().replace(/__prefix__/g, count);

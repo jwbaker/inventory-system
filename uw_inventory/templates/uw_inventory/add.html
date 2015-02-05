@@ -10,7 +10,11 @@
 
 {% block js_includes %}
   {{ block.super }}
-
+  
+  <script type="text/javascript">
+    $('#pageSave').removeAttr('disabled');
+  </script>
+  
   <script type="text/javascript">
     {# It's easier to hide the empty paragraph using jQuery than removing it in Django #}
     $('p.form-control-static').addClass('hidden')
