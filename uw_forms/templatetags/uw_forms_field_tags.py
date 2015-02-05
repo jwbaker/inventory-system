@@ -100,4 +100,11 @@ def show_field(field):
 
 @register.inclusion_tag('uw_forms/file_list.html')
 def show_files(file_set):
+    '''
+    Displays the list of associated files for an InventoryItem
+
+    Positional arguments:
+        file_set --- The Django set of ItemFile objects associated with the
+                        InventoryItem instance
+    '''
     return {'files': file_set}

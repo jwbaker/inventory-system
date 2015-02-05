@@ -5,6 +5,12 @@ register = template.Library()
 
 @register.inclusion_tag('uw_users/context_menu.html')
 def user_context_menu(user):
+    '''
+    Renders a dropdown menu with user-specific commands
+
+    Positional arguments:
+        user -- The Django user object for the currently logged-in user
+    '''
     context = {
         'user': user,
         'perms': [],

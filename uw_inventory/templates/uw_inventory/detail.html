@@ -31,26 +31,6 @@
 {% block js_includes %}
   {{ block.super }}
 
-  <script type="text/javascript">
-    var changeCount = 0;
-    $(window).on('pagechanges', function(event, hasChanges){
-      console.log(hasChanges)
-      if(hasChanges){
-        changeCount++;
-      } else{
-        changeCount--;
-      }
-
-      if(changeCount == 0){
-        $('#pageEditWarning').addClass('hidden');
-        $('#pageSave').attr('disabled', 'disabled');
-      } else{
-        $('#pageEditWarning').removeClass('hidden');
-        $('#pageSave').removeAttr('disabled');
-      }
-    });
-  </script>
-
   {% if perms.uw_inventory.change_inventoryitem %}
     <script type="text/javascript">
     {# An extra message if we're trying to duplicate with unsaved changes #}
@@ -62,11 +42,8 @@
     </script>
 
     <script type="text/javascript">
-      // $('#pageSave').attr('disabled', 'disabled');
       {# As with the paragraphs in the add page, it's easier to hide the form elements here than with Django #}
       $('.item-input').addClass('hidden');
-
-      
     </script>
 
     <script type="text/javascript">
@@ -145,7 +122,7 @@
           inputControl.parents('div.form-group').removeClass('list-group-item-warning has-warning');
         }
 
-        $(window).trigger('pagechanges', hasChanged)
+        $(window).trigger('pagechanges', hasChanged); {# Here's that event from earlier #}
 
         paragraph[0].textContent = saveText;
 

@@ -45,6 +45,9 @@
 
   <script type="text/javascript">
     $('input#inputTechId').change(function(event){
+      $(this).parents('.list-group-item').removeClass('list-group-item-danger has-error');
+      $(this).siblings('ul.errorlist').remove();
+      
       var newValue = event.target.value
       {# Custom validation of Tech_ID field #}
       if(newValue.search(new RegExp('^[a-z]{2}-?\\d*$')) === 0){
@@ -53,8 +56,8 @@
         formattedValue += newValue.substring(Math.max(1, newValue.indexOf('-')) + 1)
         event.target.value = formattedValue;
       } else{
-        $('input#inputTechId').parents('.list-group-item').addClass('list-group-item-danger has-error');
-        $('input#inputTechId').parent().append('<ul class="errorlist"><li>Must be of the form AA-00000</li></ul>');
+        $(this).parents('.list-group-item').addClass('list-group-item-danger has-error');
+        $(this).parent().append('<ul class="errorlist"><li>Must be of the form AA-00000</li></ul>');
       }
     });
   </script>

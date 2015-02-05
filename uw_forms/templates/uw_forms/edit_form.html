@@ -5,9 +5,11 @@
       id="{{ form_id }}"
       enctype="multipart/form-data">
   {% csrf_token %}
+
   {% for key,fs in formsets.items %}
     {{ fs.management_form }}
   {% endfor %}
+
   {% for field in shown_excluded_fields %}
       {% show_excluded_field field.label field.value %}
   {% endfor %}

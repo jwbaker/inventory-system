@@ -10,4 +10,4 @@ def get_name_display(self):
 # We're monkey-patching the contrib.User model to reduce some boilerplate code
 User.get_name_display = get_name_display
 
-del(get_name_display)  # Don't need to pollutethe namespace
+del(get_name_display)  # Don't need to pollute the namespace

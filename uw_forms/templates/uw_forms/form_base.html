@@ -55,6 +55,27 @@
 {% endblock content %}
 
 {% block js_includes %}
+  <script type="text/javascript">
+    var changeCount = 0;
+    {# In theory, ths pagechanges event should be raised every time the page is modified #}
+    $(window).on('pagechanges', function(event, hasChanges){
+      {# We're basically keeping a semaphore lock on the EditWarning block #}
+      if(hasChanges){
+        changeCount++;
+      } else{
+        changeCount--;
+      }
+
+      if(changeCount == 0){
+        $('#pageEditWarning').addClass('hidden');
+        $('#pageSave').attr('disabled', 'disabled');
+      } else{
+        $('#pageEditWarning').removeClass('hidden');
+        $('#pageSave').removeAttr('disabled');
+      }
+    });
+  </script>
+  
   {% if can_edit or can_add %}
     <script type="text/javascript">
       {# Handler for changing the state of our checkbox control #}

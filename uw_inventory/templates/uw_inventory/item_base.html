@@ -209,84 +209,150 @@
     });
   </script>
 
-  <script type="text/javascript">
-    $('#newNoteSubmit').click(function(event){
-      var noteHTML = $(this).parent().siblings('.modal-body').find('form');
-      noteHTML.find('.form-errors').remove();
-      
-      if(!noteHTML.find('#inputTitle').val()){
-        noteHTML.find('#inputTitle').after('<ul class="form-errors"><li>This field is required.</li></ul>');
-        return;
-      }
-
-      var noteJSON = {
-        'title': noteHTML.find('#inputTitle').val(),
-        'body': noteHTML.find('#inputBody').val(),
-        'creation_date': (new Date()).djangoFormat(), {# Date.prototype.djangoFormat is defined in base.html #}
-        'author_id': {{ request.user.id }}
-      }
-
-      $.ajax({
-        url: '{% url "uw_inventory.views.note_new" %}',
-        type: 'POST',
-        data: $('#newNoteForm').serialize(),
-        success: function(data){
-          $('#notes-list').prepend(data);
-
-          var count = $('#notes-form-container').children().length;
-          var template = $('#note-template').html();
-          var compiledTemplate = template.replace(/__prefix__/g, count)
-          $('div#notes-form-container').append(compiledTemplate);
-
-          $('#note-' + count).find('[name="notes-' + count + '-title"]').val(noteJSON.title)
-          $('#note-' + count).find('[name="notes-' + count + '-body"]').val(noteJSON.body)
-          $('#note-' + count).find('[name="notes-' + count + '-creation_date"]').val(noteJSON.creation_date);
-          $('#note-' + count).find('[name="notes-' + count + '-author"]').val(noteJSON.author_id);
-
-          $('#id_notes-TOTAL_FORMS').attr('value', count+1);
-
-          pageDirty = true;
-          $(window).trigger('pagechanges', true)
-
-          $('#newNoteModal').find('input.form-control').val('');
-          $('#newNoteModal').find('textarea').val('');
-          $('#newNoteModal').modal('hide');
-        },
-        error: function(xhr, msg, err){
-          console.log(xhr);
-          console.log(msg);
-          console.log(err);
+  {% if perms.uw_inventory.add_note %}
+    <script type="text/javascript">
+      $('#newNoteSubmit').click(function(event){
+        var noteHTML = $(this).parent().siblings('.modal-body').find('form');
+        noteHTML.find('.form-errors').remove();
+        
+        if(!noteHTML.find('#inputTitle').val()){
+          noteHTML.find('#inputTitle').after('<ul class="form-errors"><li>This field is required.</li></ul>');
+          return;
         }
+
+        var noteJSON = {
+          'title': noteHTML.find('#inputTitle').val(),
+          'body': noteHTML.find('#inputBody').val(),
+          'creation_date': (new Date()).djangoFormat(), {# Date.prototype.djangoFormat is defined in base.html #}
+          'author_id': {{ request.user.id }}
+        }
+
+        $.ajax({
+          url: '{% url "uw_inventory.views.note_new" %}',
+          type: 'POST',
+          data: $('#newNoteForm').serialize(),
+          success: function(data){
+            $('#notes-list').prepend(data);
+
+            var count = $('#notes-form-container').children().length;
+            var template = $('#note-template').html();
+            var compiledTemplate = template.replace(/__prefix__/g, count)
+            $('div#notes-form-container').append(compiledTemplate);
+
+            $('#note-' + count).find('[name="notes-' + count + '-title"]').val(noteJSON.title)
+            $('#note-' + count).find('[name="notes-' + count + '-body"]').val(noteJSON.body)
+            $('#note-' + count).find('[name="notes-' + count + '-creation_date"]').val(noteJSON.creation_date);
+            $('#note-' + count).find('[name="notes-' + count + '-author"]').val(noteJSON.author_id);
+
+            $('#id_notes-TOTAL_FORMS').attr('value', count+1);
+
+            pageDirty = true;
+            $(window).trigger('pagechanges', true)
+
+            $('#newNoteModal').find('input.form-control').val('');
+            $('#newNoteModal').find('textarea').val('');
+            $('#newNoteModal').modal('hide');
+          },
+          error: function(xhr, msg, err){
+            console.log(xhr);
+            console.log(msg);
+            console.log(err);
+          }
+        });
       });
-    });
-  </script>
+    </script>
 
-  <script type="text/html" id="note-template">
-    <div id="note-__prefix__" class="field-hidden">
-      {{ formsets.note.empty_form }}
-    </div>     
-  </script>
+    <script type="text/html" id="note-template">
+      <div id="note-__prefix__" class="field-hidden">
+        {{ formsets.note.empty_form }}
+      </div>     
+    </script>
+  {% endif %}
 
-  <script type="text/html" id="file-template">
-    <div id="file-__prefix__">
-      {{ formsets.file.empty_form.as_p }}
-    </div>     
-  </script>
+  {% if perms.uw_inventory.add_itemfile %}
+    <script type="text/javascript">
+      {# When we add a file, we create a new instance of the formset #}
+      $('#add-file').click(function(){
+        var count = $('#id_files-TOTAL_FORMS').attr('value');
+        var compiledTemplate = $("#file-template").html().replace(/__prefix__/g, count);
+        $('#file-table tr:last').before($('#file-table-row-template').html().replace(/__form__/g, compiledTemplate));
+        $('#id_files-TOTAL_FORMS').attr('value', parseInt(count, 10)+1);
+      });
 
-  <script type="text/html" id="file-table-row-template">
-    <tr>
-      <td class="hidden file-description"></td>
-      <td class="hidden file-size"></td>
-      <td class="hidden">
-        <i class="fa fa-gear file-edit"></i>
-      </td>
-      <td colspan="2">__form__</td>
-      <td>
-        <i class="fa fa-check file-save"></i>
-        <i class="fa fa-times file-cancel"></i>
-      </td>
-    </tr>
-  </script>
+      $('#file-table').on('click', 'i.file-cancel', function(){
+        $(this).closest('tr').children().toggleClass('hidden');
+      });
+
+      $('#file-table').on('click', 'i.file-save', function(){
+        var row = $(this).closest('tr');
+        var description = row.find('#inputDescription').val() ||
+                          {# Some magic regex to convert a fully-qualified path into a filename #}
+                          row.find('[type="file"]').val().match(/[^\\]*\..*/)[0];
+
+        {# Really horrible ugly filesize formatting #}
+        var fileSize;
+        try{
+          fileSize = row.find('[type="file"]')[0].files[0].size;
+
+          if(fileSize >= 1000000000){
+            fileSize = (fileSize/1000000000).toFixed(2) + ' G';
+          } else if(fileSize >= 1000000){
+            fileSize = (fileSize/1000000).toFixed(2) + ' M';
+          } else if(fileSize >= 1000){
+            fileSize = (fileSize/1000).toFixed(2) + ' K';
+          } else{
+            fileSize = fileSize.toFixed(2) + ' ';
+          }
+
+          fileSize += 'B';
+        } catch(e){ {# Exception arises if the browser doesn't support the HTML5 files API #}
+          fileSize = 'N/A';
+        }
+
+        row.find('.file-description').html(description);
+        row.find('.file-size').html(fileSize);
+        row.children().toggleClass('hidden');
+
+        {# The !! operator quickly turns any type into a boolean, otherwise hasChanged #}
+        {# would be a string type because of operator overloading witchcraft #}
+        var hasChanged = !!row.find('[type="file"]').val() || !!description;
+        if(hasChanged){
+          row.addClass('warning');
+        } else{
+          row.removeClass('warning');
+        }
+
+        $(window).trigger('pagechanges', hasChanged);
+      });
+
+      $('#file-table').on('click', 'i.file-edit', function(){
+        var row = $(this).closest('tr');
+        row.children().toggleClass('hidden');
+      });
+    </script>
+
+    <script type="text/html" id="file-template">
+      <div id="file-__prefix__">
+        {{ formsets.file.empty_form.as_p }}
+      </div>     
+    </script>
+
+    <script type="text/html" id="file-table-row-template">
+      <tr>
+        {# When we toggle visibility on the tr's children, the hidden classes will all swap #}
+        <td class="hidden file-description"></td>
+        <td class="hidden file-size"></td>
+        <td class="hidden">
+          <i class="fa fa-gear file-edit"></i>
+        </td>
+        <td colspan="2">__form__</td>
+        <td>
+          <i class="fa fa-check file-save"></i>
+          <i class="fa fa-times file-cancel"></i>
+        </td>
+      </tr>
+    </script>
+  {% endif %}
 
   {% if perms.uw_inventory.change_inventoryitem or perms.uw_inventory.add_inventoryitem %}
     <script type="text/javascript">
@@ -351,62 +417,6 @@
         select: function(event, ui){
           $('input#inputOwner').attr('to-save', ui.item.id)
         }
-      });
-    </script>
-
-    <script type="text/javascript">
-      $('#add-file').click(function(){
-        var count = $('#id_files-TOTAL_FORMS').attr('value');
-        var compiledTemplate = $("#file-template").html().replace(/__prefix__/g, count);
-        $('#file-table tr:last').before($('#file-table-row-template').html().replace(/__form__/g, compiledTemplate));
-        $('#id_files-TOTAL_FORMS').attr('value', parseInt(count, 10)+1);
-      });
-
-      $('#file-table').on('click', 'i.file-cancel', function(){
-        $(this).closest('tr').children().toggleClass('hidden');
-      });
-
-      $('#file-table').on('click', 'i.file-save', function(){
-        var row = $(this).closest('tr');
-        var description = row.find('#inputDescription').val() ||
-                          row.find('[type="file"]').val().match(/[^\\]*\..*/)[0];
-        var fileSize;
-
-        try{
-          fileSize = row.find('[type="file"]')[0].files[0].size;
-
-          if(fileSize >= 1000000000){
-            fileSize = (fileSize/1000000000).toFixed(2) + ' G';
-          } else if(fileSize >= 1000000){
-            fileSize = (fileSize/1000000).toFixed(2) + ' M';
-          } else if(fileSize >= 1000){
-            fileSize = (fileSize/1000).toFixed(2) + ' K';
-          } else{
-            fileSize = fileSize.toFixed(2) + ' ';
-          }
-
-          fileSize += 'B';
-        } catch(e){
-          fileSize = 'N/A';
-        }
-
-        row.find('.file-description').html(description);
-        row.find('.file-size').html(fileSize);
-        row.children().toggleClass('hidden');
-
-        var hasChanged = !!row.find('[type="file"]').val() || !!description;
-        if(hasChanged){
-          row.addClass('warning');
-        } else{
-          row.removeClass('warning');
-        }
-
-        $(window).trigger('pagechanges', hasChanged);
-      });
-
-      $('#file-table').on('click', 'i.file-edit', function(){
-        var row = $(this).closest('tr');
-        row.children().toggleClass('hidden');
       });
     </script>
   {% endif %}
