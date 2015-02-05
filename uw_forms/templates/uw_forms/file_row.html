@@ -1,6 +1,6 @@
 <tr>
   <td class="file-description">
-    <a href="{% url 'uw_inventory_system.views.file_download' file.id %}">
+    <a href="">
       {% if file.description %}
         {{ file.description }}
       {% else %}
@@ -9,5 +9,9 @@
     </a>
   </td>
   <td class="file-size">{{ file.file.size|filesizeformat }}</td>
-  <td></td>
+  <td>
+    <i class="fa fa-download file-download"
+       data-target="{% url 'uw_inventory_system.views.file_download' file.id %}">
+    </i>
+  </td>
 </tr>

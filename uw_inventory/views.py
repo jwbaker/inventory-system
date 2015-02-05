@@ -152,7 +152,9 @@ def inventory_detail(request, item_id):
         ],
         'can_edit': request.user.has_perm('change_inventoryitem'),
         'form_id': 'itemForm',
-        'note_form': NoteForm(),
+        'forms': {
+            'note': NoteForm(),
+        },
         'formsets': {
             'note': NoteCreateFormset(),
             'file': FileUploadFormset(prefix='files'),

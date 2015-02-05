@@ -203,7 +203,13 @@
   {% endif %}
 
   <script type="text/javascript">
-    var unsavedNotes = []
+    $('.file-download').click(function(){
+      console.log($(this).attr('data-target'))
+      window.location = $(this).attr('data-target');
+    });
+  </script>
+
+  <script type="text/javascript">
     $('#newNoteSubmit').click(function(event){
       var noteHTML = $(this).parent().siblings('.modal-body').find('form');
       noteHTML.find('.form-errors').remove();
@@ -240,8 +246,7 @@
           $('#id_notes-TOTAL_FORMS').attr('value', count+1);
 
           pageDirty = true;
-          $('#pageEditWarning').removeClass('hidden');
-          $('#pageSave').removeAttr('disabled');
+          $(window).trigger('pagechanges', true)
 
           $('#newNoteModal').find('input.form-control').val('');
           $('#newNoteModal').find('textarea').val('');
@@ -393,7 +398,15 @@
         row.find('.file-description').html(description);
         row.find('.file-size').html(fileSize);
         row.children().toggleClass('hidden');
-        row.addClass('warning');
+
+        var hasChanged = !!row.find('[type="file"]').val() || !!description;
+        if(hasChanged){
+          row.addClass('warning');
+        } else{
+          row.removeClass('warning');
+        }
+
+        $(window).trigger('pagechanges', hasChanged);
       });
 
       $('#file-table').on('click', 'i.file-edit', function(){
