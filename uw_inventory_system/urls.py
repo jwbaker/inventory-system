@@ -14,4 +14,5 @@ urlpatterns = patterns(
     url(r'^accounts/', include('uw_users.urls')),
     # TODO: remove this URL for production
     url(r'^forbidden/$', views.permission_denied),
+    url(r'^download/(?P<file_id>\d+)/$', views.file_download),
 )

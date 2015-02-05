@@ -1,10 +1,12 @@
 <tr>
   <td class="file-description">
-    {% if file.description %}
-      {{ file.description }}
-    {% else %}
-      {{ file.file }}
-    {% endif %}
+    <a href="{% url 'uw_inventory_system.views.file_download' file.id %}">
+      {% if file.description %}
+        {{ file.description }}
+      {% else %}
+        {{ file.file }}
+      {% endif %}
+    </a>
   </td>
   <td class="file-size">{{ file.file.size|filesizeformat }}</td>
   <td></td>
