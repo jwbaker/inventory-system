@@ -36,6 +36,7 @@
     $('#sop-form-container').find('#inputDescription').val(
       $('#sop-form-container').find('#file-description-default').attr('value')
     );
+    $('#id_sop-0-id').attr('value', '{{ inventory_item.sop_file.id }}');
   </script>
 
   {% if perms.uw_inventory.change_inventoryitem %}
