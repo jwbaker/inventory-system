@@ -1,3 +1,5 @@
+import os
+
 from datetime import datetime
 
 from django import forms
@@ -210,16 +212,26 @@ class FileInput(forms.FileInput):
         return super(FileInput, self).__init__(attrs=context)
 
     def render(self, name, value, attrs=None):
+        file_name = ''
+        file_description = ''
+
         if value:
             file_obj = self.attrs['data-set'].get(id=value)
+            file_name = file_obj.file.name
+            file_description = file_obj.description
             render_str = _render_static_label(
                 self.attrs.get('id', ''),
-                file_obj.file.name
+                file_description or os.path.basename(file_name)
             )
         else:
-            render_str = '''
-            <div id="sop-form-container"></div>
-            '''
+            render_str = _render_static_label(self.attrs.get('id', ''), None)
+        render_str += '''
+        <div id="sop-form-container">
+            <input class="hidden" id="file-default" value="{0}" />
+            <textarea class="hidden" id="file-description-default"
+                      value="{1}"></textarea>
+        </div>
+        '''.format(file_name, file_description)
         return mark_safe(render_str)
 
 

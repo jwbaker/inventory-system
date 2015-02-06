@@ -63,7 +63,7 @@
       if(hasChanges){
         changeCount++;
       } else{
-        changeCount--;
+        changeCount = Math.max(changeCount-1, 0); {# We REALLY don't want to have a negative changeCount #}
       }
 
       if(changeCount == 0){

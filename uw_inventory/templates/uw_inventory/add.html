@@ -12,15 +12,6 @@
   {{ block.super }}
 
   <script type="text/javascript">
-    (function(){
-      var compiledTemplate = $('#file-template').html().replace(/files?-__prefix__/g, 'sop-0');
-      $('#sop-form-container').append(compiledTemplate);
-      $('#id_sop-TOTAL_FORMS').val(1);
-      $('#id_sop-MAX_NUM_FORMS').val(1);
-    })();
-  </script>
-
-  <script type="text/javascript">
     $('#pageSave').removeAttr('disabled');
   </script>
   

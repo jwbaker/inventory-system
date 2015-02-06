@@ -31,6 +31,10 @@
 {% block js_includes %}
   {{ block.super }}
 
+  <script type="text/javascript">
+    $('#sop-form-container').addClass('hidden');
+  </script>
+
   {% if perms.uw_inventory.change_inventoryitem %}
     <script type="text/javascript">
     {# An extra message if we're trying to duplicate with unsaved changes #}
@@ -72,54 +76,66 @@
       });
 
       $('.save').click(function(){
+        var saveText; {# This will eventually go in the "saved" <p> tag text #}
+        var hasChanged = false;
         var paragraph = $('p#' + $(this).attr('for'));
 
         {# This line looks up from the pragraph for the parent div, then down for the input element #}
         var inputControl = paragraph.closest('div').find('.form-element');
-        var original = inputControl.parents('div.form-group').find('span.default-value')[0].textContent.trim();
-        var saveText; {# This will eventually go in the "saved" <p> tag text #}
 
-        if(inputControl.is('select')){
-          {# inputControl was formerly the select box itself, but we need the selected option #}
-          inputControl = inputControl.find('option:selected');
+        if(inputControl.length > 0){
+          var original = inputControl.parents('div.form-group').find('span.default-value')[0].textContent.trim();
+          if(inputControl.is('select')){
+            {# inputControl was formerly the select box itself, but we need the selected option #}
+            inputControl = inputControl.find('option:selected');
 
-          saveText = inputControl[0].text;
-        } else if(inputControl.is('input[type="date"]')){
-          {# Need to do this because sending the string alone into the Date constructor will #}
-          {#   interpret the data as UTC, but we want it to be Eastern time #}
-          var dateStr = inputControl[0].value;
-          if(dateStr){
-            var dateArr = dateStr.split('-');
-            var date = new Date(dateArr[0], dateArr[1] - 1, dateArr[2]);
+            saveText = inputControl[0].text;
+          } else if(inputControl.is('input[type="date"]')){
+            {# Need to do this because sending the string alone into the Date constructor will #}
+            {#   interpret the data as UTC, but we want it to be Eastern time #}
+            var dateStr = inputControl[0].value;
+            if(dateStr){
+              var dateArr = dateStr.split('-');
+              var date = new Date(dateArr[0], dateArr[1] - 1, dateArr[2]);
 
-            {# Keeps a consistent formatting on the date. We could do this with native JS, but this is cleaner #}
-            saveText = $.datepicker.formatDate('M. d, yy', date);
-          } else{
-            saveText = '';
-          }
-        } else if(inputControl.is('i.checkbox')){
-          saveText = (inputControl.hasClass('fa-check-square-o') ? 'Yes' : 'No');
-        } else if(inputControl.is('.ui-autocomplete-input')){
-          saveText = (inputControl[0].value == inputControl.placeholder ? '' : inputControl[0].value);
-          var toSave;
-          if(saveText === ''){
-            toSave = '';
+              {# Keeps a consistent formatting on the date. We could do this with native JS, but this is cleaner #}
+              saveText = $.datepicker.formatDate('M. d, yy', date);
+            } else{
+              saveText = '';
+            }
+          } else if(inputControl.is('i.checkbox')){
+            saveText = (inputControl.hasClass('fa-check-square-o') ? 'Yes' : 'No');
+          } else if(inputControl.is('.ui-autocomplete-input')){
+            saveText = (inputControl[0].value == inputControl.placeholder ? '' : inputControl[0].value);
+            var toSave;
+            if(saveText === ''){
+              toSave = '';
+            } else {
+              toSave = inputControl.attr('to-save');
+            }
+            {# More magic here, because the autocomplete widget sends the name value but we need the id #}
+            inputControl[1].setAttribute('value', toSave);
           } else {
-            toSave = inputControl.attr('to-save');
+            {# We don't want to display placeholder text #}
+            saveText = (inputControl[0].value == inputControl.placeholder ? '' : inputControl[0].value);
           }
-          {# More magic here, because the autocomplete widget sends the name value but we need the id #}
-          inputControl[1].setAttribute('value', toSave);
-        } else {
-          {# We don't want to display placeholder text #}
-          saveText = (inputControl[0].value == inputControl.placeholder ? '' : inputControl[0].value);
-        }
 
-        hasChanged = (saveText !== original) {# Here, blank values are considered a change #}
-        
-        if(hasChanged){ {# Have we made a change? #}
-          inputControl.parents('div.form-group').addClass('list-group-item-warning has-warning');
-        } else{ {# Are we back to original? #}
-          inputControl.parents('div.form-group').removeClass('list-group-item-warning has-warning');
+          hasChanged = (saveText !== original) {# Here, blank values are considered a change #}
+          
+          if(hasChanged){ {# Have we made a change? #}
+            inputControl.parents('div.form-group').addClass('list-group-item-warning has-warning');
+          } else{ {# Are we back to original? #}
+            inputControl.parents('div.form-group').removeClass('list-group-item-warning has-warning');
+          }
+        } else { {# No inputControl - probably means this is the SOP field #}
+          inputControl = $('#sop-form-container');
+          var new_file_name = inputControl.find('[type="file"]').val();
+          if(new_file_name) new_file_name = new_file_name.match(/[^\\]*\..*/)[0];
+          var new_description = inputControl.find('#inputDescription').val();
+
+          saveText = new_description || new_file_name;
+          hasChanged = (new_file_name !== inputControl.find('#file-default').val()) ||
+                        (new_description !== inputControl.find('#file-description-default').val());
         }
 
         $(window).trigger('pagechanges', hasChanged); {# Here's that event from earlier #}

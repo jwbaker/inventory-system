@@ -270,6 +270,37 @@
   {% endif %}
 
   {% if perms.uw_inventory.add_itemfile %}
+    <script type="text/html" id="file-template">
+      <div id="file-__prefix__">
+        {{ formsets.file.empty_form.as_p }}
+      </div>     
+    </script>
+
+    <script type="text/html" id="file-table-row-template">
+      <tr>
+        {# When we toggle visibility on the tr's children, the hidden classes will all swap #}
+        <td class="hidden file-description"></td>
+        <td class="hidden file-size"></td>
+        <td class="hidden">
+          <i class="fa fa-gear file-edit"></i>
+        </td>
+        <td colspan="2">__form__</td>
+        <td>
+          <i class="fa fa-check file-save"></i>
+          <i class="fa fa-times file-cancel"></i>
+        </td>
+      </tr>
+    </script>
+
+    <script type="text/javascript">
+      (function(){
+        var compiledTemplate = $('#file-template').html().replace(/files?-__prefix__/g, 'sop-0');
+        $('#sop-form-container').append(compiledTemplate);
+        $('#id_sop-TOTAL_FORMS').val(1);
+        $('#id_sop-MAX_NUM_FORMS').val(1);
+      })();
+    </script>
+
     <script type="text/javascript">
       {# When we add a file, we create a new instance of the formset #}
       $('#add-file').click(function(){
@@ -329,28 +360,6 @@
         var row = $(this).closest('tr');
         row.children().toggleClass('hidden');
       });
-    </script>
-
-    <script type="text/html" id="file-template">
-      <div id="file-__prefix__">
-        {{ formsets.file.empty_form.as_p }}
-      </div>     
-    </script>
-
-    <script type="text/html" id="file-table-row-template">
-      <tr>
-        {# When we toggle visibility on the tr's children, the hidden classes will all swap #}
-        <td class="hidden file-description"></td>
-        <td class="hidden file-size"></td>
-        <td class="hidden">
-          <i class="fa fa-gear file-edit"></i>
-        </td>
-        <td colspan="2">__form__</td>
-        <td>
-          <i class="fa fa-check file-save"></i>
-          <i class="fa fa-times file-cancel"></i>
-        </td>
-      </tr>
     </script>
   {% endif %}
 
