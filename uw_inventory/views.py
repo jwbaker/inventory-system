@@ -124,13 +124,25 @@ def inventory_detail(request, item_id):
             prefix='files',
             instance=inventory_item
         )
+        sop_formset = FileUploadFormset(
+            request.POST,
+            request.FILES,
+            prefix='sop',
+            instance=inventory_item
+        )
 
         if (
           form.is_valid() and
           note_formset.is_valid() and
-          file_formset.is_valid()
+          file_formset.is_valid() and
+          sop_formset.is_valid()
         ):
-            form.save()
+            new_item = form.save(commit=False)
+            sop_files = sop_formset.save(commit=False)
+            map(lambda x: x.save(), sop_files)
+            if sop_files:
+                new_item.sop_file_id = sop_files[0].id
+            new_item.save()
             note_formset.save()
             file_formset.save()
             messages.success(request,
@@ -158,6 +170,7 @@ def inventory_detail(request, item_id):
         'formsets': {
             'note': NoteCreateFormset(),
             'file': FileUploadFormset(prefix='files'),
+            'sop': FileUploadFormset(prefix='sop'),
         }
     })
 
@@ -196,8 +209,22 @@ def inventory_add(request):
                 prefix='files',
                 instance=new_item
             )
+            sop_formset = FileUploadFormset(
+                request.POST,
+                request.FILES,
+                prefix='sop',
+                instance=new_item
+            )
 
-            if note_formset.is_valid() and file_formset.is_valid():
+            if (
+              note_formset.is_valid() and
+              file_formset.is_valid() and
+              sop_formset.is_valid()
+            ):
+                sop_files = sop_formset.save(commit=False)
+                map(lambda x: x.save(), sop_files)
+                if sop_files:
+                    new_item.sop_file_id = sop_files[0].id
                 new_item.save()
                 note_formset.save()
                 file_formset.save()
@@ -226,6 +253,7 @@ def inventory_add(request):
         'formsets': {
             'note': NoteCreateFormset(prefix='notes'),
             'file': FileUploadFormset(prefix='files'),
+            'sop': FileUploadFormset(prefix='sop'),
         }
     })
 
