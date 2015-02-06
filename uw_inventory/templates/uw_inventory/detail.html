@@ -33,6 +33,9 @@
 
   <script type="text/javascript">
     $('#sop-form-container').addClass('hidden');
+    $('#sop-form-container').find('#inputDescription').val(
+      $('#sop-form-container').find('#file-description-default').val()
+    );
   </script>
 
   {% if perms.uw_inventory.change_inventoryitem %}
@@ -122,22 +125,22 @@
 
           hasChanged = (saveText !== original) {# Here, blank values are considered a change #}
           
-          if(hasChanged){ {# Have we made a change? #}
-            inputControl.parents('div.form-group').addClass('list-group-item-warning has-warning');
-          } else{ {# Are we back to original? #}
-            inputControl.parents('div.form-group').removeClass('list-group-item-warning has-warning');
-          }
         } else { {# No inputControl - probably means this is the SOP field #}
           inputControl = $('#sop-form-container');
           var new_file_name = inputControl.find('[type="file"]').val();
           if(new_file_name) new_file_name = new_file_name.match(/[^\\]*\..*/)[0];
           var new_description = inputControl.find('#inputDescription').val();
 
-          saveText = new_description || new_file_name;
-          hasChanged = (new_file_name !== inputControl.find('#file-default').val()) ||
+          saveText = new_description || new_file_name || paragraph[0].textContent.trim();
+          hasChanged = ((new_file_name !== '') && (new_file_name !== inputControl.find('#file-default').val())) ||
                         (new_description !== inputControl.find('#file-description-default').val());
         }
 
+        if(hasChanged){ {# Have we made a change? #}
+          inputControl.parents('div.form-group').addClass('list-group-item-warning has-warning');
+        } else{ {# Are we back to original? #}
+          inputControl.parents('div.form-group').removeClass('list-group-item-warning has-warning');
+        }
         $(window).trigger('pagechanges', hasChanged); {# Here's that event from earlier #}
 
         paragraph[0].textContent = saveText;
