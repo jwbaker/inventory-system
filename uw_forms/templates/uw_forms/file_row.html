@@ -11,11 +11,16 @@
   <td class="file-size">{{ form.initial.file.size|filesizeformat }}</td>
   <td colspan="2" class="hidden">
     {{ form.as_p }}
+    <span class="default-description hidden">{{ form.initial.description }}</span>
   </td>
   <td>
     <i class="fa fa-download file-download"
        data-target="{% url 'uw_inventory_system.views.file_download' form.instance.id %}">
     </i>
-    <i class="fa fa-gear"></i>
+    <i class="fa fa-gear file-edit"></i>
+  </td>
+  <td class="hidden">
+    <i class="fa fa-check file-save"></i>
+    <i class="fa fa-times file-cancel"></i>
   </td>
 </tr>
