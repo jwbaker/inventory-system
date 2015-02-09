@@ -24,6 +24,8 @@
         {# There should be a better way to generate this table, but this will do for now #}
         <td>Name</td>
         <td>Location</td>
+        <td>Technician</td>
+        <td>Owner</td>
         <td>Manufacturer</td>
         <td>Model</td>
         <td>Description</td>
@@ -58,6 +60,8 @@
               {{ item.name }}
             </td>
             <td>{{ item.location }}</td>
+            <td>{{ item.technician.get_name_display }}</td>
+            <td>{{ item.owner.get_name_display }}</td>
             <td>{{ item.manufacturer }}</td>
             <td>{{ item.model_number }}</td>
             <td>{{ item.description }}</td>
@@ -100,7 +104,7 @@
         {# This is how we can search on invisible columns - DataTables magic! #}
         'columnDefs': [
           {
-            'targets': [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25],
+            'targets': [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27],
             'visible': false,
           }
         ]
