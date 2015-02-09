@@ -24,9 +24,7 @@
       {% endif %}
   {% endfor %}
 
-  {% if form.instance.itemfile_set %}
-    {% show_files form.instance.itemfile_set.all %}
-  {% endif %}
+  {% show_files formsets.file %}
   <div id="notes-form-container">
       
   </div>

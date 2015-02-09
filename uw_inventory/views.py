@@ -115,20 +115,25 @@ def inventory_detail(request, item_id):
         can_delete=False
     )
 
+    note_formset = NoteCreateFormset(
+        request.POST or None,
+        prefix='notes',
+        instance=inventory_item
+    )
+    file_formset = FileUploadFormset(
+        request.POST or None,
+        request.FILES or None,
+        prefix='files',
+        instance=inventory_item
+    )
+    sop_formset = FileUploadFormset(
+        request.POST or None,
+        request.FILES or None,
+        prefix='sop'
+    )
+
     if request.method == 'POST':
         form = ItemForm(request.POST, request.FILES, instance=inventory_item)
-        note_formset = NoteCreateFormset(request.POST, instance=inventory_item)
-        file_formset = FileUploadFormset(
-            request.POST,
-            request.FILES,
-            prefix='files',
-            instance=inventory_item
-        )
-        sop_formset = FileUploadFormset(
-            request.POST,
-            request.FILES,
-            prefix='sop'
-        )
 
         if (
           form.is_valid() and
@@ -168,9 +173,9 @@ def inventory_detail(request, item_id):
             'note': NoteForm(),
         },
         'formsets': {
-            'note': NoteCreateFormset(),
-            'file': FileUploadFormset(prefix='files'),
-            'sop': FileUploadFormset(prefix='sop'),
+            'note': note_formset,
+            'file': file_formset,
+            'sop': sop_formset,
         }
     })
 

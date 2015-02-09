@@ -1,17 +1,21 @@
 {% load uw_forms_format_tags %}
 
-<tr>
+<tr {% if form.errors %}class="danger"{% endif %}>
   <td class="file-description">
-    {% if file.description %}
-      {{ file.description }}
+    {% if form.initial.description %}
+      {{ form.initial.description }}
     {% else %}
-      {{ file.file.name|filename }}
+      {{ form.initial.file.name|filename }}
     {% endif %}
   </td>
-  <td class="file-size">{{ file.file.size|filesizeformat }}</td>
+  <td class="file-size">{{ form.initial.file.size|filesizeformat }}</td>
+  <td colspan="2" class="hidden">
+    {{ form.as_p }}
+  </td>
   <td>
     <i class="fa fa-download file-download"
-       data-target="{% url 'uw_inventory_system.views.file_download' file.id %}">
+       data-target="{% url 'uw_inventory_system.views.file_download' form.instance.id %}">
     </i>
+    <i class="fa fa-gear"></i>
   </td>
 </tr>

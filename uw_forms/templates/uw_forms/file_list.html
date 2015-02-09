@@ -2,7 +2,7 @@
   <div class="col-xs-3">
     <label class="control-label">Files</label>
   </div>
-  <div class="col-xs-8">
+  <div class="col-xs-9">
     <table id="file-table" class="table table-condensed">
       <thead>
         <td>Description</td>
@@ -10,8 +10,8 @@
         <td></td>
       </thead>
       <tbody>
-        {% for file in files %}
-          {% include 'uw_forms/file_row.html' with file=file %}
+        {% for form in forms %}
+          {% include 'uw_forms/file_row.html' with form=form %}
         {% endfor %}
         <tr>
           <td align="center" colspan="3">
