@@ -2,13 +2,11 @@
 
 <tr>
   <td class="file-description">
-    <a href="">
-      {% if file.description %}
-        {{ file.description }}
-      {% else %}
-        {{ file.file.name|filename }}
-      {% endif %}
-    </a>
+    {% if file.description %}
+      {{ file.description }}
+    {% else %}
+      {{ file.file.name|filename }}
+    {% endif %}
   </td>
   <td class="file-size">{{ file.file.size|filesizeformat }}</td>
   <td>
