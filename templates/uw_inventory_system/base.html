@@ -95,7 +95,7 @@
       <hr>
 
       <footer>
-        <p>&copy; University of Waterloo 2014</p>
+        <p id="copyright">&copy; University of Waterloo</p>
       </footer>
     </div>
 
@@ -125,6 +125,10 @@
 
       return year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds;
     }
+    </script>
+
+    <script>
+      $('#copyright').append('<span> ' + (new Date()).getFullYear() + '</span>')
     </script>
 
     {% block js_includes %}
