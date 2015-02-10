@@ -1,21 +1,17 @@
 {% load uw_forms_field_tags %}
 
-  {% csrf_token %}
+{% csrf_token %}
 
-  {% for field in shown_excluded_fields %}
-      {% show_excluded_field field.label field.value %}
-  {% endfor %}
+{% for field in shown_excluded_fields %}
+    {% show_excluded_field field.label field.value %}
+{% endfor %}
 
-  {% for field in fields %}
-      {% if field.legacy %}
-          {% if field.field.value %}
-              {% show_static_field field %}
-          {% endif %}
-      {% else %}
-          {% show_editable_field field can_edit %}
-      {% endif %}
-  {% endfor %}
-
-  <div id="notes-form-container">
-      
-  </div>
+{% for field in fields %}
+    {% if field.legacy %}
+        {% if field.field.value %}
+            {% show_static_field field %}
+        {% endif %}
+    {% else %}
+        {% show_editable_field field can_edit %}
+    {% endif %}
+{% endfor %}

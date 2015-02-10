@@ -34,6 +34,9 @@
     {% endfor %}
     {% edit_form form perms.uw_inventory.change_inventoryitem shown_excluded_fields %}
     {% show_files formsets.file %}
+    <div id="notes-form-container">
+      
+    </div>
   </form>
   {{ block.super }}
 {% endblock page_body %}
