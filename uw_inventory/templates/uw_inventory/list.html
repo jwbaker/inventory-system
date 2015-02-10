@@ -65,7 +65,7 @@
             </td>
             <td>
               {# Have to put the link somewhere #}
-              <a href="{% url 'uw_inventory.views.inventory_detail' item.id %}"></a>
+              <a class="item-detail" href="{% url 'uw_inventory.views.inventory_detail' item.id %}"></a>
               {{ item.name }}
             </td>
             <td>{{ item.location }}</td>
@@ -123,7 +123,7 @@
   <script type="text/javascript">
     {# If we click anywhere in a row, we want to trigger the link contained in that row #}
     $('tbody tr').click(function(){
-      window.location = $(this).find('a').attr('href');
+      window.location = $(this).find('a.item-detail').attr('href');
     });
   </script>
 {% endblock js_includes %}
