@@ -1,5 +1,6 @@
 {% extends 'uw_inventory/item_base.html' %}
 {% load uw_forms_form_tags %}
+{% load uw_forms_field_tags %}
 
 {% block gutter_nav %}
   {% if perms.uw_inventory.add_inventoryitem %}  
@@ -24,7 +25,16 @@
 {% endblock page_heading %}
 
 {% block page_body %}
-  {% edit_form form 'itemForm' 'uw_inventory.views.inventory_detail' perms.uw_inventory.change_inventoryitem shown_excluded_fields formsets %}
+  <form id="itemForm"
+        method="post"
+        action="{% url 'uw_inventory.views.inventory_detail' inventory_item.id %}"
+        enctype="multipart/form-data">
+    {% for key,fs in formsets.items %}
+      {{ fs.management_form }}
+    {% endfor %}
+    {% edit_form form perms.uw_inventory.change_inventoryitem shown_excluded_fields %}
+    {% show_files formsets.file %}
+  </form>
   {{ block.super }}
 {% endblock page_body %}
 

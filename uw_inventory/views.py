@@ -135,7 +135,7 @@ def inventory_detail(request, item_id):
 
     if request.method == 'POST':
         form = ItemForm(request.POST, request.FILES, instance=inventory_item)
-        print sop_formset.errors
+
         if (
           form.is_valid() and
           note_formset.is_valid() and

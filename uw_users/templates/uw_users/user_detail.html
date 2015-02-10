@@ -7,7 +7,11 @@
 {% endblock page_heading %}
 
 {% block page_body %}
-  {% edit_form form 'userForm' 'uw_users.views.user_detail' can_edit shown_excluded_fields %}
+  <form action="{% url 'uw_users.views.user_detail' page_user %}"
+        method="post"
+        id="userForm">
+    {% edit_form form can_edit shown_excluded_fields %}
+  </form>
 {% endblock page_body %}
 
 {% block js_includes %}

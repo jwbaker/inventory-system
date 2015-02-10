@@ -10,8 +10,6 @@ class UserForm(forms.ModelForm):
         {'Name': 'last_name'}
     ]
 
-    INSTANCE_MEMBER = 'username'
-
     class Meta:
         model = User
         fields = [
