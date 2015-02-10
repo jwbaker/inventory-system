@@ -129,12 +129,13 @@ def inventory_detail(request, item_id):
     sop_formset = FileUploadFormset(
         request.POST or None,
         request.FILES or None,
-        prefix='sop'
+        prefix='sop',
+        instance=inventory_item
     )
 
     if request.method == 'POST':
         form = ItemForm(request.POST, request.FILES, instance=inventory_item)
-
+        print sop_formset.errors
         if (
           form.is_valid() and
           note_formset.is_valid() and
@@ -143,6 +144,7 @@ def inventory_detail(request, item_id):
         ):
             new_item = form.save(commit=False)
             sop_files = sop_formset.save(commit=False)
+            map(lambda f: setattr(f, 'inventory_item_id', None), sop_files)
             map(lambda f: f.save(), sop_files)
 
             if sop_files:

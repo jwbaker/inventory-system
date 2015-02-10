@@ -99,7 +99,7 @@ def show_field(field):
 
 
 @register.inclusion_tag('uw_forms/file_list.html')
-def show_files(formset):
+def show_files(formset=None):
     '''
     Displays the list of associated files for an InventoryItem
 
@@ -107,4 +107,7 @@ def show_files(formset):
         formset --- The Django set of ItemFile forms associated with the
                         InventoryItem instance
     '''
-    return {'forms': formset.forms}
+    if formset:
+        return {'forms': formset.forms}
+    else:
+        return {'forms': None}

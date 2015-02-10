@@ -1,4 +1,5 @@
 from datetime import datetime
+import re
 
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
@@ -19,6 +20,12 @@ class AutocompleteData(models.Model):
 
 
 class ItemFile(models.Model):
+    MIMETYPES = {
+        'txt': 'text/plain',
+        'pdf': 'application/pdf',
+        'doc': 'application/msword',
+        'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    }
     description = models.TextField(blank=True, null=True)
     file = models.FileField(upload_to='files/%Y/%m/%d/')
     inventory_item = models.ForeignKey(
@@ -29,6 +36,13 @@ class ItemFile(models.Model):
         default=None,
         null=True
     )
+    mimetype = models.CharField(max_length=255)
+
+    def save(self, *args, **kwargs):
+        extension = re.search('.(\w+)$', self.file.name).group(1)
+        self.mimetype = ItemFile.MIMETYPES.get(extension, None)
+        print vars(self)
+        super(ItemFile, self).save(*args, **kwargs)
 
 
 class InventoryItem(models.Model):
@@ -76,11 +90,10 @@ class InventoryItem(models.Model):
     # save method is overriden so we can generate the UUID automatically
     def save(self, *args, **kwargs):
         super(InventoryItem, self).save()
-        if not self.uuid:  # No sense generating it twice
-            self.uuid = "{0}-{1}".format(
-                self.creation_date.strftime('%Y%m%d'),
-                self.id
-            )
+        self.uuid = "{0}-{1}".format(
+            self.creation_date.strftime('%Y%m%d'),
+            self.id
+        )
         # Double save so we can include a unique record ID in the UUID
         super(InventoryItem, self).save(*args, **kwargs)
 

@@ -10,6 +10,9 @@
     table#inventoryTable tbody tr:hover{
       cursor: pointer;
     }
+    td.sop-cell{
+      text-align: center;
+    }
   </style>
 {% endblock css_includes %}
 
@@ -22,6 +25,7 @@
     <table id="inventoryTable" class="table table-condensed table-hover">
       <thead>
         {# There should be a better way to generate this table, but this will do for now #}
+        <td>SOP</td>
         <td>Name</td>
         <td>Location</td>
         <td>Technician</td>
@@ -54,6 +58,11 @@
       <tbody>
         {% for item in inventory_list %}
           <tr>
+            <td class="sop-cell">
+              {% if item.sop_file %}
+                <a href="{% url 'uw_inventory_system.views.file_view' item.sop_file.file.name %}"><i class="fa fa-file"></i></a>
+              {% endif %}
+            </td>
             <td>
               {# Have to put the link somewhere #}
               <a href="{% url 'uw_inventory.views.inventory_detail' item.id %}"></a>
@@ -104,7 +113,7 @@
         {# This is how we can search on invisible columns - DataTables magic! #}
         'columnDefs': [
           {
-            'targets': [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27],
+            'targets': [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28],
             'visible': false,
           }
         ]

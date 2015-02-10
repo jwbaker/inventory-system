@@ -19,3 +19,18 @@ def file_download(request, file_id):
         )
 
         return response
+
+
+def file_view(request, file_name):
+    if request.method == 'GET':
+        file_obj = ItemFile.objects.get(file=file_name)
+        with open(file_name, 'r') as file:
+            response = HttpResponse(
+                file.read(),
+                content_type=file_obj.mimetype
+            )
+            response['Content-Disposition'] = 'inline; filename="{0}"'.format(
+                os.path.basename(file.name)
+            )
+            return response
+        file.closed
