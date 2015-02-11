@@ -154,6 +154,25 @@ def inventory_detail(request, item_id):
             new_item.save()
             note_formset.save()
             file_formset.save()
+
+            sop_formset = FileUploadFormset(
+                None,
+                None,
+                prefix='sop',
+                instance=inventory_item,
+                queryset=ItemFile.objects.filter(
+                    id=inventory_item.sop_file_id
+                )
+            )
+            file_formset = FileUploadFormset(
+                None,
+                None,
+                prefix='files',
+                instance=inventory_item,
+                queryset=ItemFile.objects.exclude(
+                    id=inventory_item.sop_file_id
+                )
+            )
             messages.success(request,
                              'Item saved successfully')
         else:
