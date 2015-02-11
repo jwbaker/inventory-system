@@ -1,6 +1,7 @@
 {% extends 'uw_inventory/item_base.html' %}
 {% load uw_forms_form_tags %}
 {% load uw_forms_field_tags %}
+{% load uw_forms_format_tags %}
 
 {% block page_heading %}New Inventory Item{% endblock page_heading %}
 
@@ -18,7 +19,7 @@
         <label for="inputSopFile" class="control-label">SOP</label>
       </div>
       <div class="col-xs-8">
-        {{ formsets.sop.empty_form.as_p }}
+        {{ formsets.sop.empty_form.as_p|prefix }}
       </div>
     </div>
     {% show_files %}

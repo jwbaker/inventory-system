@@ -50,7 +50,7 @@
         {% if formsets.sop.forms %}
           {{ formsets.sop.forms.0.as_p }}
         {% else %}
-          {{ formsets.sop.empty_form.as_p }}
+          {{ formsets.sop.empty_form.as_p|prefix }}
         {% endif %}
         <input type="text" class="field-hidden" id="file-description-default" value="{{ formsets.sop.forms.0.instance.description }}">
         </div>

@@ -40,7 +40,7 @@ class ItemFile(models.Model):
 
     def save(self, *args, **kwargs):
         extension = re.search('.(\w+)$', self.file.name).group(1)
-        self.mimetype = ItemFile.MIMETYPES.get(extension, None)
+        self.mimetype = ItemFile.MIMETYPES.get(extension, '')
         print vars(self)
         super(ItemFile, self).save(*args, **kwargs)
 
