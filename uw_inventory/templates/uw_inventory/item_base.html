@@ -129,6 +129,17 @@
   </script>
 
   {{ block.super }}
+
+  <script type="text/javascript">
+    String.prototype.formatFilename = function(){
+      try{
+        return this.match(/[^\\]*\..*/)[0];
+      } catch(e){
+        return '';
+      }
+    }
+  </script>
+
   {% if perms.uw_inventory.add_autocompletedata %}
     <script type="text/javascript">
       {# Launch the modal to add an autocomplete term #}
@@ -315,7 +326,7 @@
         if(row.find('[type="file"]').val()){
           var description = row.find('#inputDescription').val() ||
                         {# Some magic regex to convert a fully-qualified path into a filename #}
-                        row.find('[type="file"]').val().match(/[^\\]*\..*/)[0];
+                        row.find('[type="file"]').val().formatFilename();
 
           {# Really horrible ugly filesize formatting #}
           var fileSize;

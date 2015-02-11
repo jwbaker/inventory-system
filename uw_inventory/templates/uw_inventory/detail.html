@@ -171,7 +171,7 @@
         } else { {# No inputControl - probably means this is the SOP field #}
           inputControl = $('#sop-form-container');
           var new_file_name = inputControl.find('[type="file"]').val();
-          if(new_file_name) new_file_name = new_file_name.match(/[^\\]*\..*/)[0];
+          if(new_file_name) new_file_name = new_file_name.formatFilename();
           var new_description = inputControl.find('#inputDescription').val();
 
           saveText = new_description || new_file_name || paragraph[0].textContent.trim();
