@@ -1,6 +1,7 @@
 {% extends 'uw_inventory/item_base.html' %}
 {% load uw_forms_form_tags %}
 {% load uw_forms_field_tags %}
+{% load uw_forms_format_tags %}
 
 {% block gutter_nav %}
   {% if perms.uw_inventory.add_inventoryitem %}  
@@ -38,13 +39,20 @@
         <label for="inputSopFile" class="control-label">SOP</label>
       </div>
       <div class="col-xs-8">
-        <p class="form-control-static" id="inputSopFile"></p>
-        <div class="hidden">
+        <p class="form-control-static" id="inputSopFile">
+          {% if formsets.sop.forms.0.instance.description %}
+            {{ formsets.sop.forms.0.instance.description }}
+          {% else %}
+            {{ formsets.sop.forms.0.instance.file.name|filename }}
+          {% endif %}
+        </p>
+        <div class="hidden" id="sop-form-container">
         {% if formsets.sop.forms %}
           {{ formsets.sop.forms.0.as_p }}
         {% else %}
           {{ formsets.sop.empty_form.as_p }}
         {% endif %}
+        <input type="text" class="field-hidden" id="file-description-default" value="{{ formsets.sop.forms.0.instance.description }}">
         </div>
       </div>
       <div class="col-xs-1">
@@ -167,8 +175,8 @@
           var new_description = inputControl.find('#inputDescription').val();
 
           saveText = new_description || new_file_name || paragraph[0].textContent.trim();
-          hasChanged = ((new_file_name !== '') && (new_file_name !== inputControl.find('#file-default').val())) ||
-                        (new_description !== inputControl.find('#file-description-default').val());
+          hasChanged = (new_file_name !== '') ||
+                       (new_description !== inputControl.find('#file-description-default').attr('value'));
         }
 
         if(hasChanged){ {# Have we made a change? #}
