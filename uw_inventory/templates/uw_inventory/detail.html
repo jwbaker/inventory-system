@@ -30,21 +30,27 @@
         method="post"
         action="{% url 'uw_inventory.views.inventory_detail' inventory_item.id %}"
         enctype="multipart/form-data">
+
     {% for key,fs in formsets.items %}
       {{ fs.management_form }}
     {% endfor %}
+
     {% edit_form form perms.uw_inventory.change_inventoryitem shown_excluded_fields %}
+
+    {# Putting this template here makes me cry, but it works for now #}
     <div class="form-group list-group-item clearfix">
       <div class="col-xs-3">
         <label for="inputSopFile" class="control-label">SOP</label>
       </div>
       <div class="col-xs-8">
         <p class="form-control-static" id="inputSopFile">
+
           {% if formsets.sop.forms.0.instance.description %}
             {{ formsets.sop.forms.0.instance.description }}
           {% else %}
             {{ formsets.sop.forms.0.instance.file.name|filename }}
           {% endif %}
+
         </p>
         <div class="hidden" id="sop-form-container">
         {% if formsets.sop.forms %}
@@ -52,16 +58,18 @@
         {% else %}
           {{ formsets.sop.empty_form.as_p|prefix }}
         {% endif %}
-        <input type="text" class="field-hidden" id="file-description-default" value="{{ formsets.sop.forms.0.instance.description }}">
+        <input type="text" class="persist-hidden" id="file-description-default" value="{{ formsets.sop.forms.0.instance.description }}">
         </div>
       </div>
-      <div class="col-xs-1">
-        <i class="fa fa-check save hidden" for="inputSopFile"></i>
-        <i class="fa fa-times cancel hidden" for="inputSopFile"></i>
-        <i class="fa fa-pencil edit" for="inputSopFile"></i>
-      </div>
+      {% if perms.uw_inventory.change_itemfile %}
+        <div class="col-xs-1">
+          <i class="fa fa-check save hidden" for="inputSopFile"></i>
+          <i class="fa fa-times cancel hidden" for="inputSopFile"></i>
+          <i class="fa fa-pencil edit" for="inputSopFile"></i>
+        </div>
+      {% endif %}
     </div>
-    {% show_files formsets.file %}
+    {% show_files perms.uw_inventory.add_itemfile perms.uw_inventory.change_itemfile formsets.file %}
 
     <div id="notes-form-container">
       
@@ -72,14 +80,6 @@
 
 {% block js_includes %}
   {{ block.super }}
-
-  <script type="text/javascript">
-    $('#sop-form-container').addClass('hidden');
-    $('#sop-form-container').find('#inputDescription').val(
-      $('#sop-form-container').find('#file-description-default').attr('value')
-    );
-    $('#id_sop-0-id').attr('value', '{{ inventory_item.sop_file.id }}');
-  </script>
 
   {% if perms.uw_inventory.change_inventoryitem %}
     <script type="text/javascript">

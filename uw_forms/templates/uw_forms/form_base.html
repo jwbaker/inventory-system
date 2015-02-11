@@ -19,8 +19,10 @@
     {% if can_edit or can_add %}
       <div class="col-xs-7 col-xs-offset-2">
     {% else %}
+      {# Since users who can't edit don't see the affix save button, we expand the window for them #}
       <div class="col-xs-8 col-xs-offset-2">
     {% endif %}
+
       <div class="panel panel-default">
         <div class="panel-heading">{% block page_heading %}{% endblock page_heading %}</div>
             {% block page_body %}

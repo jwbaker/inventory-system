@@ -13,13 +13,15 @@
         {% for form in forms %}
           {% include 'uw_forms/file_row.html' with form=form %}
         {% endfor %}
-        <tr>
-          <td align="center" colspan="3">
-            <a id="add-file">
-              <i class="fa fa-plus-circle"></i>
-            </a>
-          </td>
-        </tr>
+        {% if can_add %}
+          <tr>
+            <td align="center" colspan="3">
+              <a id="add-file">
+                <i class="fa fa-plus-circle"></i>
+              </a>
+            </td>
+          </tr>
+        {% endif %}
       </tbody>
     </table>
   </div>

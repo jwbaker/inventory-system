@@ -99,15 +99,27 @@ def show_field(field):
 
 
 @register.inclusion_tag('uw_forms/file_list.html')
-def show_files(formset=None):
+def show_files(can_add, can_edit, formset=None):
     '''
     Displays the list of associated files for an InventoryItem
 
     Positional arguments:
+        can_add -- True if the currently logged-in user is allowed to upload
+                    files
+        can_edit -- True if the currently logged-in user is allowed to edit
+                    file properties
         formset --- The Django set of ItemFile forms associated with the
                         InventoryItem instance
     '''
     if formset:
-        return {'forms': formset.forms}
+        return {
+            'can_add': can_add,
+            'can_edit': can_edit,
+            'forms': formset.forms
+        }
     else:
-        return {'forms': None}
+        return {
+            'can_add': can_add,
+            'can_edit': can_edit,
+            'forms': None
+        }

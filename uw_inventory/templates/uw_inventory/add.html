@@ -22,7 +22,7 @@
         {{ formsets.sop.empty_form.as_p|prefix }}
       </div>
     </div>
-    {% show_files %}
+    {% show_files perms.uw_inventory.add_itemfile perms.uw_inventory.change_itemfile %}
     <div id="notes-form-container">
       
     </div>
@@ -32,6 +32,9 @@
 
 {% block js_includes %}
   {{ block.super }}
+
+  {# In principle I could wrap most of this code in permission guard, as I do on other pages #}
+  {# In practice though, there's no point; permission verification occurs when the page is loaded #}
 
   <script type="text/javascript">
     $('#pageSave').removeAttr('disabled');
@@ -72,6 +75,7 @@
       
       var newValue = event.target.value
       {# Custom validation of Tech_ID field #}
+      {# It would eventually be nice to attach this to the widget #}
       if(newValue.search(new RegExp('^[a-z]{2}-?\\d*$')) === 0){
         {# If the value is plausibly similar, we massage it into the right form #}
         var formattedValue = newValue.substring(0,2).toUpperCase() + '-';

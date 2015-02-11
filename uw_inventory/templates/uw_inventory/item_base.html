@@ -17,7 +17,7 @@
 {% endblock css_includes %}
 
 {% block page_body %}
-  {% show_notes inventory_item.note_set.all %}
+  {% show_notes inventory_item.note_set.all perms.uw_inventory.add_note %}
 {% endblock page_body %}
 
 {% block modal %}
@@ -131,8 +131,14 @@
   {{ block.super }}
 
   <script type="text/javascript">
+    /*
+     * Formats a file path into an absolute filename
+     */
     String.prototype.formatFilename = function(){
       try{
+        {# This annoyingly complicated regex basically takes anything that's not a '\', #}
+        {# followed by a '.', followed by literally anything. It's a naive way to do the job, #}
+        {# since it precludes the possibility of having '.' in filenames, but it's good enough for now #}
         return this.match(/[^\\]*\..*/)[0];
       } catch(e){
         return '';
@@ -156,7 +162,7 @@
 
 
         {# Because we're using one modal to add items to all autocomplete fields, #}
-        {# we clear the modal between sessions #}
+        {# we clear the modal between 'sessions' #}
         $('#' + targetID + 'Name').val('');
 
         {# We also have to set some of the modal's content dynamically #}
@@ -197,8 +203,8 @@
           });
         } else {
           $('#' + targetID + 'Name').parent().append(
-                  '<span class="error text-danger">This field is required</span>'
-                );
+            '<span class="error text-danger">This field is required</span>'
+          );
           $('#' + targetID + 'Name').parent().addClass('has-error');
         }
       }
@@ -224,6 +230,7 @@
     <script type="text/javascript">
       $('#newNoteSubmit').click(function(event){
         var noteHTML = $(this).parent().siblings('.modal-body').find('form');
+        {# We need to do some client-side validation here, since it's a modal #}
         noteHTML.find('.form-errors').remove();
         
         if(!noteHTML.find('#inputTitle').val()){
@@ -238,6 +245,10 @@
           'author_id': {{ request.user.id }}
         }
 
+        {# Despite how it may appear, this ajax call does NOT actually "create" the note #}
+        {# Rather, I'm using a small ajax call to force data into a prepared template. #}
+        {# The actual saving won't be done until the pageSave button is pressed, which #}
+        {# preserves the expected behaviour of the pageCancel button #}
         $.ajax({
           url: '{% url "uw_inventory.views.note_new" %}',
           type: 'POST',
@@ -274,7 +285,7 @@
     </script>
 
     <script type="text/html" id="note-template">
-      <div id="note-__prefix__" class="field-hidden">
+      <div id="note-__prefix__" class="persist-hidden">
         {{ formsets.note.empty_form }}
       </div>     
     </script>
@@ -288,10 +299,12 @@
     </script>
 
     <script type="text/javascript">
-    (function(){
-      $('#id_sop-TOTAL_FORMS').val(1);
-      $('#id_sop-MAX_NUM_FORMS').val(1);
-    })();
+      (function(){
+        {# We need to set these management form fields manually because we're using the same #}
+        {# formset factory for files as for SOP #}
+        $('#id_sop-TOTAL_FORMS').val(1);
+        $('#id_sop-MAX_NUM_FORMS').val(1);
+      })();
     </script>
 
     <script type="text/html" id="file-table-row-template">
@@ -319,6 +332,8 @@
         $('#id_files-TOTAL_FORMS').attr('value', parseInt(count, 10)+1);
       });
 
+      {# This event-handling syntax is used because we're adding the target elements #}
+      {# dynamically, so they don't exist on the DOM when the page runs #}
       $('#file-table').on('click', 'i.file-cancel', function(){
         var row = $(this).closest('tr');
         row.find('#inputDescription').val(row.find('.default-description').text());
@@ -332,7 +347,6 @@
         var fileChanged = row.find('[type="file"]').val();
         if(row.find('[type="file"]').val()){
           var description = row.find('#inputDescription').val() ||
-                        {# Some magic regex to convert a fully-qualified path into a filename #}
                         row.find('[type="file"]').val().formatFilename();
 
           {# Really horrible ugly filesize formatting #}
@@ -360,8 +374,6 @@
         }
         row.children().toggleClass('hidden');
 
-        {# The !! operator quickly turns any type into a boolean, otherwise hasChanged #}
-        {# would be a string type because of operator overloading witchcraft #}
         var hasChanged = descriptionChanged || fileChanged;
         if(hasChanged){
           row.addClass('warning');
@@ -404,6 +416,8 @@
 
     <script type="text/javascript">
       {# Manually define the autocomplete fields #}
+      {# Doing it this way kind of hurts my soul, but I'm not sure Django's template #}
+      {# system can handle iterating over array literals #}
       $('input#inputLocation').autocomplete({
         minLength: 1,
         source: "{% url 'uw_inventory.views.autocomplete_list' 'location' %}",

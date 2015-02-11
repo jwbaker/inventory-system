@@ -30,7 +30,7 @@
       }
       {# We need this special CSS class because of our indiscriminate hiding/showing of input elements #}
       {# Adding this class makes the element perma-hidden #}
-      .field-hidden{
+      .persist-hidden{
         display: none!important;
         visibility: hidden!important;
       }
@@ -107,6 +107,10 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
 
     <script type="text/javascript">
+    /*
+     * Returns a string representing the current Date object, formatted according to Django
+     * specifications, i.e. YYY-MM-DD HH:MM:SS
+     */
     Date.prototype.djangoFormat = function(){
       var year = this.getFullYear();
       var month = this.getMonth() + 1; {# Date.prototype.getMonth return 0-11 #}

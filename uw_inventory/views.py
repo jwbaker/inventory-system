@@ -155,6 +155,8 @@ def inventory_detail(request, item_id):
             note_formset.save()
             file_formset.save()
 
+            # This is a sneaky hack, but it prevents some oddities when
+            # coming back from a save doesn't populate inline formsets
             sop_formset = FileUploadFormset(
                 None,
                 None,

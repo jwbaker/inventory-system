@@ -45,7 +45,7 @@ def _render_default_value(field_id, field_value):
         field_id -- The unique identifier of the field
         field_value -- The current value of the field
     '''
-    return u'''<span class="field-hidden default-value" for="{0}">
+    return u'''<span class="persist-hidden default-value" for="{0}">
                 {1}</span>'''.format(field_id, field_value or '')
 
 
@@ -83,7 +83,7 @@ class AutocompleteInput(forms.Widget):
                             Add option
                         </a>
                         <input id="{0}"
-                               class="{1} hidden field-hidden"
+                               class="{1} hidden persist-hidden"
                                value="{4}"
                                name="{5}" />'''.format(
                                  widget_id,
@@ -127,7 +127,7 @@ class CheckboxInput(forms.Widget):
                             display_value
                         )
         render_str += u'''<input type="checkbox" id="{0}" name="{1}"
-                        class="field-hidden" {2} />'''.format(
+                        class="persist-hidden" {2} />'''.format(
             widget_id,
             name,
             'checked="checked"' if value else ''
@@ -198,40 +198,6 @@ class DateInput(forms.DateInput):
             self.attrs.get('id', ''),
             display_value
         )
-        return mark_safe(render_str)
-
-
-class FileInput(forms.FileInput):
-    def __init__(self, attrs=None):
-        if attrs:
-            context = _common_attributes_handler(attrs)
-            context['class'] += 'item-input '
-            context['data-set'] = attrs.get('data-set', None)
-        else:
-            context = None
-        return super(FileInput, self).__init__(attrs=context)
-
-    def render(self, name, value, attrs=None):
-        file_name = ''
-        file_description = ''
-
-        if value:
-            file_obj = self.attrs['data-set'].get(id=value)
-            file_name = file_obj.file.name
-            file_description = file_obj.description
-            render_str = _render_static_label(
-                self.attrs.get('id', ''),
-                file_description or os.path.basename(file_name)
-            )
-        else:
-            render_str = _render_static_label(self.attrs.get('id', ''), None)
-        render_str += '''
-        <div id="sop-form-container">
-            <input class="hidden" id="file-default" value="{0}" />
-            <textarea class="hidden" id="file-description-default"
-                      value="{1}"></textarea>
-        </div>
-        '''.format(file_name, file_description)
         return mark_safe(render_str)
 
 
