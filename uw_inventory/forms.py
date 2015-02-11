@@ -51,15 +51,20 @@ class ItemForm(forms.ModelForm):
         {'Name': 'modified_since_csa'},
         {'Name': 'undergraduate'},
         {'Name': 'csa_cost'},
-        {'Name': 'sop_required'},
-        {'Name': 'sop_file'},
         {'Name': 'lifting_device'},
         {'Name': 'lifting_device_inspection_date'},
+        {'Name': 'sop_required'},
     ]
 
     class Meta:
         model = InventoryItem
-        exclude = ['creation_date', 'deleted', 'last_modified', 'uuid']
+        exclude = [
+            'creation_date',
+            'deleted',
+            'last_modified',
+            'sop_file',
+            'uuid'
+        ]
 
         # The labels are only necessary if sentence-casing the field name
         # doesn't work, i.e. abbreviations and punctuation
@@ -73,7 +78,6 @@ class ItemForm(forms.ModelForm):
             'lifting_device_inspection_date': 'Lifting device inspection date',
             'modified_since_csa': 'Modified since CSA inspection?',
             'replacement_cost_date': 'Estimation date',
-            'sop_file': 'SOP',
             'sop_required': 'SOP required?',
             'tech_id': 'Technician ID',
             'undergraduate': 'Used for undergrad teaching?',
@@ -152,10 +156,6 @@ class ItemForm(forms.ModelForm):
             'serial_number': widgets.TextInput({
                 'id': 'inputSerialNumber',
                 'placeholder': 'Serial number'
-            }),
-            'sop_file':  widgets.FileInput({
-                'id': 'inputSopFile',
-                'data-set': ItemFile.objects
             }),
             'sop_required': widgets.CheckboxInput({
                 'id': 'inputSopRequired',

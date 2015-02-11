@@ -13,6 +13,14 @@
       {{ fs.management_form }}
     {% endfor %}
     {% add_form form %}
+    <div class="form-group list-group-item clearfix">
+      <div class="col-xs-3">
+        <label for="inputSopFile" class="control-label">SOP</label>
+      </div>
+      <div class="col-xs-8">
+        {{ formsets.sop.empty_form.as_p }}
+      </div>
+    </div>
     {% show_files %}
     <div id="notes-form-container">
       

@@ -2,11 +2,13 @@
 
 <tr {% if form.errors %}class="danger"{% endif %}>
   <td class="file-description">
-    {% if form.initial.description %}
-      {{ form.initial.description }}
-    {% else %}
-      {{ form.initial.file.name|filename }}
-    {% endif %}
+    <a href="{% url 'uw_inventory_system.views.file_view' form.instance.file.name %}">
+      {% if form.initial.description %}
+        {{ form.initial.description }}
+      {% else %}
+        {{ form.initial.file.name|filename }}
+      {% endif %}
+    </a>
   </td>
   <td class="file-size">{{ form.initial.file.size|filesizeformat }}</td>
   <td colspan="2" class="hidden">

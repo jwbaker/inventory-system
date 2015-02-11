@@ -33,7 +33,28 @@
       {{ fs.management_form }}
     {% endfor %}
     {% edit_form form perms.uw_inventory.change_inventoryitem shown_excluded_fields %}
+    <div class="form-group list-group-item clearfix">
+      <div class="col-xs-3">
+        <label for="inputSopFile" class="control-label">SOP</label>
+      </div>
+      <div class="col-xs-8">
+        <p class="form-control-static" id="inputSopFile"></p>
+        <div class="hidden">
+        {% if formsets.sop.forms %}
+          {{ formsets.sop.forms.0.as_p }}
+        {% else %}
+          {{ formsets.sop.empty_form.as_p }}
+        {% endif %}
+        </div>
+      </div>
+      <div class="col-xs-1">
+        <i class="fa fa-check save hidden" for="inputSopFile"></i>
+        <i class="fa fa-times cancel hidden" for="inputSopFile"></i>
+        <i class="fa fa-pencil edit" for="inputSopFile"></i>
+      </div>
+    </div>
     {% show_files formsets.file %}
+
     <div id="notes-form-container">
       
     </div>
