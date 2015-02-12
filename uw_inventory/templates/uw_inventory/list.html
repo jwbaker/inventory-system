@@ -1,4 +1,5 @@
 {% extends 'uw_inventory_system/base.html' %}
+{% load uw_inventory_misc_tags %}
 
 {% block css_includes %}
   <!-- DataTables -->
@@ -60,7 +61,9 @@
           <tr>
             <td class="sop-cell">
               {% if item.sop_file %}
-                <a href="{% url 'uw_inventory_system.views.file_view' item.sop_file.file.name %}"><i class="fa fa-file"></i></a>
+                <a href="{% url 'uw_inventory_system.views.file_view' item.sop_file.file.name %}">
+                  {% contexual_file_icon item.sop_file %}
+                </a>
               {% endif %}
             </td>
             <td>
