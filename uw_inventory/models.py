@@ -38,6 +38,9 @@ class ItemFile(models.Model):
     )
     mimetype = models.CharField(max_length=255)
 
+    def get_name_display(self):
+        return self.description or self.file.name
+
     def save(self, *args, **kwargs):
         extension = re.search('.(\w+)$', self.file.name).group(1)
         self.mimetype = ItemFile.MIMETYPES.get(extension, '')

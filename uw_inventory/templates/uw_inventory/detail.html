@@ -46,11 +46,7 @@
         <p class="form-control-static" id="inputSopFile">
           {% if formsets.sop.forms %}
             <a href="{% url 'uw_inventory_system.views.file_view' formsets.sop.forms.0.instance.file.name %}">
-              {% if formsets.sop.forms.0.instance.description %}
-                {{ formsets.sop.forms.0.instance.description }}
-              {% else %}
-                {{ formsets.sop.forms.0.instance.file.name|filename }}
-              {% endif %}
+              {{ formsets.sop.forms.0.instance.get_name_display|filename }}
             </a>
           {% endif %}
         </p>
