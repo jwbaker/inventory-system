@@ -44,14 +44,15 @@
       </div>
       <div class="col-xs-8">
         <p class="form-control-static" id="inputSopFile">
-
-          {% if formsets.sop.forms.0.instance.description %}
-            {{ formsets.sop.forms.0.instance.description }}
-          {% else %}
-            {{ formsets.sop.forms.0.instance.file.name|filename }}
-          {% endif %}
-
+          <a href="{% url 'uw_inventory_system.views.file_view' formsets.sop.forms.0.instance.file.name %}">
+            {% if formsets.sop.forms.0.instance.description %}
+              {{ formsets.sop.forms.0.instance.description }}
+            {% else %}
+              {{ formsets.sop.forms.0.instance.file.name|filename }}
+            {% endif %}
+          </a>
         </p>
+
         <div class="hidden" id="sop-form-container">
         {% if formsets.sop.forms %}
           {{ formsets.sop.forms.0.as_p }}
