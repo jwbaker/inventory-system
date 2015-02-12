@@ -77,6 +77,12 @@
       }
     });
   </script>
+
+  <script type="text/javascript">
+    {# This is mostly for the benefit of the SOP field, since dynamically-added fields #}
+    {# won't be affected by this #}
+    $('[id*="DELETE"], [for*="DELETE"]').addClass('persist-hidden');
+  </script>
   
   {% if can_edit or can_add %}
     <script type="text/javascript">

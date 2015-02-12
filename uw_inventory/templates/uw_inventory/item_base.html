@@ -314,11 +314,13 @@
         <td class="hidden file-size"></td>
         <td class="hidden">
           <i class="fa fa-gear file-edit"></i>
+          <i class="fa fa-trash file-delete"></i>
         </td>
         <td colspan="2">__form__</td>
         <td>
           <i class="fa fa-check file-save"></i>
           <i class="fa fa-times file-cancel"></i>
+          <i class="fa fa-trash file-delete"></i>
         </td>
       </tr>
     </script>
@@ -327,8 +329,13 @@
       {# When we add a file, we create a new instance of the formset #}
       $('#add-file').click(function(){
         var count = $('#id_files-TOTAL_FORMS').attr('value');
-        var compiledTemplate = $("#file-template").html().replace(/__prefix__/g, count);
-        $('#file-table tr:last').before($('#file-table-row-template').html().replace(/__form__/g, compiledTemplate));
+
+        {# The first replace is some trickery to hide the formset delete checkbox #}
+        {# The second replace is to update the formset ID, which will be used at save-time #}
+        var compiledRowTemplate = $("#file-template").html().replace(/__prefix__-DELETE"/g, '__prefix__-DELETE" class="persist-hidden"').replace(/__prefix__/g, count);
+        var compiledTemplate = $('#file-table-row-template').html().replace(/__form__/g, compiledRowTemplate);
+        
+        $('#file-table tr:last').before(compiledTemplate);
         $('#id_files-TOTAL_FORMS').attr('value', parseInt(count, 10)+1);
       });
 
@@ -336,9 +343,21 @@
       {# dynamically, so they don't exist on the DOM when the page runs #}
       $('#file-table').on('click', 'i.file-cancel', function(){
         var row = $(this).closest('tr');
-        row.find('#inputDescription').val(row.find('.default-description').text());
-        row.find('[type="file"]').val('');
-        row.children().toggleClass('hidden');
+
+        var inputFileName = row.find('[type="file"]').val();
+        var inputFileDescription = row.find('#inputDescription').val();
+
+        if(!inputFileName || !inputFileDescription){
+          row.find('.file-delete').click();
+        } else{
+          row.childen().toggleClass('hidden');
+        }
+      });
+
+      $('#file-table').on('click', 'i.file-delete', function(){
+        var row = $(this).closest('tr');
+        row.find('[id*=DELETE]').attr('checked', 'checked');
+        row.addClass('hidden');
       });
 
       $('#file-table').on('click', 'i.file-save', function(){

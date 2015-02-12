@@ -112,7 +112,6 @@ def inventory_detail(request, item_id):
         ItemFile,
         form=FileForm,
         extra=0,
-        can_delete=False
     )
 
     note_formset = NoteCreateFormset(
