@@ -146,6 +146,42 @@
     }
   </script>
 
+  <script type="text/javascript">
+    $('.sort-row').click(function(){
+      var rows = $(this).closest('table').find('tr.file-row');
+      var sortColumnIndex = parseInt($(this).attr('data-index'), 10);
+      var compareDelta = $(this).hasClass('fa-sort-asc') ? -1 : 1;
+
+      $(this).closest('table').find('tr.file-row').remove();
+      rows = rows.sort(function(a, b){
+        var aCompare = $(a).children()[sortColumnIndex].textContent.trim();
+        var bCompare = $(b).children()[sortColumnIndex].textContent.trim();
+
+        if(aCompare < bCompare){
+          return -1 * compareDelta;
+        } else if(aCompare > bCompare){
+          return 1 * compareDelta;
+        }
+        return 0;
+
+      });
+
+      $('#file-table tr:last').before(rows);
+
+      $('#file-table').find('.sort-row').removeClass('fa-sort-asc').removeClass('fa-sort-desc')
+                                        .removeClass('text-primary').addClass('fa-sort');
+
+      $(this).addClass('text-primary');
+      if(compareDelta > 0){
+        $(this).removeClass('fa-sort');
+        $(this).addClass('fa-sort-asc');
+      } else {
+        $(this).removeClass('fa-sort-asc');
+        $(this).addClass('fa-sort-desc');
+      }
+    });
+  </script>
+
   {% if perms.uw_inventory.add_autocompletedata %}
     <script type="text/javascript">
       {# Launch the modal to add an autocomplete term #}
