@@ -120,9 +120,12 @@ class InventoryItem(models.Model):
             note.copy(copy.id)
 
         for item_file in self.itemfile_set.all():
-            if item_file.id != self.sop_file_id:
-                item_file.copy(copy.id)
+            new_file = item_file.copy(copy.id)
 
+            if item_file.id == self.sop_file_id:
+                copy.sop_file_id = new_file.id
+
+        copy.save()
         return copy
 
     # save method is overriden so we can generate the UUID automatically
