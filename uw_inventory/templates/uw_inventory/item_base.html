@@ -350,10 +350,10 @@
         var inputFileName = row.find('[type="file"]').val();
         var inputFileDescription = row.find('#inputDescription').val();
 
-        if(!inputFileName || !inputFileDescription){
+        if(!inputFileName && !inputFileDescription && row.find('a').length === 0){
           row.find('.file-delete').click();
         } else{
-          row.childen().toggleClass('hidden');
+          row.children().toggleClass('hidden');
         }
       });
 
