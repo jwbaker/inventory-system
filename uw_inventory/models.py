@@ -89,6 +89,27 @@ class InventoryItem(models.Model):
         return ' '.join([str(f.title) + ' ' + str(f.body) for f in
                         [n for n in self.note_set.all()]])
 
+    def copy(self):
+        copy = InventoryItem()
+        for field in [attr for attr in vars(self) if attr != '_state']:
+            if (
+                'id' not in field and
+                field not in ['creation_date', 'last_modified']
+            ):
+                setattr(copy, field, getattr(self, field))
+
+        copy.supplier_id = self.supplier_id
+        copy.technician_id = self.technician_id
+        copy.owner_id = self.owner_id
+        copy.manufacturer_id = self.manufacturer_id
+
+        copy.save()
+
+        for note in self.note_set.all():
+            note.copy(copy.id)
+
+        return copy
+
     # save method is overriden so we can generate the UUID automatically
     def save(self, *args, **kwargs):
         super(InventoryItem, self).save()
@@ -221,6 +242,15 @@ class InventoryItem(models.Model):
 
 
 class Note(models.Model):
+    def copy(self, parent_id):
+        new_note = Note()
+        new_note.author_id = self.author_id
+        new_note.body = self.body
+        new_note.title = self.title
+        new_note.inventory_item_id = parent_id
+        new_note.save()
+        return new_note
+
     author = models.ForeignKey(User)
     body = models.TextField(blank=True, null=True)
     creation_date = models.DateTimeField(default=datetime.now)

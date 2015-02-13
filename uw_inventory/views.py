@@ -289,17 +289,17 @@ def inventory_add(request):
 @permission_required('uw_inventory.add_inventoryitem')
 def inventory_copy(request, item_id):
     item = InventoryItem.objects.get(pk=item_id)
-    item.pk = None
-    try:
-        item.save()
-    except:
-        messages.error(request,
-                       'Something went wrong')
-    else:
-        messages.success(request,
-                         'Duplication was successful')
+    new_item = item.copy()
+    # try:
+    #     item.save()
+    # except:
+    #     messages.error(request,
+    #                    'Something went wrong')
+    # else:
+    #     messages.success(request,
+    #                      'Duplication was successful')
 
-    return HttpResponseRedirect('/list/%s' % item.pk)
+    return HttpResponseRedirect('/list/%s' % new_item.pk)
 
 
 @permission_required('uw_inventory.change_inventoryitem')
