@@ -13,7 +13,7 @@ from uw_inventory.models import (
 class FileForm(forms.ModelForm):
     class Meta:
         model = ItemFile
-        fields = ['file', 'description']
+        fields = ['file_field', 'description']
         widgets = {
             'description': forms.Textarea({
                 'id': 'inputDescription',

@@ -61,7 +61,7 @@
           <tr>
             <td class="sop-cell">
               {% if item.sop_file %}
-                <a href="{% url 'uw_inventory_system.views.file_view' item.sop_file.file.name %}">
+                <a href="{% url 'uw_inventory_system.views.file_view' item.sop_file.file_field.name %}">
                   {% contexual_file_icon item.sop_file %}
                 </a>
               {% endif %}

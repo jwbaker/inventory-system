@@ -12,7 +12,7 @@ def permission_denied(request):
 
 def file_download(request, file_id):
     if request.method == 'GET':
-        file = ItemFile.objects.get(id=file_id).file
+        file = ItemFile.objects.get(id=file_id).file_field
         response = HttpResponse(file)
         response['Content-Disposition'] = 'attachment; filename="{0}"'.format(
             os.path.basename(file.name)
@@ -23,7 +23,7 @@ def file_download(request, file_id):
 
 def file_view(request, file_name):
     if request.method == 'GET':
-        file_obj = ItemFile.objects.get(file=file_name)
+        file_obj = ItemFile.objects.get(file_field=file_name)
         with open(file_name, 'r') as file:
             response = HttpResponse(
                 file.read(),

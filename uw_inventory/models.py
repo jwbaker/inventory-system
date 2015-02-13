@@ -2,6 +2,7 @@ from datetime import datetime
 import re
 
 from django.contrib.auth.models import User
+from django.core.files import File
 from django.core.validators import RegexValidator
 from django.db import models
 
@@ -27,7 +28,7 @@ class ItemFile(models.Model):
         'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
     }
     description = models.TextField(blank=True, null=True)
-    file = models.FileField(upload_to='files/%Y/%m/%d/')
+    file_field = models.FileField(upload_to='files/%Y/%m/%d/')
     inventory_item = models.ForeignKey(
         # Using quotes evaluates this reference lazily, which lets us have
         # this circular reference
@@ -38,11 +39,21 @@ class ItemFile(models.Model):
     )
     mimetype = models.CharField(max_length=255)
 
+    def copy(self, parent_id):
+        new_item_file = ItemFile()
+        new_item_file.description = self.description
+        new_item_file.mimetype = self.mimetype
+        new_item_file.file_field = File(file(self.file_field.name))
+        new_item_file.inventory_item_id = parent_id
+        new_item_file.save()
+
+        return new_item_file
+
     def get_name_display(self):
-        return self.description or self.file.name
+        return self.description or self.file_field.name
 
     def save(self, *args, **kwargs):
-        extension = re.search('.(\w+)$', self.file.name).group(1)
+        extension = re.search('.(\w+)$', self.file_field.name).group(1)
         self.mimetype = ItemFile.MIMETYPES.get(extension, '')
         super(ItemFile, self).save(*args, **kwargs)
 
@@ -107,6 +118,10 @@ class InventoryItem(models.Model):
 
         for note in self.note_set.all():
             note.copy(copy.id)
+
+        for item_file in self.itemfile_set.all():
+            if item_file.id != self.sop_file_id:
+                item_file.copy(copy.id)
 
         return copy
 

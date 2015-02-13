@@ -15,7 +15,7 @@ def contexual_file_icon(item_file):
                      if value == item_file.mimetype][0]
     if not extension:
         try:
-            extension = re.search('\.(\w+)$', item_file.file.name).group(1)
+            extension = re.search('\.(\w+)$', item_file.file_field.name).group(1)
         except:
             raise ValueError('Expected file name to have valid type extension')
     if not extension:
