@@ -160,6 +160,7 @@
             targetID = 'autocompleteAddTerm'; break;
         }
 
+        $('#' + targetID + 'Submit').attr('data-set', dataSet);
 
         {# Because we're using one modal to add items to all autocomplete fields, #}
         {# we clear the modal between 'sessions' #}
@@ -175,8 +176,9 @@
         $('span.error').remove();
         $('#' + targetID + 'Name').parent().removeClass('has-error');
 
-        var dataSet = $('a.autocomplete-add-term').attr('data-set');
-        if(dataSet === 'location'){
+        var dataSet = $('#' + targetID + 'Submit').attr('data-set');
+
+        if(dataSet === 'owner' || dataSet === 'technician'){
           dataSet = 'user'
         }
         var optionName = $('#' + targetID + 'Name').val();
@@ -192,6 +194,7 @@
                   '<span class="error text-danger">'+ data.error +'</span>'
                 );
               } else {
+                $('#' + targetID + 'Submit').removeAttr('data-set');
                 $('#' + targetID + 'Modal').modal('hide');
               }
             },
