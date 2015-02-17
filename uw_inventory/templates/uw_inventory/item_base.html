@@ -147,6 +147,24 @@
   </script>
 
   <script type="text/javascript">
+    var stringToFilesize = function(str){
+      var components = str.split(/\s/);
+      var numComponent = parseFloat(components[0]);
+
+      switch(components[1]){
+        case 'GB':
+          numComponent *= 1000000000; break;
+        case 'MB':
+          numComponent *= 1000000; break;
+        case 'KB':
+          numComponent *= 1000; break;
+      }
+
+      return numComponent;
+    }
+  </script>
+
+  <script type="text/javascript">
     $('.sort-row').click(function(){
       var rows = $(this).closest('table').find('tr.file-row');
       var sortColumnIndex = parseInt($(this).attr('data-index'), 10);
@@ -156,6 +174,11 @@
       rows = rows.sort(function(a, b){
         var aCompare = $(a).children()[sortColumnIndex].textContent.trim();
         var bCompare = $(b).children()[sortColumnIndex].textContent.trim();
+
+        if($(rows.children()[sortColumnIndex]).hasClass('file-size')){
+          aCompare = stringToFilesize(aCompare);
+          bCompare = stringToFilesize(bCompare);
+        }
 
         if(aCompare < bCompare){
           return -1 * compareDelta;
