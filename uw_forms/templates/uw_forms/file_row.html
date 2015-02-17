@@ -1,6 +1,6 @@
 {% load uw_forms_format_tags %}
 
-<tr class="file-row {% if form.errors %}danger{% endif %}">
+<tr class="file-row {% if form.errors %}danger{% endif %} {% if not form.instance.to_display %}disabled{% endif %}">
   <td class="file-description">
     <a href="{% url 'uw_inventory_system.views.file_view' form.instance.file_field.name %}">
       {{ form.instance.get_name_display|filename }}
@@ -20,7 +20,11 @@
     </i>
     {% if can_edit %}
       <i class="fa fa-gear file-edit"></i>
-      <i class="fa fa-trash file-hide"></i>
+      {% if form.instance.to_display %}
+        <i class="fa fa-trash file-hide"></i>
+      {% else %}
+        <i class="fa fa-reply file-restore"></i>
+      {% endif %}
     {% endif %}
   </td>
 
@@ -28,7 +32,11 @@
     <td class="hidden file-menu">
       <i class="fa fa-check file-save"></i>
       <i class="fa fa-times file-cancel"></i>
-      <i class="fa fa-trash file-hide"></i>
+      {% if form.instance.to_display %}
+        <i class="fa fa-trash file-hide"></i>
+      {% else %}
+        <i class="fa fa-reply file-restore"></i>
+      {% endif %}
     </td>
   {% endif %}
 </tr>
