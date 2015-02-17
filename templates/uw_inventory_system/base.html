@@ -1,3 +1,4 @@
+{% load staticfiles %}
 {% load uw_users_tags %}
 
 <!DOCTYPE html>
@@ -23,6 +24,8 @@
     {% block css_includes %}
     {% endblock css_includes %}
 
+    <link rel="stylesheet" href="{% static 'uw_inventory_system/css/icons.css' %}">
+
     <style type="text/css">
       {# Pushes the whole page down to account for the sticky navigation bar #}
       body {
@@ -36,82 +39,6 @@
       }
       tr.disabled td {
         background-color: #E5E5E5;
-      }
-      .add-item::after {
-        content: "\f055"; /* fa-plus-circle */
-      }
-      .cancel::after {
-        content: "\f00d"; /* fa-times */
-      }
-      .cancel-item::after {
-        content: "\f057"; /* fa-times-circle-o */
-      }
-      .copy::after {
-        content: "\f0c5"; /* fa-files-o */
-      }
-      .checkbox.checked::after {
-        content: "\f046"; /* fa-check-square-o */
-      }
-      .checkbox.unchecked::after {
-        content: "\f096"; /* fa-square-o */
-      }
-      .drop-down::after {
-        content: "\f0d7"; /* fa-caret-down */
-      }
-      .edit::after {
-        content: "\f040"; /* fa-pencil */
-      }
-      .file-file::after {
-        content: "\f016"; /* fa-file-o */
-      }
-      .file-excel::after {
-        content: "\f1c3"; /* fa-excel-o */
-      }
-      .file-word::after {
-        content: "\f1c2"; /* fa-word-o */
-      }
-      .file-powerpoint::after {
-        content: "\f1c4"; /* fa-powerpoint-o */
-      }
-      .file-archive::after {
-        content: "\f1c6"; /* fa-archive-o */
-      }
-      .file-image::after {
-        content: "\f1c5"; /* fa-image-o */
-      }
-      .file-text::after {
-        content: "\f0f6"; /* fa-text-o */
-      }
-      .file-pdf::after {
-        content: "\f1c1"; /* fa-pdf-o */
-      }
-      .file-download::after {
-        content: "\f019"; /* fa-download */
-      }
-      .file-edit::after {
-        content: "\f013"; /* fa-cog */
-      }
-      .file-hide::after,
-      .delete::after {
-        content: "\f1f8"; /* fa-trash */
-      }
-      .restore::after {
-        content: "\f112"; /* fa-reply */
-      }
-      .save::after {
-        content: "\f00c"; /* fa-check */
-      }
-      .save-item::after {
-        content: "\f0c7"; /* fa-floppy-o */
-      }
-      .sort-asc::after {
-        content: "\f0de"; /* fa-sort-asc */
-      }
-      .sort-desc::after {
-        content: "\f0dd"; /* fa-sort-desc */
-      }
-      .sort-row::after {
-        content: "\f0dc"; /* fa-sort */
       }
     </style>
 
