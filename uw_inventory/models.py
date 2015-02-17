@@ -147,7 +147,7 @@ class InventoryItem(models.Model):
 
     # These fields get automatically filled and cannot be edited
     creation_date = models.DateField(default=datetime.now)
-    deleted = models.BooleanField(default=False)
+    to_display = models.BooleanField(default=True)
     last_modified = models.DateTimeField(
         auto_now=True,
         default=datetime.now

@@ -58,47 +58,49 @@
       </thead>
       <tbody>
         {% for item in inventory_list %}
-          <tr>
-            <td class="sop-cell">
-              {% if item.sop_file %}
-                <a href="{% url 'uw_inventory_system.views.file_view' item.sop_file.file_field.name %}">
-                  {% contexual_file_icon item.sop_file %}
-                </a>
-              {% endif %}
-            </td>
-            <td>
-              {# Have to put the link somewhere #}
-              <a class="item-detail" href="{% url 'uw_inventory.views.inventory_detail' item.id %}"></a>
-              {{ item.name }}
-            </td>
-            <td>{{ item.location }}</td>
-            <td>{{ item.technician.get_name_display }}</td>
-            <td>{{ item.owner.get_name_display }}</td>
-            <td>{{ item.manufacturer }}</td>
-            <td>{{ item.model_number }}</td>
-            <td>{{ item.description }}</td>
-            <td>{{ item.technician }}</td>
-            <td>{{item.owner }}</td>
-            <td>{{ item.tech_id }}</td>
-            <td>{{ item.get_status_display }}</td>
-            <td>{{ item.serial_number }}</td>
-            <td>{{ item.manufacture_date }}</td>
-            <td>{{ item.purchase_price }}</td>
-            <td>{{ item.purchase_date }}</td>
-            <td>{{ item.replacement_cost }}</td>
-            <td>{{ item.replacement_cost_date }}</td>
-            <td>{{ item.csa_required }}</td>
-            <td>{{ item.factory_csa }}</td>
-            <td>{{ item.csa_special }}</td>
-            <td>{{ item.csa_special_date }}</td>
-            <td>{{ item.modified_since_csa }}</td>
-            <td>{{ item.undergraduate }}</td>
-            <td>{{ item.csa_cost }}</td>
-            <td>{{ item.sop_required }}</td>
-            <td>{{ item.lifting_device }}</td>
-            <td>{{ item.lifting_device_inspection_date }}</td>
-            <td>{{ item.get_notes_as_string }}</td>
-          </tr>
+          {% if item.to_display or perms.uw_inventory.view_deleted_item %}
+            <tr {% if not item.to_display %}class="disabled"{% endif %}>
+              <td class="sop-cell">
+                {% if item.sop_file %}
+                  <a href="{% url 'uw_inventory_system.views.file_view' item.sop_file.file_field.name %}">
+                    {% contexual_file_icon item.sop_file %}
+                  </a>
+                {% endif %}
+              </td>
+              <td>
+                {# Have to put the link somewhere #}
+                <a class="item-detail" href="{% url 'uw_inventory.views.inventory_detail' item.id %}"></a>
+                {{ item.name }}
+              </td>
+              <td>{{ item.location }}</td>
+              <td>{{ item.technician.get_name_display }}</td>
+              <td>{{ item.owner.get_name_display }}</td>
+              <td>{{ item.manufacturer }}</td>
+              <td>{{ item.model_number }}</td>
+              <td>{{ item.description }}</td>
+              <td>{{ item.technician }}</td>
+              <td>{{item.owner }}</td>
+              <td>{{ item.tech_id }}</td>
+              <td>{{ item.get_status_display }}</td>
+              <td>{{ item.serial_number }}</td>
+              <td>{{ item.manufacture_date }}</td>
+              <td>{{ item.purchase_price }}</td>
+              <td>{{ item.purchase_date }}</td>
+              <td>{{ item.replacement_cost }}</td>
+              <td>{{ item.replacement_cost_date }}</td>
+              <td>{{ item.csa_required }}</td>
+              <td>{{ item.factory_csa }}</td>
+              <td>{{ item.csa_special }}</td>
+              <td>{{ item.csa_special_date }}</td>
+              <td>{{ item.modified_since_csa }}</td>
+              <td>{{ item.undergraduate }}</td>
+              <td>{{ item.csa_cost }}</td>
+              <td>{{ item.sop_required }}</td>
+              <td>{{ item.lifting_device }}</td>
+              <td>{{ item.lifting_device_inspection_date }}</td>
+              <td>{{ item.get_notes_as_string }}</td>
+            </tr>
+          {% endif %}
         {% endfor %}
       </tbody>
     </table>

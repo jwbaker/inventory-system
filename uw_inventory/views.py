@@ -89,7 +89,7 @@ def _json_builder_autocomplete(obj):
 @permission_required('uw_inventory.view_item')
 def inventory_list(request):
     message_list = _collect_messages(request)
-    inventory_list = InventoryItem.objects.filter(deleted=False)
+    inventory_list = InventoryItem.objects.all()
     return render(request, 'uw_inventory/list.html', {
         'inventory_list': inventory_list,
         'page_messages': message_list,
@@ -307,7 +307,7 @@ def inventory_copy(request, item_id):
 @permission_required('uw_inventory.change_inventoryitem')
 def inventory_delete(request, item_id):
     item = InventoryItem.objects.get(pk=item_id)
-    item.deleted = True
+    item.to_display = False
     try:
         item.save()
     except:

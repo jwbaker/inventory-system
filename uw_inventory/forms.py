@@ -60,10 +60,10 @@ class ItemForm(forms.ModelForm):
         model = InventoryItem
         exclude = [
             'creation_date',
-            'deleted',
             'last_modified',
             'sop_file',
-            'uuid'
+            'to_display',
+            'uuid',
         ]
 
         # The labels are only necessary if sentence-casing the field name
