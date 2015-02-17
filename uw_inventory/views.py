@@ -322,6 +322,21 @@ def inventory_delete(request, item_id):
 
 
 @permission_required('uw_inventory.change_inventoryitem')
+def inventory_undelete(request, item_id):
+    item = InventoryItem.objects.get(pk=item_id)
+    item.to_display = True
+    try:
+        item.save()
+    except:
+        messages.error(request,
+                       'SOmething went wrong')
+    else:
+        messages.success(request,
+                         'Restored')
+    return HttpResponseRedirect('/list/{0}'.format(item_id))
+
+
+@permission_required('uw_inventory.change_inventoryitem')
 def autocomplete_list(request, source):
     if request.is_ajax():
         query = request.GET.get('term', '')

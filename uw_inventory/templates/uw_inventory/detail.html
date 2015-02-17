@@ -13,9 +13,15 @@
   {% endif %}
   {% if perms.uw_inventory.change_inventoryitem %}  
     <li class="list-group-item">
-      <a href="{% url 'uw_inventory.views.inventory_delete' inventory_item.id %}">
-        <i class="fa fa-trash navigate"></i> Delete
-      </a>
+      {% if inventory_item.to_display %}
+        <a href="{% url 'uw_inventory.views.inventory_delete' inventory_item.id %}">
+          <i class="fa fa-trash navigate"></i> Delete
+        </a>
+      {% else %}
+        <a href="{% url 'uw_inventory.views.inventory_undelete' inventory_item.id %}">
+          <i class="fa fa-reply navigate"></i> Restore
+        </a>
+      {% endif %}
     </li>
   {% endif %}
 {% endblock gutter_nav %}
