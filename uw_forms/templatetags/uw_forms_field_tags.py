@@ -99,7 +99,7 @@ def show_field(field):
 
 
 @register.inclusion_tag('uw_forms/file_list.html')
-def show_files(can_add, can_edit, formset=None):
+def show_files(can_add, can_edit, view_deleted, formset=None):
     '''
     Displays the list of associated files for an InventoryItem
 
@@ -108,6 +108,8 @@ def show_files(can_add, can_edit, formset=None):
                     files
         can_edit -- True if the currently logged-in user is allowed to edit
                     file properties
+        view_deleted -- True if the currently logged-in user is allowed to view
+                        'deleted' files
         formset --- The Django set of ItemFile forms associated with the
                         InventoryItem instance
     '''
@@ -115,11 +117,13 @@ def show_files(can_add, can_edit, formset=None):
         return {
             'can_add': can_add,
             'can_edit': can_edit,
+            'view_deleted': view_deleted,
             'forms': formset.forms
         }
     else:
         return {
             'can_add': can_add,
             'can_edit': can_edit,
+            'view_deleted': view_deleted,
             'forms': None
         }

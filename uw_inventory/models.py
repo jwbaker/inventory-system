@@ -21,6 +21,11 @@ class AutocompleteData(models.Model):
 
 
 class ItemFile(models.Model):
+    class Meta:
+        permissions = (
+            ('view_deleted_itemfile', 'Can view deleted item files'),
+        )
+
     MIMETYPES = {
         'txt': 'text/plain',
         'pdf': 'application/pdf',

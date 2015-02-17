@@ -11,7 +11,9 @@
       </thead>
       <tbody>
         {% for form in forms %}
-          {% include 'uw_forms/file_row.html' with form=form %}
+          {% if form.instance.to_display or view_deleted %}
+            {% include 'uw_forms/file_row.html' with form=form %}
+          {% endif %}
         {% endfor %}
         {% if can_add %}
           <tfoot>
