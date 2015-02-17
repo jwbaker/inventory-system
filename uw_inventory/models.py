@@ -19,6 +19,9 @@ class AutocompleteData(models.Model):
     name = models.CharField(max_length=255)
     kind = models.CharField(choices=KIND_CHOICES, max_length=255)
 
+    def __unicode__(self):
+        return self.name
+
 
 class ItemFile(models.Model):
     class Meta:
@@ -63,6 +66,9 @@ class ItemFile(models.Model):
         extension = re.search('.(\w+)$', self.file_field.name).group(1)
         self.mimetype = ItemFile.MIMETYPES.get(extension, '')
         super(ItemFile, self).save(*args, **kwargs)
+
+    def __unicode__(self):
+        return self.get_name_display()
 
 
 class InventoryItem(models.Model):
@@ -144,6 +150,9 @@ class InventoryItem(models.Model):
         )
         # Double save so we can include a unique record ID in the UUID
         super(InventoryItem, self).save(*args, **kwargs)
+
+    def __unicode__(self):
+        return self.uuid
 
     # These fields get automatically filled and cannot be edited
     creation_date = models.DateField(default=datetime.now)
@@ -275,6 +284,9 @@ class Note(models.Model):
         new_note.inventory_item_id = parent_id
         new_note.save()
         return new_note
+
+    def __unicode__(self):
+        return self.title
 
     author = models.ForeignKey(User)
     body = models.TextField(blank=True, null=True)
