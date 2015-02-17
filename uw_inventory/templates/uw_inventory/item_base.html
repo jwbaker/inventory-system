@@ -189,7 +189,7 @@
 
       });
 
-      $('#file-table tr:last').before(rows);
+      $('#file-table tbody').append(rows);
 
       $('#file-table').find('.sort-row').removeClass('fa-sort-asc').removeClass('fa-sort-desc')
                                         .removeClass('text-primary').addClass('fa-sort');
@@ -370,7 +370,7 @@
     </script>
 
     <script type="text/html" id="file-table-row-template">
-      <tr>
+      <tr class="file-row">
         {# When we toggle visibility on the tr's children, the hidden classes will all swap #}
         <td class="hidden file-description"></td>
         <td class="hidden file-size"></td>
@@ -397,7 +397,7 @@
         var compiledRowTemplate = $("#file-template").html().replace(/__prefix__-DELETE"/g, '__prefix__-DELETE" class="persist-hidden"').replace(/__prefix__/g, count);
         var compiledTemplate = $('#file-table-row-template').html().replace(/__form__/g, compiledRowTemplate);
         
-        $('#file-table tr:last').before(compiledTemplate);
+        $('#file-table tbody').append(compiledTemplate);
         $('#id_files-TOTAL_FORMS').attr('value', parseInt(count, 10)+1);
       });
 
