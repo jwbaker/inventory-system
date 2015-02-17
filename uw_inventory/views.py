@@ -261,7 +261,7 @@ def inventory_add(request):
 
                 messages.success(request,
                                  'Inventory item saved successfully')
-                return HttpResponseRedirect('/list/%s' % new_item.pk)
+                return HttpResponseRedirect('/list/{0}'.format(new_item.pk))
             else:
                 messages.error(request, 'Fatal formset badness')
         else:
@@ -292,16 +292,8 @@ def inventory_add(request):
 def inventory_copy(request, item_id):
     item = InventoryItem.objects.get(pk=item_id)
     new_item = item.copy()
-    # try:
-    #     item.save()
-    # except:
-    #     messages.error(request,
-    #                    'Something went wrong')
-    # else:
-    #     messages.success(request,
-    #                      'Duplication was successful')
 
-    return HttpResponseRedirect('/list/%s' % new_item.pk)
+    return HttpResponseRedirect('/list/{0}'.format(new_item.pk))
 
 
 @permission_required('uw_inventory.change_inventoryitem')
@@ -313,7 +305,7 @@ def inventory_delete(request, item_id):
     except:
         messages.error(request,
                        'Something went wrong')
-        dest = '/list/%s' % item_id
+        dest = '/list/{0}'.format(item_id)
     else:
         messages.success(request,
                          'Deleted')
