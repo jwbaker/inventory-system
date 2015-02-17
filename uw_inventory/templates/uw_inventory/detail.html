@@ -7,7 +7,7 @@
   {% if perms.uw_inventory.add_inventoryitem %}  
     <li class="list-group-item">
       <a href="{% url 'uw_inventory.views.inventory_copy' inventory_item.id %}">
-        <i class="fa fa-files-o navigate" id="duplicate"></i> Duplicate
+        <i class="fa copy navigate" id="duplicate"></i> Duplicate
       </a>
     </li>
   {% endif %}
@@ -15,11 +15,11 @@
     <li class="list-group-item">
       {% if inventory_item.to_display %}
         <a href="{% url 'uw_inventory.views.inventory_delete' inventory_item.id %}">
-          <i class="fa fa-trash navigate"></i> Delete
+          <i class="fa delete navigate"></i> Delete
         </a>
       {% else %}
         <a href="{% url 'uw_inventory.views.inventory_undelete' inventory_item.id %}">
-          <i class="fa fa-reply navigate"></i> Restore
+          <i class="fa restore navigate"></i> Restore
         </a>
       {% endif %}
     </li>
@@ -68,9 +68,9 @@
       </div>
       {% if perms.uw_inventory.change_itemfile %}
         <div class="col-xs-1">
-          <i class="fa fa-check save hidden" for="inputSopFile"></i>
-          <i class="fa fa-times cancel hidden" for="inputSopFile"></i>
-          <i class="fa fa-pencil edit" for="inputSopFile"></i>
+          <i class="fa save hidden" for="inputSopFile"></i>
+          <i class="fa cancel hidden" for="inputSopFile"></i>
+          <i class="fa edit" for="inputSopFile"></i>
         </div>
       {% endif %}
     </div>
@@ -155,7 +155,7 @@
               saveText = '';
             }
           } else if(inputControl.is('i.checkbox')){
-            saveText = (inputControl.hasClass('fa-check-square-o') ? 'Yes' : 'No');
+            saveText = (inputControl.hasClass('checked') ? 'Yes' : 'No');
           } else if(inputControl.is('.ui-autocomplete-input')){
             saveText = (inputControl[0].value == inputControl.placeholder ? '' : inputControl[0].value);
             var toSave;

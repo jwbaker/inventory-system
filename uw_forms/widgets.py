@@ -113,7 +113,7 @@ class CheckboxInput(forms.Widget):
         widget_class = self.attrs.get('class', '')
         widget_class += ' checkbox fa fa-2x'
         widget_class += ' {0}'.format(
-            'fa-check-square-o' if value else 'fa-square-o'
+            'checked' if value else 'unchecked'
         )
         display_value = 'Yes' if value else 'No'
 

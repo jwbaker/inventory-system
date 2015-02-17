@@ -15,27 +15,27 @@
     </td>
   {% endif %}
   <td class="file-menu">
-    <i class="fa fa-download file-download"
+    <i class="fa file-download"
        data-target="{% url 'uw_inventory_system.views.file_download' form.instance.id %}">
     </i>
     {% if can_edit %}
-      <i class="fa fa-gear file-edit"></i>
+      <i class="fa file-edit"></i>
       {% if form.instance.to_display %}
-        <i class="fa fa-trash file-hide"></i>
+        <i class="fa file-hide"></i>
       {% else %}
-        <i class="fa fa-reply file-restore"></i>
+        <i class="fa restore"></i>
       {% endif %}
     {% endif %}
   </td>
 
   {% if can_edit %}
     <td class="hidden file-menu">
-      <i class="fa fa-check file-save"></i>
-      <i class="fa fa-times file-cancel"></i>
+      <i class="fa save"></i>
+      <i class="fa cancel"></i>
       {% if form.instance.to_display %}
-        <i class="fa fa-trash file-hide"></i>
+        <i class="fa file-hide"></i>
       {% else %}
-        <i class="fa fa-reply file-restore"></i>
+        <i class="fa restore"></i>
       {% endif %}
     </td>
   {% endif %}

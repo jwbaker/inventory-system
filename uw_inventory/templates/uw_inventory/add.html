@@ -59,7 +59,7 @@
     {# Special case for special widgets #}
     $('i.checkbox').on('classChange', function(event){
       {# Most checkboxes are unchecked by default, so this would be a change #}
-      pageDirty = $(this).hasClass('fa-check-square-o');
+      pageDirty = $(this).hasClass('checked');
 
       {# However, sop_required is checked by default #}
       if($(this).is('#inputSopRequired')){

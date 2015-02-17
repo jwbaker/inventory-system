@@ -74,7 +74,7 @@
           saveText = '';
         }
       } else if(inputControl.is('i.checkbox')){
-        saveText = (inputControl.hasClass('fa-check-square-o') ? 'Yes' : 'No');
+        saveText = (inputControl.hasClass('checked') ? 'Yes' : 'No');
       } else if(inputControl.is('.ui-autocomplete-input')){
         saveText = (inputControl[0].value == inputControl.placeholder ? '' : inputControl[0].value);
         var toSave;

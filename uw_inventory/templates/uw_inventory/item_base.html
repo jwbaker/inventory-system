@@ -174,7 +174,7 @@
     $('.sort-row').click(function(){
       var rows = $(this).closest('table').find('tr.file-row');
       var sortColumnIndex = parseInt($(this).attr('data-index'), 10);
-      var compareDelta = $(this).hasClass('fa-sort-asc') ? -1 : 1;
+      var compareDelta = $(this).hasClass('sort-asc') ? -1 : 1;
 
       $(this).closest('table').find('tr.file-row').remove();
       rows = rows.sort(function(a, b){
@@ -197,16 +197,16 @@
 
       $('#file-table tbody').append(rows);
 
-      $('#file-table').find('.sort-row').removeClass('fa-sort-asc').removeClass('fa-sort-desc')
-                                        .removeClass('text-primary').addClass('fa-sort');
+      $('#file-table').find('.sort-row').removeClass('sort-asc').removeClass('sort-desc')
+                                        .removeClass('text-primary').addClass('sort');
 
       $(this).addClass('text-primary');
       if(compareDelta > 0){
-        $(this).removeClass('fa-sort');
-        $(this).addClass('fa-sort-asc');
+        $(this).removeClass('sort');
+        $(this).addClass('sort-asc');
       } else {
-        $(this).removeClass('fa-sort-asc');
-        $(this).addClass('fa-sort-desc');
+        $(this).removeClass('sort-asc');
+        $(this).addClass('sort-desc');
       }
     });
   </script>
@@ -381,14 +381,14 @@
         <td class="hidden file-description"></td>
         <td class="hidden file-size"></td>
         <td class="hidden">
-          <i class="fa fa-gear file-edit"></i>
-          <i class="fa fa-trash file-delete"></i>
+          <i class="fa file-edit"></i>
+          <i class="fa delete"></i>
         </td>
         <td colspan="2">__form__</td>
         <td>
-          <i class="fa fa-check file-save"></i>
-          <i class="fa fa-times file-cancel"></i>
-          <i class="fa fa-trash file-delete"></i>
+          <i class="fa save"></i>
+          <i class="fa cancel"></i>
+          <i class="fa delete"></i>
         </td>
       </tr>
     </script>
@@ -409,20 +409,20 @@
 
       {# This event-handling syntax is used because we're adding the target elements #}
       {# dynamically, so they don't exist on the DOM when the page runs #}
-      $('#file-table').on('click', 'i.file-cancel', function(){
+      $('#file-table').on('click', 'i.cancel', function(){
         var row = $(this).closest('tr');
 
         var inputFileName = row.find('[type="file"]').val();
         var inputFileDescription = row.find('#inputDescription').val();
 
         if(!inputFileName && !inputFileDescription && row.find('a').length === 0){
-          row.find('.file-delete').click();
+          row.find('.delete').click();
         } else{
           row.children().toggleClass('hidden');
         }
       });
 
-      $('#file-table').on('click', 'i.file-delete', function(){
+      $('#file-table').on('click', 'i.delete', function(){
         var row = $(this).closest('tr');
         row.find('[id*=DELETE]').attr('checked', 'checked');
         row.addClass('hidden');
@@ -433,22 +433,22 @@
         row.find('[id*=to_display]').removeAttr('checked');
         row.addClass('disabled');
         row.find('i.file-hide').remove();
-        row.find('.file-menu').append('<i class="fa fa-reply file-restore"></i>');
+        row.find('.file-menu').append('<i class="fa restore"></i>');
 
         $(window).trigger('pagechanges', true);
       });
 
-      $('#file-table').on('click', 'i.file-restore', function(){
+      $('#file-table').on('click', 'i.restore', function(){
         var row = $(this).closest('tr');
         row.find('[id*=to_display]').attr('checked', 'checked');
         row.removeClass('disabled');
-        row.find('i.file-restore').remove();
-        row.find('.file-menu').append('<i class="fa fa-trash file-hide"></i>');
+        row.find('i.restore').remove();
+        row.find('.file-menu').append('<i class="fa file-hide"></i>');
 
         $(window).trigger('pagechanges', false);
       });
 
-      $('#file-table').on('click', 'i.file-save', function(){
+      $('#file-table').on('click', 'i.save', function(){
         var row = $(this).closest('tr');
         var descriptionChanged = (row.find('#inputDescription').val() !== row.find('.default-description').text());
         var fileChanged = row.find('[type="file"]').val();

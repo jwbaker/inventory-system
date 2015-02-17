@@ -36,12 +36,12 @@
             <ul class="nav">
               <li>
                 <button class="btn btn-success navbar-btn nav-justified" id="pageSave" disabled="disabled">
-                  <i class="fa fa-floppy-o"></i> Save
+                  <i class="fa save-item"></i> Save
                 </button>
               </li>
               <li>
                 <button class="btn btn-danger navbar-btn nav-justified" id="pageCancel">
-                  <i class="fa fa-times-circle"></i> Cancel
+                  <i class="fa cancel-item"></i> Cancel
                 </button>
               </li>
             </ul>
@@ -89,9 +89,9 @@
       {# Handler for changing the state of our checkbox control #}
       $('i.checkbox').click(function(){
         if(!$(this).hasClass('hidden')){
-          $(this).toggleClass('fa-square-o');
-          $(this).toggleClass('fa-check-square-o');
-          $(this).attr('value', $(this).hasClass('fa-check-square-o') ? 'Yes' : 'No');
+          $(this).toggleClass('unchecked');
+          $(this).toggleClass('checked');
+          $(this).attr('value', $(this).hasClass('checked') ? 'Yes' : 'No');
           {# This custom event will be picked up on the add form and cause special things #}
           $(this).trigger('classChange');
         }

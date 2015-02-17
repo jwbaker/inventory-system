@@ -21,20 +21,22 @@ def contexual_file_icon(item_file):
     if not extension:
         raise ValueError('Expected file name to have valid type extension')
 
-    file_class = 'o'
+    file_class = 'file-'
     if extension.lower() in ['xls', 'xlsx']:
-        file_class = 'excel-o'
+        file_class += 'excel'
     elif extension.lower() in ['doc', 'docx']:
-        file_class = 'word-o'
+        file_class += 'word'
     elif extension.lower() in ['ppt', 'pptx']:
-        file_class = 'powerpoint-o'
+        file_class += 'powerpoint'
     elif extension.lower() == 'pdf':
-        file_class = 'pdf-o'
+        file_class += 'pdf'
     elif extension.lower() == 'txt':
-        file_class = 'text-o'
+        file_class += 'text'
     elif extension.lower() in ['zip', 'gz', '7z', 'bz2']:
-        file_class = 'archive-o'
+        file_class += 'archive'
     elif extension.lower() in ['png', 'jpg', 'jpeg', 'gif']:
-        file_class = 'image-o'
+        file_class += 'image'
+    else:
+        file_class += 'file'
 
     return {'file_class': file_class}
