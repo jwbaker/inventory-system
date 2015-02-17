@@ -147,6 +147,12 @@
   </script>
 
   <script type="text/javascript">
+    {# It's a little messy, but this will allow us to disable files from displaying #}
+    $('[for*=to_display]').addClass('persist-hidden');
+    $('[name*=to_display]').addClass('persist-hidden');
+  </script>
+
+  <script type="text/javascript">
     var stringToFilesize = function(str){
       var components = str.split(/\s/);
       var numComponent = parseFloat(components[0]);
@@ -394,7 +400,7 @@
 
         {# The first replace is some trickery to hide the formset delete checkbox #}
         {# The second replace is to update the formset ID, which will be used at save-time #}
-        var compiledRowTemplate = $("#file-template").html().replace(/__prefix__-DELETE"/g, '__prefix__-DELETE" class="persist-hidden"').replace(/__prefix__/g, count);
+        var compiledRowTemplate = $("#file-template").html().replace(/__prefix__-(DELETE|to_display)"/g, '__prefix__-\1" class="persist-hidden"').replace(/__prefix__/g, count);
         var compiledTemplate = $('#file-table-row-template').html().replace(/__form__/g, compiledRowTemplate);
         
         $('#file-table tbody').append(compiledTemplate);
@@ -420,6 +426,26 @@
         var row = $(this).closest('tr');
         row.find('[id*=DELETE]').attr('checked', 'checked');
         row.addClass('hidden');
+      });
+
+      $('#file-table').on('click', 'i.file-hide', function(){
+        var row = $(this).closest('tr');
+        row.find('[id*=to_display]').removeAttr('checked');
+        row.addClass('disabled');
+        row.find('i.file-hide').remove();
+        row.find('.file-menu').append('<i class="fa fa-reply file-restore"></i>');
+
+        $(window).trigger('pagechanges', true);
+      });
+
+      $('#file-table').on('click', 'i.file-restore', function(){
+        var row = $(this).closest('tr');
+        row.find('[id*=to_display]').attr('checked', 'checked');
+        row.removeClass('disabled');
+        row.find('i.file-restore').remove();
+        row.find('.file-menu').append('<i class="fa fa-trash file-hide"></i>');
+
+        $(window).trigger('pagechanges', false);
       });
 
       $('#file-table').on('click', 'i.file-save', function(){

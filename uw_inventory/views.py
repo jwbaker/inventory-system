@@ -125,7 +125,9 @@ def inventory_detail(request, item_id):
         request.FILES or None,
         prefix='files',
         instance=inventory_item,
-        queryset=ItemFile.objects.exclude(id=inventory_item.sop_file_id)
+        queryset=ItemFile.objects.exclude(
+            id=inventory_item.sop_file_id
+        ).exclude(to_display=False)
     )
     sop_formset = FileUploadFormset(
         request.POST or None,

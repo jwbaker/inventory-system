@@ -38,12 +38,14 @@ class ItemFile(models.Model):
         null=True
     )
     mimetype = models.CharField(max_length=255)
+    to_display = models.BooleanField(default=True)
 
     def copy(self, parent_id):
         new_item_file = ItemFile()
         new_item_file.description = self.description
         new_item_file.mimetype = self.mimetype
         new_item_file.file_field = File(file(self.file_field.name))
+        new_item_file.to_display = True
         new_item_file.inventory_item_id = parent_id
         new_item_file.save()
 
