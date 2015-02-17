@@ -71,6 +71,6 @@
 .sort-desc::after {
   content: "\f0dd"; /* fa-sort-desc */
 }
-.sort-row::after {
+.sort::after {
   content: "\f0dc"; /* fa-sort */
 }
