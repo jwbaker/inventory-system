@@ -354,8 +354,23 @@
     </script>
 
     <script type="text/html" id="note-template">
-      <div id="note-__prefix__">
-        {{ formsets.note.empty_form.as_p }}
+      <div class="row note">
+        <div id="note-__prefix__" class="col-xs-11">
+          {{ formsets.note.empty_form.as_p }}
+        </div>
+        <div class="col-xs-1">
+          <i class="fa save"></i>
+          <i class="fa cancel"></i>
+          <i class="fa delete"></i>
+        </div>
+
+        <div class="col-xs-11 hidden static-note">
+          {% include 'uw_inventory/note_detail.html' %}
+        </div>
+        <div class="col-xs-1 hidden">
+          <i class="fa edit"></i>
+          <i class="fa delete"></i>
+        </div>
       </div>
     </script>
 
@@ -373,8 +388,37 @@
         newElement.find('[id*=author]').val({{ user.id }});
         newElement.find('[id*=author]').attr('disabled', 'disabled');
         newElement.find('[id*=author]').parent().addClass('persist-hidden');
-        
+
         newElement.find('[id*=DELETE]').parent().addClass('persist-hidden');
+      });
+
+      $('#notes-list').on('click', 'i.save', function(){
+        var note = $(this).closest('.note');
+        var newNoteJSON = {
+          'title': note.find('#inputTitle').val(),
+          'body': note.find('#inputBody').val(),
+          'author': '{{ user.get_name_display }}',
+          'creation_date': note.find('[id*=creation_date]').val(),
+        }
+        
+        var staticNote = note.find('.static-note');
+        staticNote.find('.panel-title')[0].textContent = newNoteJSON.title;
+        staticNote.find('.panel-heading small strong')[0].textContent = newNoteJSON.author;
+        staticNote.find('.panel-heading small em')[0].textContent = newNoteJSON.creation_date;
+        staticNote.find('.panel-body')[0].textContent = newNoteJSON.body;
+
+        note.children().toggleClass('hidden');
+        $(window).trigger('pagechanges', true);
+      });
+
+      $('#notes-list').on('click', 'i.cancel', function(){
+        $(this).closest('.note').children().toggleClass('hidden');
+      });
+
+      $('#notes-list').on('click', 'i.delete', function(){
+        var note = $(this).closest('.note');
+        note.find('[id*=DELETE]').attr('checked', 'checked');
+        note.addClass('hidden');
       });
     </script>
   {% endif %}

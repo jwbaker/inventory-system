@@ -104,8 +104,7 @@ def inventory_detail(request, item_id):
         InventoryItem,
         Note,
         form=NoteCreateForm,
-        extra=0,
-        can_delete=False
+        extra=0
     )
     FileUploadFormset = inlineformset_factory(
         InventoryItem,
@@ -213,15 +212,13 @@ def inventory_add(request):
         InventoryItem,
         Note,
         form=NoteCreateForm,
-        extra=0,
-        can_delete=False
+        extra=0
     )
     FileUploadFormset = inlineformset_factory(
         InventoryItem,
         ItemFile,
         form=FileForm,
-        extra=0,
-        can_delete=False
+        extra=0
     )
 
     if request.method == 'POST':
