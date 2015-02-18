@@ -295,64 +295,6 @@
   </script>
 
   {% if perms.uw_inventory.add_note %}
-
-    <script type="text/javascript">
-      // $('#newNoteSubmit').click(function(event){
-      //   var noteHTML = $(this).parent().siblings('.modal-body').find('form');
-      //   {# We need to do some client-side validation here, since it's a modal #}
-      //   noteHTML.find('.form-errors').remove();
-        
-      //   if(!noteHTML.find('#inputTitle').val()){
-      //     noteHTML.find('#inputTitle').after('<ul class="form-errors"><li>This field is required.</li></ul>');
-      //     return;
-      //   }
-
-      //   var noteJSON = {
-      //     'title': noteHTML.find('#inputTitle').val(),
-      //     'body': noteHTML.find('#inputBody').val(),
-      //     'creation_date': (new Date()).djangoFormat(), {# Date.prototype.djangoFormat is defined in base.html #}
-      //     'author_id': {{ request.user.id }}
-      //   }
-
-      //   {# Despite how it may appear, this ajax call does NOT actually "create" the note #}
-      //   {# Rather, I'm using a small ajax call to force data into a prepared template. #}
-      //   {# The actual saving won't be done until the pageSave button is pressed, which #}
-      //   {# preserves the expected behaviour of the pageCancel button #}
-      //   $.ajax({
-      //     url: '{% url "uw_inventory.views.note_new" %}',
-      //     type: 'POST',
-      //     data: $('#newNoteForm').serialize(),
-      //     success: function(data){
-      //       $('#notes-list').prepend(data);
-
-      //       var count = $('#notes-form-container').children().length;
-      //       var template = $('#note-template').html();
-      //       var compiledTemplate = template.replace(/__prefix__/g, count)
-      //       $('div#notes-form-container').append(compiledTemplate);
-
-      //       $('#note-' + count).find('[name="notes-' + count + '-title"]').val(noteJSON.title)
-      //       $('#note-' + count).find('[name="notes-' + count + '-body"]').val(noteJSON.body)
-      //       $('#note-' + count).find('[name="notes-' + count + '-creation_date"]').val(noteJSON.creation_date);
-      //       $('#note-' + count).find('[name="notes-' + count + '-author"]').val(noteJSON.author_id);
-
-      //       $('#id_notes-TOTAL_FORMS').attr('value', count+1);
-
-      //       pageDirty = true;
-      //       $(window).trigger('pagechanges', true)
-
-      //       $('#newNoteModal').find('input.form-control').val('');
-      //       $('#newNoteModal').find('textarea').val('');
-      //       $('#newNoteModal').modal('hide');
-      //     },
-      //     error: function(xhr, msg, err){
-      //       console.log(xhr);
-      //       console.log(msg);
-      //       console.log(err);
-      //     }
-      //   });
-      // });
-    </script>
-
     <script type="text/html" id="note-template">
       <div class="row note">
         <div id="note-__prefix__" class="col-xs-11">
@@ -436,6 +378,12 @@
 
         note.find('[id*=DELETE]').attr('checked', 'checked');
         note.addClass('hidden');
+      });
+
+      $('#notes-list').on('click', 'i.edit', function(){
+        $(this).closest('.note').find('#inputTitle').parent().removeClass('has-error');
+        $(this).closest('.note').find('#inputTitle').parent().find('ul').remove();
+        $(this).closest('.note').children().toggleClass('hidden');
       });
     </script>
   {% endif %}
