@@ -3,17 +3,18 @@ from django import template
 register = template.Library()
 
 
-@register.inclusion_tag('uw_inventory/notes_list.html')
-def show_notes(note_set, can_add):
+@register.inclusion_tag('uw_inventory/comments_list.html')
+def show_comments(comment_set, can_add):
     '''
-    Shows the notes associated with an InventoryItem
+    Shows the comments associated with an InventoryItem
 
     Positional arguments:
-        note_set: The list of Note objects associated with the InventoryItem
-                    instance
-        can_add: True if the currently logged-in user is allowed to add notes
+        comment_set -- The list of Comment objects associated with the
+                       InventoryItem instance
+        can_add -- True if the currently logged-in user is allowed to add
+                   comments
     '''
     return {
-        'note_set': note_set,
+        'comment_set': comment_set,
         'can_add': can_add
     }

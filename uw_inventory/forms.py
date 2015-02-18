@@ -6,7 +6,7 @@ from uw_inventory.models import (
     AutocompleteData,
     InventoryItem,
     ItemFile,
-    Note,
+    Comment,
 )
 
 
@@ -183,21 +183,21 @@ class ItemForm(forms.ModelForm):
         }
 
 
-class NoteForm(forms.ModelForm):
+class CommentForm(forms.ModelForm):
     FIELD_LIST = [
         {'Name': 'title'},
         {'Name': 'body'},
     ]
 
     class Meta:
-        model = Note
+        model = Comment
         fields = ['title', 'body']
 
         widgets = {
             'body': forms.Textarea({
                 'id': 'inputBody',
                 'class': 'form-control',
-                'placeholder': 'Note'
+                'placeholder': 'Comment'
             }),
             'title': forms.TextInput({
                 'id': 'inputTitle',
@@ -207,6 +207,6 @@ class NoteForm(forms.ModelForm):
         }
 
 
-class NoteCreateForm(NoteForm):
-    class Meta(NoteForm.Meta):
+class CommentCreateForm(CommentForm):
+    class Meta(CommentForm.Meta):
         fields = ['title', 'body', 'creation_date', 'author']

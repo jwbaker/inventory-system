@@ -54,7 +54,7 @@
         <td>SOP Required?</td>
         <td>Lifting Device?</td>
         <td>Lifting Device Inspection Date</td>
-        <td>Notes</td>
+        <td>Comments</td>
       </thead>
       <tbody>
         {% for item in inventory_list %}
@@ -98,7 +98,7 @@
               <td>{{ item.sop_required }}</td>
               <td>{{ item.lifting_device }}</td>
               <td>{{ item.lifting_device_inspection_date }}</td>
-              <td>{{ item.get_notes_as_string }}</td>
+              <td>{{ item.get_comments_as_string }}</td>
             </tr>
           {% endif %}
         {% endfor %}

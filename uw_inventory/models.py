@@ -103,15 +103,15 @@ class InventoryItem(models.Model):
         # JavaScript used in the detail page renders None as 'None' (a string)
         return ''
 
-    def get_notes_as_string(self):
+    def get_comments_as_string(self):
         '''
-        Packages the InventoryItem's notes into a space-delimited string.
+        Packages the InventoryItem's comments into a space-delimited string.
 
-        Use this method on the List page to make searching against notes as
+        Use this method on the List page to make searching against comments as
         natural as possible.
         '''
         return ' '.join([str(f.title) + ' ' + str(f.body) for f in
-                        [n for n in self.note_set.all()]])
+                        [n for n in self.comment_set.all()]])
 
     def copy(self):
         copy = InventoryItem()
@@ -129,8 +129,8 @@ class InventoryItem(models.Model):
 
         copy.save()
 
-        for note in self.note_set.all():
-            note.copy(copy.id)
+        for comment in self.comment_set.all():
+            comment.copy(copy.id)
 
         for item_file in self.itemfile_set.all():
             new_file = item_file.copy(copy.id)
@@ -275,15 +275,15 @@ class InventoryItem(models.Model):
     )
 
 
-class Note(models.Model):
+class Comment(models.Model):
     def copy(self, parent_id):
-        new_note = Note()
-        new_note.author_id = self.author_id
-        new_note.body = self.body
-        new_note.title = self.title
-        new_note.inventory_item_id = parent_id
-        new_note.save()
-        return new_note
+        new_comment = Comment()
+        new_comment.author_id = self.author_id
+        new_comment.body = self.body
+        new_comment.title = self.title
+        new_comment.inventory_item_id = parent_id
+        new_comment.save()
+        return new_comment
 
     def __unicode__(self):
         return self.title
