@@ -15,14 +15,14 @@ from django_cas.decorators import permission_required
 from uw_inventory.forms import (
     FileForm,
     ItemForm,
-    NoteForm,
-    NoteCreateForm
+    CommentForm,
+    CommentCreateForm
 )
 from uw_inventory.models import (
     AutocompleteData,
     InventoryItem,
     ItemFile,
-    Note
+    Comment
 )
 
 
@@ -100,10 +100,10 @@ def inventory_list(request):
 @permission_required('uw_inventory.view_item')
 def inventory_detail(request, item_id):
     inventory_item = InventoryItem.objects.get(pk=item_id)
-    NoteCreateFormset = inlineformset_factory(
+    CommentCreateFormset = inlineformset_factory(
         InventoryItem,
-        Note,
-        form=NoteCreateForm,
+        Comment,
+        form=CommentCreateForm,
         extra=0
     )
     FileUploadFormset = inlineformset_factory(
@@ -113,9 +113,9 @@ def inventory_detail(request, item_id):
         extra=0,
     )
 
-    note_formset = NoteCreateFormset(
+    comment_formset = CommentCreateFormset(
         request.POST or None,
-        prefix='notes',
+        prefix='comments',
         instance=inventory_item
     )
 
@@ -141,7 +141,7 @@ def inventory_detail(request, item_id):
 
         if (
           form.is_valid() and
-          note_formset.is_valid() and
+          comment_formset.is_valid() and
           file_formset.is_valid() and
           sop_formset.is_valid()
         ):
@@ -152,7 +152,7 @@ def inventory_detail(request, item_id):
             if sop_files:
                 new_item.sop_file_id = sop_files[0].id
             new_item.save()
-            note_formset.save()
+            comment_formset.save()
             file_formset.save()
 
             # This is a sneaky hack, but it prevents some oddities when
@@ -195,10 +195,10 @@ def inventory_detail(request, item_id):
         'can_edit': request.user.has_perm('change_inventoryitem'),
         'form_id': 'itemForm',
         'forms': {
-            'note': NoteForm(),
+            'comment': CommentForm(),
         },
         'formsets': {
-            'note': note_formset,
+            'comment': comment_formset,
             'file': file_formset,
             'sop': sop_formset,
         }
@@ -208,10 +208,10 @@ def inventory_detail(request, item_id):
 @csrf_protect
 @permission_required('uw_inventory.add_inventoryitem')
 def inventory_add(request):
-    NoteCreateFormset = inlineformset_factory(
+    CommentCreateFormset = inlineformset_factory(
         InventoryItem,
-        Note,
-        form=NoteCreateForm,
+        Comment,
+        form=CommentCreateForm,
         extra=0
     )
     FileUploadFormset = inlineformset_factory(
@@ -226,9 +226,9 @@ def inventory_add(request):
 
         if form.is_valid():
             new_item = form.save(commit=False)
-            note_formset = NoteCreateFormset(
+            comment_formset = CommentCreateFormset(
                 request.POST,
-                prefix='notes',
+                prefix='comments',
                 instance=new_item
             )
             file_formset = FileUploadFormset(
@@ -244,7 +244,7 @@ def inventory_add(request):
             )
 
             if (
-              note_formset.is_valid() and
+              comment_formset.is_valid() and
               file_formset.is_valid() and
               sop_formset.is_valid()
             ):
@@ -253,7 +253,7 @@ def inventory_add(request):
                 if sop_files:
                     new_item.sop_file_id = sop_files[0].id
                 new_item.save()
-                note_formset.save()
+                comment_formset.save()
                 file_formset.save()
 
                 messages.success(request,
@@ -275,10 +275,10 @@ def inventory_add(request):
         'form_id': 'itemForm',
         'forms': {
             'file': FileForm(),
-            'note': NoteForm(),
+            'comment': CommentForm(),
         },
         'formsets': {
-            'note': NoteCreateFormset(prefix='notes'),
+            'comment': CommentCreateFormset(prefix='comments'),
             'file': FileUploadFormset(prefix='files'),
             'sop': FileUploadFormset(prefix='sop'),
         }
@@ -380,19 +380,3 @@ def autocomplete_new(request):
         else:
             response = json.dumps({})
     return HttpResponse(response, 'application/json')
-
-
-@csrf_protect
-@permission_required('change_inventoryitem')
-def note_new(request):
-    if request.is_ajax() and request.method == 'POST':
-        note_obj = Note(
-                title=request.POST['title'],
-                body=request.POST['body'],
-                author=request.user,
-                creation_date=datetime.now
-            )
-        return render(request, 'uw_inventory/note_detail.html', {
-            'note': note_obj,
-            'saved': False,
-        })

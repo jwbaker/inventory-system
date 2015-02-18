@@ -4,10 +4,10 @@ from uw_inventory.models import (
     AutocompleteData,
     InventoryItem,
     ItemFile,
-    Note
+    Comment
 )
 
 admin.site.register(AutocompleteData)
 admin.site.register(InventoryItem)
 admin.site.register(ItemFile)
-admin.site.register(Note)
+admin.site.register(Comment)

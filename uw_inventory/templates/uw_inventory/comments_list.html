@@ -1,0 +1,16 @@
+<div class="form-group list-group-item clearfix">
+  <div class="col-xs-2">
+    <label class="control-label">Comments</label>
+  </div>
+  <div class="col-xs-10" id="comments-list">
+    {% for comment in comment_set|dictsortreversed:"creation_date" %}
+      {% include 'uw_inventory/comment_detail.html' with comment=comment saved=True %}
+    {% endfor %}
+
+    {% if can_add %}
+      <div class="panel panel-default" align="center">
+        <i class="fa add-item fa-2x" id="add-comment"></i>
+      </div>
+    {% endif %}
+  </div>
+</div>
