@@ -76,6 +76,10 @@
         $('#pageSave').removeAttr('disabled');
       }
     });
+
+    var isPageDirty = function(){
+      return changeCount > 0;
+    }
   </script>
 
   <script type="text/javascript">

@@ -46,11 +46,14 @@
 
     var onChangeHandler = function(event){
       {# Empty values aren't considered 'changes' #}
+      var hasChanged;
       if(event.target.value === ''){
-        pageDirty = false;
+        hasChanged = false;
       } else{
-        pageDirty = true;
+        hasChanged = true;
       }
+
+      $(window).trigger('pagechanges', hasChanged);
     }
 
     $('select').change(onChangeHandler);
@@ -59,12 +62,13 @@
     {# Special case for special widgets #}
     $('i.checkbox').on('classChange', function(event){
       {# Most checkboxes are unchecked by default, so this would be a change #}
-      pageDirty = $(this).hasClass('checked');
+      var hasChanged = $(this).hasClass('checked');
 
       {# However, sop_required is checked by default #}
       if($(this).is('#inputSopRequired')){
-        pageDirty = !pageDirty;
+        hasChanged = !hasChanged;
       }
+      $(window).trigger('pagechanges', hasChanged);
     });
   </script>
 

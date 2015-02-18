@@ -124,10 +124,6 @@
   {# Need this for the date formatting on Edit page and for autocomplete widgets #}
   <script src="https://code.jquery.com/ui/1.11.2/jquery-ui.min.js"></script>
 
-  <script type="text/javascript">
-    var pageDirty = false;
-  </script>
-
   {{ block.super }}
 
   <script type="text/javascript">
@@ -544,7 +540,7 @@
       {# We want to confirm user intent if they try to navigate away with unsaved changes #}
       var targetDestination;
       $('.navigate').parent().click(function(event){
-        if(pageDirty){
+        if(isPageDirty()){
           event.preventDefault();
           event.stopPropagation();
           targetDestination = event.target.href;

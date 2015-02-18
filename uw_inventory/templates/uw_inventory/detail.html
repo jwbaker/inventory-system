@@ -90,7 +90,7 @@
     <script type="text/javascript">
     {# An extra message if we're trying to duplicate with unsaved changes #}
     $("#duplicate").parent().click(function(){
-      if(pageDirty){
+      if(isPageDirty()){
         $('#confirmExitModal').find('.modal-body').append("<p>Unsaved changes will not be duplicated.</p>");
       }
     });
