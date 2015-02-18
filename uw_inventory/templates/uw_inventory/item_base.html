@@ -376,6 +376,8 @@
 
     <script type="text/javascript">
       $('#add-note').click(function(){
+        $('#inputTitle').parent().find('ul').remove();
+
         var count = $('#id_notes-TOTAL_FORMS').attr('value');
         var template = $('#note-template').html().replace(/__prefix__/g, count);
         $('#id_notes-TOTAL_FORMS').attr('value', count+1);
@@ -394,11 +396,20 @@
 
       $('#notes-list').on('click', 'i.save', function(){
         var note = $(this).closest('.note');
+        note.find('#inputTitle').parent().removeClass('has-error');
+        note.find('#inputTitle').parent().find('ul').remove();
+
         var newNoteJSON = {
           'title': note.find('#inputTitle').val(),
           'body': note.find('#inputBody').val(),
           'author': '{{ user.get_name_display }}',
           'creation_date': note.find('[id*=creation_date]').val(),
+        }
+
+        if(!newNoteJSON.title){
+          note.find('#inputTitle').parent().addClass('has-error');
+          note.find('#inputTitle').parent().append('<ul class="error"><li>This field is required</li></ul>')
+          return;
         }
         
         var staticNote = note.find('.static-note');
@@ -412,11 +423,17 @@
       });
 
       $('#notes-list').on('click', 'i.cancel', function(){
+        $(this).closest('.note').find('#inputTitle').parent().removeClass('has-error');
+        $(this).closest('.note').find('#inputTitle').parent().find('ul').remove();
         $(this).closest('.note').children().toggleClass('hidden');
       });
 
       $('#notes-list').on('click', 'i.delete', function(){
         var note = $(this).closest('.note');
+
+        note.find('#inputTitle').parent().removeClass('has-error');
+        note.find('#inputTitle').parent().find('ul').remove();
+
         note.find('[id*=DELETE]').attr('checked', 'checked');
         note.addClass('hidden');
       });
