@@ -57,7 +57,7 @@
   content: "\f1f8"; /* fa-trash */
 }
 .restore::after {
-  content: "\f112"; /* fa-reply */
+  content: "\f0e2"; /* fa-undo */
 }
 .save::after {
   content: "\f00c"; /* fa-check */
