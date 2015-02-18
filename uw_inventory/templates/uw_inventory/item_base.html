@@ -96,7 +96,7 @@
     </div><!-- /.modal-dialog -->
   </div><!-- /.modal -->
 
-  <div class="modal fade" id="newNoteModal" tabindex="-1" role="dialog" aria-labelledby="newNoteModalLabel" aria-hidden="true">
+  <!--<div class="modal fade" id="newNoteModal" tabindex="-1" role="dialog" aria-labelledby="newNoteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -117,7 +117,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </div>-->
 {% endblock modal %}
 
 {% block js_includes %}
@@ -295,67 +295,87 @@
   </script>
 
   {% if perms.uw_inventory.add_note %}
+
     <script type="text/javascript">
-      $('#newNoteSubmit').click(function(event){
-        var noteHTML = $(this).parent().siblings('.modal-body').find('form');
-        {# We need to do some client-side validation here, since it's a modal #}
-        noteHTML.find('.form-errors').remove();
+      // $('#newNoteSubmit').click(function(event){
+      //   var noteHTML = $(this).parent().siblings('.modal-body').find('form');
+      //   {# We need to do some client-side validation here, since it's a modal #}
+      //   noteHTML.find('.form-errors').remove();
         
-        if(!noteHTML.find('#inputTitle').val()){
-          noteHTML.find('#inputTitle').after('<ul class="form-errors"><li>This field is required.</li></ul>');
-          return;
-        }
+      //   if(!noteHTML.find('#inputTitle').val()){
+      //     noteHTML.find('#inputTitle').after('<ul class="form-errors"><li>This field is required.</li></ul>');
+      //     return;
+      //   }
 
-        var noteJSON = {
-          'title': noteHTML.find('#inputTitle').val(),
-          'body': noteHTML.find('#inputBody').val(),
-          'creation_date': (new Date()).djangoFormat(), {# Date.prototype.djangoFormat is defined in base.html #}
-          'author_id': {{ request.user.id }}
-        }
+      //   var noteJSON = {
+      //     'title': noteHTML.find('#inputTitle').val(),
+      //     'body': noteHTML.find('#inputBody').val(),
+      //     'creation_date': (new Date()).djangoFormat(), {# Date.prototype.djangoFormat is defined in base.html #}
+      //     'author_id': {{ request.user.id }}
+      //   }
 
-        {# Despite how it may appear, this ajax call does NOT actually "create" the note #}
-        {# Rather, I'm using a small ajax call to force data into a prepared template. #}
-        {# The actual saving won't be done until the pageSave button is pressed, which #}
-        {# preserves the expected behaviour of the pageCancel button #}
-        $.ajax({
-          url: '{% url "uw_inventory.views.note_new" %}',
-          type: 'POST',
-          data: $('#newNoteForm').serialize(),
-          success: function(data){
-            $('#notes-list').prepend(data);
+      //   {# Despite how it may appear, this ajax call does NOT actually "create" the note #}
+      //   {# Rather, I'm using a small ajax call to force data into a prepared template. #}
+      //   {# The actual saving won't be done until the pageSave button is pressed, which #}
+      //   {# preserves the expected behaviour of the pageCancel button #}
+      //   $.ajax({
+      //     url: '{% url "uw_inventory.views.note_new" %}',
+      //     type: 'POST',
+      //     data: $('#newNoteForm').serialize(),
+      //     success: function(data){
+      //       $('#notes-list').prepend(data);
 
-            var count = $('#notes-form-container').children().length;
-            var template = $('#note-template').html();
-            var compiledTemplate = template.replace(/__prefix__/g, count)
-            $('div#notes-form-container').append(compiledTemplate);
+      //       var count = $('#notes-form-container').children().length;
+      //       var template = $('#note-template').html();
+      //       var compiledTemplate = template.replace(/__prefix__/g, count)
+      //       $('div#notes-form-container').append(compiledTemplate);
 
-            $('#note-' + count).find('[name="notes-' + count + '-title"]').val(noteJSON.title)
-            $('#note-' + count).find('[name="notes-' + count + '-body"]').val(noteJSON.body)
-            $('#note-' + count).find('[name="notes-' + count + '-creation_date"]').val(noteJSON.creation_date);
-            $('#note-' + count).find('[name="notes-' + count + '-author"]').val(noteJSON.author_id);
+      //       $('#note-' + count).find('[name="notes-' + count + '-title"]').val(noteJSON.title)
+      //       $('#note-' + count).find('[name="notes-' + count + '-body"]').val(noteJSON.body)
+      //       $('#note-' + count).find('[name="notes-' + count + '-creation_date"]').val(noteJSON.creation_date);
+      //       $('#note-' + count).find('[name="notes-' + count + '-author"]').val(noteJSON.author_id);
 
-            $('#id_notes-TOTAL_FORMS').attr('value', count+1);
+      //       $('#id_notes-TOTAL_FORMS').attr('value', count+1);
 
-            pageDirty = true;
-            $(window).trigger('pagechanges', true)
+      //       pageDirty = true;
+      //       $(window).trigger('pagechanges', true)
 
-            $('#newNoteModal').find('input.form-control').val('');
-            $('#newNoteModal').find('textarea').val('');
-            $('#newNoteModal').modal('hide');
-          },
-          error: function(xhr, msg, err){
-            console.log(xhr);
-            console.log(msg);
-            console.log(err);
-          }
-        });
-      });
+      //       $('#newNoteModal').find('input.form-control').val('');
+      //       $('#newNoteModal').find('textarea').val('');
+      //       $('#newNoteModal').modal('hide');
+      //     },
+      //     error: function(xhr, msg, err){
+      //       console.log(xhr);
+      //       console.log(msg);
+      //       console.log(err);
+      //     }
+      //   });
+      // });
     </script>
 
     <script type="text/html" id="note-template">
-      <div id="note-__prefix__" class="persist-hidden">
-        {{ formsets.note.empty_form }}
-      </div>     
+      <div id="note-__prefix__">
+        {{ formsets.note.empty_form.as_p }}
+      </div>
+    </script>
+
+    <script type="text/javascript">
+      $('#add-note').click(function(){
+        var count = $('#id_notes-TOTAL_FORMS').attr('value');
+        var template = $('#note-template').html().replace(/__prefix__/g, count);
+        $('#id_notes-TOTAL_FORMS').attr('value', count+1);
+
+        var newElement = $('#notes-list').prepend(template);
+
+        newElement.find('[id*=creation_date]').attr('disabled', 'disabled');
+        newElement.find('[id*=creation_date]').parent().addClass('persist-hidden');
+
+        newElement.find('[id*=author]').val({{ user.id }});
+        newElement.find('[id*=author]').attr('disabled', 'disabled');
+        newElement.find('[id*=author]').parent().addClass('persist-hidden');
+        
+        newElement.find('[id*=DELETE]').parent().addClass('persist-hidden');
+      });
     </script>
   {% endif %}
 
