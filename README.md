@@ -3,7 +3,7 @@ A Django-based inventory system. Developed for the University of Waterloo Depart
 
 ## Installing on a new machine:
 
-1. Install [virtualenv](https://virtualenv.pypa.io/en/latest/) and [pip](https://pip.pypa.io/en/latest/index.html)
+1. Install Python 2.7.9, [virtualenv](https://virtualenv.pypa.io/en/latest/), and [pip](https://pip.pypa.io/en/latest/index.html)
 2. Create and activate a virtual environment
 2. Install packages using `requirements/base.txt`:  
   `pip install -r requirements/base.txt`
