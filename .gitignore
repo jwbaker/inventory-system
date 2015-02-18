@@ -60,3 +60,6 @@ target/
 files/
 
 uml.png
+
+requirements/dev.txt
+*/local_settings.py

@@ -16,11 +16,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 's6wdn2-y603^0c@=wmk(*6*l7+cfoakh&b+0m21n3a=0fdlq4g'
-
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 TEMPLATE_DEBUG = True
 
@@ -39,7 +36,6 @@ INSTALLED_APPS = (
     'uw_inventory',
     'uw_users',
     'uw_forms',
-    'autofixture',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -115,3 +111,8 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
 )
+
+try:
+    from local_settings import *
+except ImportError:
+    pass
