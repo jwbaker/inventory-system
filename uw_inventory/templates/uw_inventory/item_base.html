@@ -365,9 +365,16 @@
       });
 
       $('#notes-list').on('click', 'i.cancel', function(){
-        $(this).closest('.note').find('#inputTitle').parent().removeClass('has-error');
-        $(this).closest('.note').find('#inputTitle').parent().find('ul').remove();
-        $(this).closest('.note').children().toggleClass('hidden');
+        if(
+            !$(this).closest('.note').find('#inputTitle').val() && 
+            !$(this).closest('.note').find('#inputBody').val()
+        ){
+          $(this).siblings('i.delete').click();
+        } else {
+          $(this).closest('.note').find('#inputTitle').parent().removeClass('has-error');
+          $(this).closest('.note').find('#inputTitle').parent().find('ul').remove();
+          $(this).closest('.note').children().toggleClass('hidden');
+        }
       });
 
       $('#notes-list').on('click', 'i.delete', function(){
