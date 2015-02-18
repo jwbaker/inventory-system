@@ -460,9 +460,14 @@
       $('#file-table').on('click', 'i.file-hide', function(){
         var row = $(this).closest('tr');
         row.find('[id*=to_display]').removeAttr('checked');
-        row.addClass('disabled');
-        row.find('i.file-hide').remove();
-        row.find('.file-menu').append('<i class="fa restore"></i>');
+
+        {% if perms.uw_inventory.view_deleted_itemfile %}
+          row.addClass('disabled');
+          row.find('i.file-hide').remove();
+          row.find('.file-menu').append('<i class="fa restore"></i>');
+        {% else %}
+          row.addClass('persist-hidden');
+        {% endif %}
 
         $(window).trigger('pagechanges', true);
       });
