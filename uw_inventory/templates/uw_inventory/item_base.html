@@ -291,9 +291,9 @@
 
     <script type="text/javascript">
       $('#add-comment').click(function(){
-        var count = $('#id_comments-TOTAL_FORMS').attr('value');
+        var count = $('#id_comments-TOTAL_FORMS').val();
         var template = $('#comment-template').html().replace(/__prefix__/g, count);
-        $('#id_comments-TOTAL_FORMS').attr('value', count+1);
+        $('#id_comments-TOTAL_FORMS').val(parseInt(count)+1);
 
         var newElement = $('#comments-list').prepend(template);
 
