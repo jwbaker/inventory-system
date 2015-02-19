@@ -1,7 +1,8 @@
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseForbidden
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 
 from django_cas.decorators import permission_required
@@ -51,6 +52,9 @@ def user_detail(request, username):
             else:
                 messages.error(request,
                                'Something went wrong. Check below for errors')
+            return HttpResponseRedirect(
+                reverse('uw_users.views.user_detail', args=[user.username])
+            )
         else:
             form = UserForm(instance=user)
         message_list = _collect_messages(request)

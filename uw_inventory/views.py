@@ -1,8 +1,8 @@
-from datetime import datetime
 import json
 
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from django.db import IntegrityError
 from django.db.models import Q
 from django.forms.models import inlineformset_factory
@@ -15,7 +15,6 @@ from django_cas.decorators import permission_required
 from uw_inventory.forms import (
     FileForm,
     ItemForm,
-    CommentForm,
     CommentForm
 )
 from uw_inventory.models import (
@@ -180,6 +179,12 @@ def inventory_detail(request, item_id):
         else:
             messages.error(request,
                            'Something went wrong. Check below for errors')
+        return HttpResponseRedirect(
+            reverse(
+                'uw_inventory.views.inventory_detail',
+                args=[inventory_item.id]
+            )
+        )
 
     else:
         form = ItemForm(instance=inventory_item)
