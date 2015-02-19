@@ -1,8 +1,8 @@
-from datetime import datetime
 import json
 
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from django.db import IntegrityError
 from django.db.models import Q
 from django.forms.models import inlineformset_factory
@@ -15,8 +15,7 @@ from django_cas.decorators import permission_required
 from uw_inventory.forms import (
     FileForm,
     ItemForm,
-    CommentForm,
-    CommentCreateForm
+    CommentForm
 )
 from uw_inventory.models import (
     AutocompleteData,
@@ -103,7 +102,7 @@ def inventory_detail(request, item_id):
     CommentCreateFormset = inlineformset_factory(
         InventoryItem,
         Comment,
-        form=CommentCreateForm,
+        form=CommentForm,
         extra=0
     )
     FileUploadFormset = inlineformset_factory(
@@ -137,6 +136,7 @@ def inventory_detail(request, item_id):
     )
 
     if request.method == 'POST':
+        request.session['_scrollY'] = request.POST.get('scroll-position')
         form = ItemForm(request.POST, request.FILES, instance=inventory_item)
 
         if (
@@ -180,6 +180,12 @@ def inventory_detail(request, item_id):
         else:
             messages.error(request,
                            'Something went wrong. Check below for errors')
+        return HttpResponseRedirect(
+            reverse(
+                'uw_inventory.views.inventory_detail',
+                args=[inventory_item.id]
+            )
+        )
 
     else:
         form = ItemForm(instance=inventory_item)
@@ -192,6 +198,7 @@ def inventory_detail(request, item_id):
         'shown_excluded_fields': [
             {'label': 'Creation date', 'value': inventory_item.creation_date}
         ],
+        'scrollY': request.session.get('_scrollY') or 0,
         'can_edit': request.user.has_perm('change_inventoryitem'),
         'form_id': 'itemForm',
         'forms': {
@@ -211,7 +218,7 @@ def inventory_add(request):
     CommentCreateFormset = inlineformset_factory(
         InventoryItem,
         Comment,
-        form=CommentCreateForm,
+        form=CommentForm,
         extra=0
     )
     FileUploadFormset = inlineformset_factory(

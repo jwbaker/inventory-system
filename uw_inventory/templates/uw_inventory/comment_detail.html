@@ -1,12 +1,14 @@
 <div class="panel item-comment {% if saved %}panel-default{% else %}panel-warning{% endif %}">
   <div class="panel-heading">
-    <h4 class="panel-title">{{ comment.title }}</h4>
     <small>
-      <strong>{{ comment.author.get_name_display }}</strong> @ 
-      <em>{{ comment.creation_date }}</em>
+      <strong>{{ comment.instance.author.get_name_display }}</strong> @ 
+      <em>{{ comment.instance.creation_date }}</em>
     </small>
   </div>
   <div class="panel-body">
-    {{ comment.body }}
+    {{ comment.instance.body }}
+  </div>
+  <div class="persist-hidden">
+      {{ comment }}
   </div>
 </div>

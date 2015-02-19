@@ -54,6 +54,7 @@ class ItemForm(forms.ModelForm):
         {'Name': 'lifting_device'},
         {'Name': 'lifting_device_inspection_date'},
         {'Name': 'sop_required'},
+        {'Name': 'notes'},
     ]
 
     class Meta:
@@ -136,6 +137,11 @@ class ItemForm(forms.ModelForm):
                 'id': 'inputName',
                 'placeholder': 'Name',
             }),
+            'notes': widgets.TextareaInput({
+                'id': 'inputNotes',
+                'placeholder': 'Notes',
+                'rows': 5,
+            }),
             'owner': widgets.AutocompleteInput({
                 'id': 'inputOwner',
                 'placeholder': 'Begin typing the name or UWID...',
@@ -184,14 +190,9 @@ class ItemForm(forms.ModelForm):
 
 
 class CommentForm(forms.ModelForm):
-    FIELD_LIST = [
-        {'Name': 'title'},
-        {'Name': 'body'},
-    ]
-
     class Meta:
         model = Comment
-        fields = ['title', 'body']
+        fields = ['body', 'creation_date', 'author']
 
         widgets = {
             'body': forms.Textarea({
@@ -199,14 +200,4 @@ class CommentForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': 'Comment'
             }),
-            'title': forms.TextInput({
-                'id': 'inputTitle',
-                'class': 'form-control',
-                'placeholder': 'Title'
-            }),
         }
-
-
-class CommentCreateForm(CommentForm):
-    class Meta(CommentForm.Meta):
-        fields = ['title', 'body', 'creation_date', 'author']

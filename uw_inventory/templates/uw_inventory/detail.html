@@ -2,6 +2,7 @@
 {% load uw_forms_form_tags %}
 {% load uw_forms_field_tags %}
 {% load uw_forms_format_tags %}
+{% load uw_inventory_model_tags %}
 
 {% block gutter_nav %}
   {% if perms.uw_inventory.add_inventoryitem %}  
@@ -41,6 +42,8 @@
       {{ fs.management_form }}
     {% endfor %}
 
+    <input type="number" id="scroll-position" name="scroll-position" class="persist-hidden" />
+
     {% edit_form form perms.uw_inventory.change_inventoryitem shown_excluded_fields %}
 
     {# Putting this template here makes me cry, but it works for now #}
@@ -50,7 +53,7 @@
       </div>
       <div class="col-xs-8">
         <p class="form-control-static" id="inputSopFile">
-          {% if formsets.sop.forms %}
+          {% if formsets.sop.forms.0.instance.file_field.name %}
             <a href="{% url 'uw_inventory_system.views.file_view' formsets.sop.forms.0.instance.file_field.name %}">
               {{ formsets.sop.forms.0.instance.get_name_display|filename }}
             </a>
@@ -76,15 +79,19 @@
     </div>
     {% show_files perms.uw_inventory.add_itemfile perms.uw_inventory.change_itemfile perms.uw_inventory.view_deleted_itemfile formsets.file %}
 
-    <div id="comments-form-container">
-      
-    </div>
+    {% show_comments formsets.comment.forms perms.uw_inventory.add_comment %}
   </form>
   {{ block.super }}
 {% endblock page_body %}
 
 {% block js_includes %}
   {{ block.super }}
+
+  <script type="text/javascript">
+    (function(){
+      window.scrollTo(0, {{ scrollY }});
+    })();
+  </script>
 
   {% if perms.uw_inventory.change_inventoryitem %}
     <script type="text/javascript">

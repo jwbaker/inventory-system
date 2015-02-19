@@ -40,6 +40,10 @@
       tr.disabled td {
         background-color: #E5E5E5;
       }
+      i,
+      .alert-dismissible {
+        cursor: pointer;
+      }
     </style>
 
   </head>
@@ -76,10 +80,14 @@
     <div class="container" role="main">
 
       <div class="row">
-        <div class="col-xs-4 col-xs-offset-4">
+      {# Because of how long the InventoryItem form is, it makes more sense to have #}
+      {# the notification scroll with you, so we fix the position. #}
+      {# Because of rendering weirdness though, it's behind everything. A stupidly large #}
+      {# z-index solves this problem handily #}
+        <div class="col-xs-4 col-xs-offset-4" style="position:fixed;z-index:100000000000000">
           {% if page_messages %}
             {% for msg in page_messages %}
-              <div class="alert alert-dismissible alert-{{ msg.class }}" role="alert">
+              <div class="alert alert-dismissible alert-{{ msg.class }}" data-dismiss="alert" role="alert">
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
