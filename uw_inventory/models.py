@@ -203,6 +203,7 @@ class InventoryItem(models.Model):
     )
     modified_since_csa = models.BooleanField(default=False)
     name = models.CharField(max_length=200)
+    notes = models.TextField(blank=True, null=True)
     owner = models.ForeignKey(
         User,
         blank=True,

@@ -54,6 +54,7 @@ class ItemForm(forms.ModelForm):
         {'Name': 'lifting_device'},
         {'Name': 'lifting_device_inspection_date'},
         {'Name': 'sop_required'},
+        {'Name': 'notes'},
     ]
 
     class Meta:
@@ -135,6 +136,11 @@ class ItemForm(forms.ModelForm):
             'name': widgets.TextInput({
                 'id': 'inputName',
                 'placeholder': 'Name',
+            }),
+            'notes': widgets.TextareaInput({
+                'id': 'inputNotes',
+                'placeholder': 'Notes',
+                'rows': 5,
             }),
             'owner': widgets.AutocompleteInput({
                 'id': 'inputOwner',
