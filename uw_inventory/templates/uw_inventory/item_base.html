@@ -17,7 +17,6 @@
 {% endblock css_includes %}
 
 {% block page_body %}
-  {% show_comments inventory_item.comment_set.all perms.uw_inventory.add_comment %}
 {% endblock page_body %}
 
 {% block modal %}
@@ -295,7 +294,8 @@
         var template = $('#comment-template').html().replace(/__prefix__/g, count);
         $('#id_comments-TOTAL_FORMS').val(parseInt(count)+1);
 
-        var newElement = $('#comments-list').prepend(template);
+        var newElement = $(template).insertBefore('.item-comment:first')
+        console.log(newElement)
 
         newElement.find('[id*=creation_date]').attr('disabled', 'disabled');
         newElement.find('[id*=creation_date]').parent().addClass('persist-hidden');

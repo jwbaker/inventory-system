@@ -2,6 +2,7 @@
 {% load uw_forms_form_tags %}
 {% load uw_forms_field_tags %}
 {% load uw_forms_format_tags %}
+{% load uw_inventory_model_tags %}
 
 {% block gutter_nav %}
   {% if perms.uw_inventory.add_inventoryitem %}  
@@ -76,9 +77,7 @@
     </div>
     {% show_files perms.uw_inventory.add_itemfile perms.uw_inventory.change_itemfile perms.uw_inventory.view_deleted_itemfile formsets.file %}
 
-    <div id="comments-form-container">
-      
-    </div>
+    {% show_comments formsets.comment.forms perms.uw_inventory.add_comment %}
   </form>
   {{ block.super }}
 {% endblock page_body %}
