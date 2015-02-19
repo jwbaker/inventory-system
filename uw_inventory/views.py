@@ -16,7 +16,7 @@ from uw_inventory.forms import (
     FileForm,
     ItemForm,
     CommentForm,
-    CommentCreateForm
+    CommentForm
 )
 from uw_inventory.models import (
     AutocompleteData,
@@ -103,7 +103,7 @@ def inventory_detail(request, item_id):
     CommentCreateFormset = inlineformset_factory(
         InventoryItem,
         Comment,
-        form=CommentCreateForm,
+        form=CommentForm,
         extra=0
     )
     FileUploadFormset = inlineformset_factory(
@@ -211,7 +211,7 @@ def inventory_add(request):
     CommentCreateFormset = inlineformset_factory(
         InventoryItem,
         Comment,
-        form=CommentCreateForm,
+        form=CommentForm,
         extra=0
     )
     FileUploadFormset = inlineformset_factory(

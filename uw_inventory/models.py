@@ -110,7 +110,7 @@ class InventoryItem(models.Model):
         Use this method on the List page to make searching against comments as
         natural as possible.
         '''
-        return ' '.join([str(f.title) + ' ' + str(f.body) for f in
+        return ' '.join([str(f.body) for f in
                         [n for n in self.comment_set.all()]])
 
     def copy(self):
@@ -280,16 +280,14 @@ class Comment(models.Model):
         new_comment = Comment()
         new_comment.author_id = self.author_id
         new_comment.body = self.body
-        new_comment.title = self.title
         new_comment.inventory_item_id = parent_id
         new_comment.save()
         return new_comment
 
     def __unicode__(self):
-        return self.title
+        return self.body
 
     author = models.ForeignKey(User)
     body = models.TextField(blank=True, null=True)
     creation_date = models.DateTimeField(default=datetime.now)
-    title = models.CharField(max_length=255)
     inventory_item = models.ForeignKey(InventoryItem)

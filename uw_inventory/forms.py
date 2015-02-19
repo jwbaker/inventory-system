@@ -184,14 +184,9 @@ class ItemForm(forms.ModelForm):
 
 
 class CommentForm(forms.ModelForm):
-    FIELD_LIST = [
-        {'Name': 'title'},
-        {'Name': 'body'},
-    ]
-
     class Meta:
         model = Comment
-        fields = ['title', 'body']
+        fields = ['body', 'creation_date', 'author']
 
         widgets = {
             'body': forms.Textarea({
@@ -199,14 +194,4 @@ class CommentForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': 'Comment'
             }),
-            'title': forms.TextInput({
-                'id': 'inputTitle',
-                'class': 'form-control',
-                'placeholder': 'Title'
-            }),
         }
-
-
-class CommentCreateForm(CommentForm):
-    class Meta(CommentForm.Meta):
-        fields = ['title', 'body', 'creation_date', 'author']
