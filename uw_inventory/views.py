@@ -136,6 +136,7 @@ def inventory_detail(request, item_id):
     )
 
     if request.method == 'POST':
+        request.session['_scrollY'] = request.POST.get('scroll-position')
         form = ItemForm(request.POST, request.FILES, instance=inventory_item)
 
         if (
@@ -197,6 +198,7 @@ def inventory_detail(request, item_id):
         'shown_excluded_fields': [
             {'label': 'Creation date', 'value': inventory_item.creation_date}
         ],
+        'scrollY': request.session.get('_scrollY') or 0,
         'can_edit': request.user.has_perm('change_inventoryitem'),
         'form_id': 'itemForm',
         'forms': {

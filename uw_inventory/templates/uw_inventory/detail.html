@@ -42,6 +42,8 @@
       {{ fs.management_form }}
     {% endfor %}
 
+    <input type="number" id="scroll-position" name="scroll-position" class="persist-hidden" />
+
     {% edit_form form perms.uw_inventory.change_inventoryitem shown_excluded_fields %}
 
     {# Putting this template here makes me cry, but it works for now #}
@@ -84,6 +86,12 @@
 
 {% block js_includes %}
   {{ block.super }}
+
+  <script type="text/javascript">
+    (function(){
+      window.scrollTo(0, {{ scrollY }});
+    })();
+  </script>
 
   {% if perms.uw_inventory.change_inventoryitem %}
     <script type="text/javascript">

@@ -124,6 +124,9 @@
             hidden_input.removeAttr('checked');
           }
         }
+
+        $('#scroll-position').val(window.pageYOffset);
+
         $('form#{{ form_id }}').submit();
       });
     </script>
