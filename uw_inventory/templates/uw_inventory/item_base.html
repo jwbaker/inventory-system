@@ -295,13 +295,10 @@
         $('#id_comments-TOTAL_FORMS').val(parseInt(count)+1);
 
         var newElement = $(template).insertBefore('.item-comment:first')
-        console.log(newElement)
 
-        newElement.find('[id*=creation_date]').attr('disabled', 'disabled');
         newElement.find('[id*=creation_date]').parent().addClass('persist-hidden');
 
         newElement.find('[id*=author]').val({{ user.id }});
-        newElement.find('[id*=author]').attr('disabled', 'disabled');
         newElement.find('[id*=author]').parent().addClass('persist-hidden');
 
         newElement.find('[id*=DELETE]').parent().addClass('persist-hidden');
