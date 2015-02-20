@@ -247,7 +247,8 @@ def inventory_add(request):
             sop_formset = FileUploadFormset(
                 request.POST,
                 request.FILES,
-                prefix='sop'
+                prefix='sop',
+                instance=new_item
             )
 
             if (
@@ -262,6 +263,11 @@ def inventory_add(request):
                 new_item.save()
                 comment_formset.save()
                 file_formset.save()
+                map(
+                    lambda x: setattr(x, 'inventory_item_id', new_item.id),
+                    sop_files
+                )
+                map(lambda x: x.save(), sop_files)
 
                 messages.success(request,
                                  'Inventory item saved successfully')
