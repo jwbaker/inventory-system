@@ -44,6 +44,11 @@
       .alert-dismissible {
         cursor: pointer;
       }
+      .modal {
+        {# I'm not exactly thrilled about this solution, but we need modals to be 'higher' than messages, #}
+        {# otherwise the messages will lay overtop modals and look icky #}
+        z-index:100000000000001;
+      }
     </style>
 
   </head>
