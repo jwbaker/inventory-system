@@ -155,26 +155,6 @@ def inventory_detail(request, item_id):
             comment_formset.save()
             file_formset.save()
 
-            # This is a sneaky hack, but it prevents some oddities when
-            # coming back from a save doesn't populate inline formsets
-            sop_formset = FileUploadFormset(
-                None,
-                None,
-                prefix='sop',
-                instance=inventory_item,
-                queryset=ItemFile.objects.filter(
-                    id=inventory_item.sop_file_id
-                )
-            )
-            file_formset = FileUploadFormset(
-                None,
-                None,
-                prefix='files',
-                instance=inventory_item,
-                queryset=ItemFile.objects.exclude(
-                    id=inventory_item.sop_file_id
-                )
-            )
             messages.success(request,
                              'Item saved successfully')
         else:

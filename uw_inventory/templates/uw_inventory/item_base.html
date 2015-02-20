@@ -384,7 +384,7 @@
 
         {# The first replace is some trickery to hide the formset delete checkbox #}
         {# The second replace is to update the formset ID, which will be used at save-time #}
-        var compiledRowTemplate = $("#file-template").html().replace(/__prefix__-(DELETE|to_display)"/g, '__prefix__-\1" class="persist-hidden"').replace(/__prefix__/g, count);
+        var compiledRowTemplate = $("#file-template").html().replace(/__prefix__-(DELETE|to_display)"/g, '__prefix__-$1" class="persist-hidden"').replace(/__prefix__/g, count);
         var compiledTemplate = $('#file-table-row-template').html().replace(/__form__/g, compiledRowTemplate);
         
         $('#file-table tbody').append(compiledTemplate);
