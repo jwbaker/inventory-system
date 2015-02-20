@@ -26,13 +26,69 @@
     <table id="inventoryTable" class="table table-condensed table-hover">
       <thead>
         {# There should be a better way to generate this table, but this will do for now #}
-        <td>SOP</td>
-        <td>Name</td>
-        <td>Location</td>
-        <td>Technician</td>
-        <td>Owner</td>
-        <td>Manufacturer</td>
-        <td>Model</td>
+        <td>
+          <div class="header-label">
+            SOP
+            <i class="fa filter"></i>
+          </div>
+          <div class="header-filter">
+            <i class="fa fa-2x checkbox" data-col-index="0"></i>
+          </div>
+        </td>
+        <td>
+          <div class="header-label">
+            Name
+            <i class="fa filter"></i>
+          </div>
+          <div class="header-filter">
+            <input type="text" class="form-control input-sm" data-col-index="1" />
+          </div>
+        </td>
+        <td>
+          <div class="header-label">
+            Location
+            <i class="fa filter"></i>
+          </div>
+          <div class="header-filter">
+            <input type="text" class="form-control input-sm" data-col-index="2" />
+          </div>
+        </td>
+        <td>
+          <div class="header-label">
+            Technician
+            <i class="fa filter"></i>
+          </div>
+          <div class="header-filter">
+            <input type="text" class="form-control input-sm" data-col-index="3" />
+          </div>
+        </td>
+        <td>
+          <div class="header-label">
+            Owner
+            <i class="fa filter"></i>
+          </div>
+          <div class="header-filter">
+            <input type="text" class="form-control input-sm" data-col-index="4" />
+          </div>
+        </td>
+        <td>
+          <div class="header-label">
+            Manufacturer
+            <i class="fa filter"></i>
+          </div>
+          <div class="header-filter">
+            <input type="text" class="form-control input-sm" data-col-index="5" />
+          </div>
+        </td>
+        <td>
+          <div class="header-label">
+            Model
+            <i class="fa filter"></i>
+          </div>
+          <div class="header-filter">
+            <input type="text" class="form-control input-sm" data-col-index="6" />
+          </div>
+        </td>
         <td>Description</td>
         <td>Technician</td>
         <td>Owner</td>
@@ -108,13 +164,26 @@
 {% endblock content %} 
 
 {% block js_includes %}
+  <script type="text/javascript">
+    $('.header-filter').addClass('hidden').on('click', function(e){e.stopPropagation()});
+
+    $('.header-label').click(function(e){
+      e.stopPropagation();
+      $('.header-label i').removeClass('text-primary');
+      $('.header-filter').addClass('hidden');
+
+      var cell = $(this).closest('td');
+      cell.find('.header-filter').removeClass('hidden');
+      $(this).find('i').addClass('text-primary');
+    });
+  </script>
+
   <!-- DataTables -->
   <script src="http://cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js"></script>
   <script src="http://cdn.datatables.net/plug-ins/3cfcc339e89/integration/bootstrap/3/dataTables.bootstrap.js"></script>
 
   <script type="text/javascript">
-    $(function () {
-      $('table#inventoryTable').DataTable({
+    var dataTable = $('table#inventoryTable').DataTable({
         {# This is how we can search on invisible columns - DataTables magic! #}
         'columnDefs': [
           {
@@ -123,13 +192,39 @@
             'visible': false,
           }
         ]
-      });                              
-    });
+      });
   </script>
   <script type="text/javascript">
     {# If we click anywhere in a row, we want to trigger the link contained in that row #}
     $('tbody tr').click(function(){
       window.location = $(this).find('a.item-detail').attr('href');
+    });
+  </script>
+
+  <script type="text/javascript">
+    $('.checkbox').click(function(e){
+      if($(this).hasClass('unchecked')){
+        $(this).removeClass('unchecked');
+      } else if($(this).hasClass('checked')){
+        $(this).removeClass('checked').addClass('unchecked');
+      } else{
+        $(this).addClass('checked');
+      }
+
+      $('#inventoryTable').trigger('filter', [$(this).attr('data-col-index'), undefined])
+    });
+
+    $('.header-filter input').on('input propertychange past', function(e){
+      $('#inventoryTable').trigger('filter', [$(this).attr('data-col-index'), $(this).val()])
+    });
+
+    $('#inventoryTable').on('filter', function(event, columnIndex, filter_value){
+      switch(columnIndex){
+        case 0:
+          break;
+        default:
+          dataTable.columns(columnIndex).search(filter_value).draw(); break;
+      }
     });
   </script>
 {% endblock js_includes %}
