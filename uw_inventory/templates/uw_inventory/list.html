@@ -26,7 +26,7 @@
     <table id="inventoryTable" class="table table-condensed table-hover">
       <thead>
         {# There should be a better way to generate this table, but this will do for now #}
-        <td>
+        <th class="column-display">
           <div class="header-label">
             SOP
             <i class="fa filter"></i>
@@ -34,8 +34,8 @@
           <div class="header-filter">
             <i class="fa fa-2x checkbox" data-col-index="0"></i>
           </div>
-        </td>
-        <td>
+        </th>
+        <th class="column-display">
           <div class="header-label">
             Name
             <i class="fa filter"></i>
@@ -43,8 +43,8 @@
           <div class="header-filter">
             <input type="text" class="form-control input-sm" data-col-index="1" />
           </div>
-        </td>
-        <td>
+        </th>
+        <th class="column-display">
           <div class="header-label">
             Location
             <i class="fa filter"></i>
@@ -52,8 +52,8 @@
           <div class="header-filter">
             <input type="text" class="form-control input-sm" data-col-index="2" />
           </div>
-        </td>
-        <td>
+        </th>
+        <th class="column-display">
           <div class="header-label">
             Technician
             <i class="fa filter"></i>
@@ -61,8 +61,8 @@
           <div class="header-filter">
             <input type="text" class="form-control input-sm" data-col-index="3" />
           </div>
-        </td>
-        <td>
+        </th>
+        <th class="column-display">
           <div class="header-label">
             Owner
             <i class="fa filter"></i>
@@ -70,8 +70,8 @@
           <div class="header-filter">
             <input type="text" class="form-control input-sm" data-col-index="4" />
           </div>
-        </td>
-        <td>
+        </th>
+        <th class="column-display">
           <div class="header-label">
             Manufacturer
             <i class="fa filter"></i>
@@ -79,8 +79,8 @@
           <div class="header-filter">
             <input type="text" class="form-control input-sm" data-col-index="5" />
           </div>
-        </td>
-        <td>
+        </th>
+        <th class="column-display">
           <div class="header-label">
             Model
             <i class="fa filter"></i>
@@ -88,29 +88,29 @@
           <div class="header-filter">
             <input type="text" class="form-control input-sm" data-col-index="6" />
           </div>
-        </td>
-        <td>Description</td>
-        <td>Technician</td>
-        <td>Owner</td>
-        <td>Technician ID</td>
-        <td>Status</td>
-        <td>Serial Number</td>
-        <td>Manufacture Date</td>
-        <td>Purchase Price</td>
-        <td>Purchase Date</td>
-        <td>Replacement Cost</td>
-        <td>Replacement Cost Estimation Date</td>
-        <td>CSA Required?</td>
-        <td>Factory CSA?</td>
-        <td>CSA Special Required?</td>
-        <td>CSA Special Certification Date</td>
-        <td>Modified Since CSA?</td>
-        <td>Available for Undergraduate?</td>
-        <td>CSA Cost</td>
-        <td>SOP Required?</td>
-        <td>Lifting Device?</td>
-        <td>Lifting Device Inspection Date</td>
-        <td>Comments</td>
+        </th>
+        <th class="column-hidden">Description</th>
+        <th class="column-hidden">Technician</th>
+        <th class="column-hidden">Owner</th>
+        <th class="column-hidden">Technician ID</th>
+        <th class="column-hidden">Status</th>
+        <th class="column-hidden">Serial Number</th>
+        <th class="column-hidden">Manufacture Date</th>
+        <th class="column-hidden">Purchase Price</th>
+        <th class="column-hidden">Purchase Date</th>
+        <th class="column-hidden">Replacement Cost</th>
+        <th class="column-hidden">Replacement Cost Estimation Date</th>
+        <th class="column-hidden">CSA Required?</th>
+        <th class="column-hidden">Factory CSA?</th>
+        <th class="column-hidden">CSA Special Required?</th>
+        <th class="column-hidden">CSA Special Certification Date</th>
+        <th class="column-hidden">Modified Since CSA?</th>
+        <th class="column-hidden">Available for Undergraduate?</th>
+        <th class="column-hidden">CSA Cost</th>
+        <th class="column-hidden">SOP Required?</th>
+        <th class="column-hidden">Lifting Device?</th>
+        <th class="column-hidden">Lifting Device Inspection Date</th>
+        <th class="column-hidden">Comments</th>
       </thead>
       <tbody>
         {% for item in inventory_list %}
@@ -172,7 +172,7 @@
       $('.header-label i').removeClass('text-primary');
       $('.header-filter').addClass('hidden');
 
-      var cell = $(this).closest('td');
+      var cell = $(this).closest('th');
       cell.find('.header-filter').removeClass('hidden');
       $(this).find('i').addClass('text-primary');
     });
@@ -185,13 +185,10 @@
   <script type="text/javascript">
     var dataTable = $('table#inventoryTable').DataTable({
         {# This is how we can search on invisible columns - DataTables magic! #}
-        'columnDefs': [
-          {
-            {# Horrible, hardcoded magic... #}
-            'targets': [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28],
+        'columnDefs': [{
+            'targets': 'column-hidden',
             'visible': false,
-          }
-        ]
+          }]
       });
   </script>
   <script type="text/javascript">
