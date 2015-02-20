@@ -10,6 +10,9 @@
 .copy::after {
   content: "\f0c5"; /* fa-files-o */
 }
+.checkbox::after {
+  content: "\f147"; /* fa-minus-square-o */
+}
 .checkbox.checked::after {
   content: "\f046"; /* fa-check-square-o */
 }
@@ -55,6 +58,9 @@
 .file-hide::after,
 .delete::after {
   content: "\f1f8"; /* fa-trash */
+}
+.filter::after {
+  content: "\f0b0"; /* fa-filter */
 }
 .restore::after {
   content: "\f0e2"; /* fa-undo */
