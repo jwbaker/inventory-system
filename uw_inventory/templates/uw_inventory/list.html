@@ -193,9 +193,9 @@
   </script>
   <script type="text/javascript">
     {# If we click anywhere in a row, we want to trigger the link contained in that row #}
-    $('tbody tr').click(function(){
+    $('tbody').on('click', 'tr', function(){
       window.location = $(this).find('a.item-detail').attr('href');
-    });
+    })
   </script>
 
   <script type="text/javascript">
