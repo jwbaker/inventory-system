@@ -203,15 +203,19 @@
 
   <script type="text/javascript">
     $('.checkbox').click(function(e){
-      if($(this).hasClass('unchecked')){
+      var filter_value;
+      if($(this).hasClass('unchecked')){ // New state: indeterminate
         $(this).removeClass('unchecked');
-      } else if($(this).hasClass('checked')){
+        filter_value = '';
+      } else if($(this).hasClass('checked')){ // New state: unchecked
         $(this).removeClass('checked').addClass('unchecked');
-      } else{
+        filter_value = '^$'; // Filter on empty
+      } else{ // New state: checked
         $(this).addClass('checked');
+        filter_value = '^.+$'; // Filter on *something*
       }
 
-      $('#inventoryTable').trigger('filter', [$(this).attr('data-col-index'), undefined])
+      $('#inventoryTable').trigger('filter', [$(this).attr('data-col-index'), filter_value])
     });
 
     $('.header-filter input').on('input propertychange past', function(e){
@@ -219,9 +223,9 @@
     });
 
     $('#inventoryTable').on('filter', function(event, columnIndex, filter_value){
-      switch(columnIndex){
+      switch(parseInt(columnIndex, 10)){
         case 0:
-          break;
+          dataTable.columns(columnIndex).search(filter_value, true, false).draw(); break;
         default:
           dataTable.columns(columnIndex).search(filter_value).draw(); break;
       }
