@@ -416,6 +416,8 @@
         var row = $(this).closest('tr');
         row.find('[id*=to_display]').removeAttr('checked');
 
+        var hasChanged = row.find('span.initial-display').text() === 'True';
+
         {% if perms.uw_inventory.view_deleted_itemfile %}
           row.addClass('disabled');
           row.find('i.file-hide').remove();
@@ -424,7 +426,7 @@
           row.addClass('persist-hidden');
         {% endif %}
 
-        $(window).trigger('pagechanges', true);
+        $(window).trigger('pagechanges', hasChanged);
       });
 
       $('#file-table').on('click', 'i.restore', function(){
@@ -434,7 +436,8 @@
         row.find('i.restore').remove();
         row.find('.file-menu').append('<i class="fa file-hide"></i>');
 
-        $(window).trigger('pagechanges', false);
+        var hasChanged = row.find('span.initial-display').text() === 'False';
+        $(window).trigger('pagechanges', hasChanged);
       });
 
       $('#file-table').on('click', 'i.save', function(){
