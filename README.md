@@ -11,7 +11,7 @@ A Django-based inventory system. Developed for the University of Waterloo Depart
 4. Copy `local_settings.template` to `local_settings.py`
 5. Add a value to the `SECRET_KEY` setting in `local_settings.py`:  
   1. In the terminal, run the following command:  
-     `python -c 'import random; import string; print "".join([random.SystemRandom().choice(string.digits + string.letters + "!#$&()*+,-./:;<=>?@[\]^_{|}~") for i in range(100)])'`
+     `python -c 'import random; import string; print "".join([random.SystemRandom().choice(string.digits + string.letters + "!$&()*+,-./:;<=>?@[]^_{|}~") for i in range(100)])'`
   2. Copy and paste the output into `local_settings.py`, in-between the quotation marks following `SECRET_KEY`
 6. Run migrations. From the project root directory:  
    `python manage.py migrate`
