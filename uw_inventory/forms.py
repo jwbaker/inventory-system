@@ -53,8 +53,8 @@ class ItemForm(forms.ModelForm):
         {'Name': 'csa_cost'},
         {'Name': 'lifting_device'},
         {'Name': 'lifting_device_inspection_date'},
-        {'Name': 'sop_required'},
         {'Name': 'notes'},
+        {'Name': 'sop_required'},
     ]
 
     class Meta:
