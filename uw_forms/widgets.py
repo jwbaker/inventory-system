@@ -109,7 +109,7 @@ class CheckboxInput(forms.Widget):
     def render(self, name, value, attrs=None):
         widget_id = self.attrs.get('id', '')
         widget_class = self.attrs.get('class', '')
-        widget_class += ' checkbox fa fa-2x'
+        widget_class += ' checkbox-2 fa fa-2x'
         widget_class += ' {0}'.format(
             'checked' if value else 'unchecked'
         )

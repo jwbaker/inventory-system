@@ -11,7 +11,8 @@
   {% if can_edit %}
     <td colspan="2" class="hidden">
       {{ form.as_p }}
-      <span class="default-description hidden">{{ form.initial.description }}</span>
+      <span class="default-description persist-hidden">{{ form.initial.description }}</span>
+      <span class="initial-display persist-hidden">{{ form.initial.to_display }}</span>
     </td>
   {% endif %}
   <td class="file-menu">
