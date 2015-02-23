@@ -86,9 +86,8 @@
   {% if can_edit or can_add %}
     <script type="text/javascript">
       {# Handler for changing the state of our checkbox control #}
-      $('i.checkbox').click(function(){
+      $('i.checkbox-2').click(function(){
         if(!$(this).hasClass('hidden')){
-          $(this).toggleClass('unchecked');
           $(this).toggleClass('checked');
           $(this).attr('value', $(this).hasClass('checked') ? 'Yes' : 'No');
           {# This custom event will be picked up on the add form and cause special things #}
@@ -108,7 +107,7 @@
       $('#pageSave').click(function(event){
         {# Because we're not using real form controls for our checkboxes, #}
         {# we need to update the value of the real checkbox control #}
-        var checkboxes = $('i.checkbox');
+        var checkboxes = $('i.checkbox-2');
         for(var i = 0; i < checkboxes.length; i++){
           var hidden_input = $('input#' + checkboxes[i].id);
           var checkbox_value = checkboxes[i].getAttribute('value');
