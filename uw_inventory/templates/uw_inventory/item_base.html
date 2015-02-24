@@ -273,17 +273,17 @@
           {{ formsets.comment.empty_form.as_p }}
         </div>
         <div class="col-xs-1">
-          <i class="fa save"></i>
-          <i class="fa cancel"></i>
-          <i class="fa delete"></i>
+          <i class="save"></i>
+          <i class="cancel"></i>
+          <i class="delete"></i>
         </div>
 
         <div class="col-xs-11 hidden static-comment">
           {% include 'uw_inventory/comment_detail.html' %}
         </div>
         <div class="col-xs-1 hidden">
-          <i class="fa edit"></i>
-          <i class="fa delete"></i>
+          <i class="edit"></i>
+          <i class="delete"></i>
         </div>
       </div>
     </script>
@@ -365,14 +365,14 @@
         <td class="hidden file-description"></td>
         <td class="hidden file-size"></td>
         <td class="hidden">
-          <i class="fa file-edit"></i>
-          <i class="fa delete"></i>
+          <i class="file-edit"></i>
+          <i class="delete"></i>
         </td>
         <td colspan="2">__form__</td>
         <td>
-          <i class="fa save"></i>
-          <i class="fa cancel"></i>
-          <i class="fa delete"></i>
+          <i class="save"></i>
+          <i class="cancel"></i>
+          <i class="delete"></i>
         </td>
       </tr>
     </script>
@@ -421,7 +421,7 @@
         {% if perms.uw_inventory.view_deleted_itemfile %}
           row.addClass('disabled');
           row.find('i.file-hide').remove();
-          row.find('.file-menu').append('<i class="fa restore"></i>');
+          row.find('.file-menu').append('<i class="restore"></i>');
         {% else %}
           row.addClass('persist-hidden');
         {% endif %}
@@ -434,7 +434,7 @@
         row.find('[id*=to_display]').attr('checked', 'checked');
         row.removeClass('disabled');
         row.find('i.restore').remove();
-        row.find('.file-menu').append('<i class="fa file-hide"></i>');
+        row.find('.file-menu').append('<i class="file-hide"></i>');
 
         var hasChanged = row.find('span.initial-display').text() === 'False';
         $(window).trigger('pagechanges', hasChanged);

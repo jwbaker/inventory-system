@@ -40,10 +40,6 @@
       tr.disabled td {
         background-color: #E5E5E5;
       }
-      i,
-      .alert-dismissible {
-        cursor: pointer;
-      }
       .modal {
         {# I'm not exactly thrilled about this solution, but we need modals to be 'higher' than messages, #}
         {# otherwise the messages will lay overtop modals and look icky #}
@@ -73,7 +69,7 @@
             {% if perms.uw_inventory.add_inventoryitem %}
               <li>
                 <a href="{% url 'uw_inventory.views.inventory_add' %}">
-                  <i class="fa add-item navigate"></i>
+                  <i class="add-item navigate"></i>
                 </a>
               </li>
             {% endif %}

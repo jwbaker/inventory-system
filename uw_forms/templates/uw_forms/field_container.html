@@ -23,9 +23,9 @@
   {# If we came from a show_editable_field tag and we are allowed to edit this model #}
   {% if caller == "edit" and can_edit %}
     <div class="col-xs-1">
-      <i class="fa save hidden" for="{{ field_id }}"></i>
-      <i class="fa cancel hidden" for="{{ field_id }}"></i>
-      <i class="fa edit" for="{{ field_id }}"></i>
+      <i class="save hidden" for="{{ field_id }}"></i>
+      <i class="cancel hidden" for="{{ field_id }}"></i>
+      <i class="edit" for="{{ field_id }}"></i>
     </div>
   {% endif %}
 </div>
