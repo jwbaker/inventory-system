@@ -58,7 +58,7 @@
           <th class="column-hidden">Lifting Device Inspection Date</th>
           <th class="column-hidden">Comments</th>
         </tr>
-        <tr id="column-filters">
+        <tr id="column-filters" class="hidden">
           <th><i class="fa fa-2x checkbox-3"></i></th>
           <th class="has-feedback">
             <input type="text" class="form-control input-sm" placeholder="Begin typing...">
@@ -136,9 +136,22 @@
   <script src="http://cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js"></script>
   <script src="http://cdn.datatables.net/plug-ins/3cfcc339e89/integration/bootstrap/3/dataTables.bootstrap.js"></script>
 
+  <script type="text/html" id="list-toolbar-template">
+    <button class="btn btn-default" id="show-filters">
+      <i class="fa filter"></i> Show filters
+    </button>
+    <button class="btn btn-default hidden" id="hide-filters">
+      <i class="fa fa-inverse filter"></i> Hide filters
+    </button>
+    <button class="btn btn-danger hidden" id="clear-filters">
+      <i class="fa cancel"></i>
+      Clear all filters
+    </button>
+  </script>
+
   <script type="text/javascript">
     var dataTable = $('table#inventoryTable').DataTable({
-        'dom': '<"row"<"col-xs-2"l><"col-xs-1 toolbar"><fr>>t<"row"ip>',
+        'dom': '<"row"<"col-xs-2"l><"col-xs-7 toolbar btn-group btn-group-sm"><fr>><"row"t><"row"ip>',
         // Applies sorting to the top row of the thead - needed because we have a second row for searching
         'orderCellsTop': true,
         {# This is how we can search on invisible columns - DataTables magic! #}
@@ -147,19 +160,13 @@
             'visible': false,
           }]
       });
+    $('.toolbar').append($('#list-toolbar-template').html());
   </script>
   <script type="text/javascript">
     {# If we click anywhere in a row, we want to trigger the link contained in that row #}
     $('tbody').on('click', 'tr', function(){
       window.location = $(this).find('a.item-detail').attr('href');
     })
-  </script>
-
-  <script type="text/html" id="clear-filters-template">
-    <button class="btn btn-danger btn-sm" id="clear-filters">
-      <i class="fa cancel"></i>
-      Clear all filters
-    </button>
   </script>
 
   <script type="text/javascript">
@@ -201,19 +208,19 @@
       } else{
         this.filterActivations[columnIndex]++;
       }
-
-      var context = this;
-      var numActiveFilters = Object.keys(this.filterActivations).reduce(function(prev, current, index){
-        return prev + context.filterActivations[current];
-      }, 0);
-      if(numActiveFilters === 0){
-        $('.toolbar').children().remove('button#clear-filters');
-      } else if(numActiveFilters === 1){
-        $('.toolbar').append($('#clear-filters-template').html());
-      }
     });
 
-    $('body').on('click', '#clear-filters', function(){
+    $('.toolbar').on('click', '#show-filters', function(){
+      $('tr#column-filters').removeClass('hidden');
+      $(this).parent().children().toggleClass('hidden');
+    });
+
+    $('.toolbar').on('click', '#hide-filters', function(){
+      $('tr#column-filters').addClass('hidden');
+      $(this).parent().children().toggleClass('hidden');
+    });
+
+    $('.toolbar').on('click', '#clear-filters', function(){
       $('#column-filters input').val('');
       $('#column-filters .checkbox-3').removeClass('checked').removeClass('unchecked');
 
