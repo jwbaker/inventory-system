@@ -98,6 +98,14 @@
       </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
   </div><!-- /.modal -->
+
+  <div class="modal fade" id="lightboxModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <img src="" alt="" style="max-width:100%;height:auto">
+      </div>
+    </div>
+  </div>
 {% endblock modal %}
 
 {% block js_includes %}
@@ -566,9 +574,9 @@
   {% if perms.uw_inventory.add_itemimage or perms.uw_inventory.change_itemimage %}
     <script type="text/html" id="image-detail-template">
       <div class="image-item">
-        <div class="col-xs-4">
+        <div class="col-md-4 col-sm-6">
           <div class="thumbnail clearfix">
-            <div class="image-placeholder" style="height:91px;text-align:center">
+            <div class="image-placeholder" style="min-height:91px;text-align:center">
               <i class="fa-picture-o fa-fw fa-5x"></i>
             </div>
             <div class="pull-right">
@@ -664,4 +672,20 @@
       });
     </script>
   {% endif %}
+
+  <script type="text/javascript">
+    $('.image-item img').click(function(){
+      var imageData = {
+        'src': $(this).attr('src'),
+        'width': $(this).attr('data-width'),
+        'height': $(this).attr('data-height'),
+      }
+      $('#lightboxModal').find('img').attr('src', imageData.src);
+      $('#lightboxModal').modal('show');
+    });
+
+    $('#lightboxModal').on('hidden.bs.modal', function(){
+      $('#lightboxModal').find('img').attr('src', '');
+    })
+  </script>
 {% endblock js_includes %}
