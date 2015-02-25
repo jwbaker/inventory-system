@@ -18,7 +18,7 @@ class FileForm(forms.ModelForm):
         widgets = {
             'description': forms.Textarea({
                 'id': 'inputDescription',
-                'class': 'form-control',
+                'class': 'form-control form-element',
                 'placeholder': 'Description',
                 'rows': 2,
             }),
@@ -32,7 +32,7 @@ class ImageForm(forms.ModelForm):
         widgets = {
             'description': forms.Textarea({
                 'id': 'inputDescription',
-                'class': 'form-control',
+                'class': 'form-control form-element',
                 'placeholder': 'Description',
                 'rows': 2,
             }),

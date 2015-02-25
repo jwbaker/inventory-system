@@ -47,11 +47,11 @@
     {% edit_form form perms.uw_inventory.change_inventoryitem shown_excluded_fields %}
 
     {# Putting this template here makes me cry, but it works for now #}
-    <div class="form-group list-group-item clearfix">
+    <div class="singleton-formset form-group list-group-item clearfix">
       <div class="col-xs-3">
         <label for="inputSopFile" class="control-label">SOP</label>
       </div>
-      <div class="col-xs-8">
+      <div class="col-xs-8 field-container">
         <p class="form-control-static" id="inputSopFile">
           {% if formsets.sop.forms %}
             <a href="{% url 'uw_inventory_system.views.file_view' formsets.sop.forms.0.instance.file_field.name %}">
@@ -60,7 +60,7 @@
           {% endif %}
         </p>
 
-        <div class="hidden" id="sop-form-container">
+        <div class="hidden form-element" id="sop-form-container">
         {% if formsets.sop.forms %}
           {{ formsets.sop.forms.0.as_p }}
         {% else %}
@@ -113,12 +113,8 @@
     <script type="text/javascript">
       {# This function performs all the magic of adding and removing edit states #}
       var editClickHandler = function(context){
-        var editTarget = context.attr('for');
-        var paragraph = $('p#' + editTarget);
-        paragraph.toggleClass('hidden');
-        {# We're using broad stroked to render the input elements visible, which will bite us later #}
-        paragraph.siblings().toggleClass('hidden');
-        editMenuToggle(editTarget);
+        context.closest('.form-group').find('.field-container').children().toggleClass('hidden');
+        context.parent().children().toggleClass('hidden');
       }
 
       var editMenuToggle = function(editTarget){
@@ -135,63 +131,78 @@
         editClickHandler($(this));
       });
 
-      $('.save').click(function(){
+      $('.singleton-field .save').click(function(){
+        var saveText;
+        var hasChanged = false;
+
+        var formGroup = $(this).closest('.form-group');
+        var originalValue = formGroup.find('input.default-value').val();
+        var savedParagraph = formGroup.find('p.form-control-static');
+        var inputControl = savedParagraph.siblings('.form-element');
+
+        if(inputControl.is('select')){
+          {# inputControl was formerly the select box itself, but we need the selected option #}
+          inputControl = inputControl.find('option:selected');
+          saveText = inputControl.text();
+        } else if(inputControl.is('input[type="date"]')){
+          {# Need to do this because sending the string alone into the Date constructor will #}
+          {#   interpret the data as UTC, but we want it to be Eastern time #}
+          var dateStr = inputControl.val();
+          if(dateStr){
+            var dateArr = dateStr.split('-');
+            var date = new Date(dateArr[0], dateArr[1] - 1, dateArr[2]);
+
+            {# Keeps a consistent formatting on the date. We could do this with native JS, but this is cleaner #}
+            saveText = $.datepicker.formatDate('M. d, yy', date);
+          } else{
+            saveText = '';
+          }
+        } else if(inputControl.is('i.checkbox-2')){
+          saveText = (inputControl.hasClass('checked') ? 'Yes' : 'No');
+        } else if(inputControl.is('.ui-autocomplete-input')){
+          saveText = (inputControl[0].value == inputControl.placeholder ? '' : inputControl[0].value);
+          var toSave;
+          if(saveText === ''){
+            toSave = '';
+          } else {
+            toSave = inputControl.attr('to-save');
+          }
+          {# More magic here, because the autocomplete widget sends the name value but we need the id #}
+          inputControl[1].setAttribute('value', toSave);
+        } else {
+          saveText = (inputControl.val() == inputControl.placeholder ? '' : inputControl.val());
+        }
+
+        hasChanged = (saveText !== originalValue) {# Here, blank values are considered a change #}
+
+        if(hasChanged){ {# Have we made a change? #}
+          formGroup.addClass('list-group-item-warning has-warning');
+        } else{ {# Are we back to original? #}
+          formGroup.removeClass('list-group-item-warning has-warning');
+        }
+        $(window).trigger('pagechanges', hasChanged); {# Here's that event from earlier #}
+
+        savedParagraph.text(saveText);
+
+        editClickHandler($(this));
+      });
+
+      $('.singleton-formset .save').click(function(){
         var saveText; {# This will eventually go in the "saved" <p> tag text #}
         var hasChanged = false;
-        var paragraph = $('p#' + $(this).attr('for'));
 
-        {# This line looks up from the pragraph for the parent div, then down for the input element #}
-        var inputControl = paragraph.closest('div').find('.form-element');
+        var formGroup = $(this).closest('.form-group');
+        var originalValue = formGroup.find('input.default-value').val();
+        var savedParagraph = formGroup.find('p.form-control-static');
+        var inputControl = savedParagraph.siblings('.form-element');
 
-        if(inputControl.length > 0){
-          var original = inputControl.parents('div.form-group').find('span.default-value')[0].textContent.trim();
-          if(inputControl.is('select')){
-            {# inputControl was formerly the select box itself, but we need the selected option #}
-            inputControl = inputControl.find('option:selected');
+        var new_file_name = inputControl.find('[type="file"]').val();
+        if(new_file_name) new_file_name = new_file_name.formatFilename();
+        var new_description = inputControl.find('#inputDescription').val();
 
-            saveText = inputControl[0].text;
-          } else if(inputControl.is('input[type="date"]')){
-            {# Need to do this because sending the string alone into the Date constructor will #}
-            {#   interpret the data as UTC, but we want it to be Eastern time #}
-            var dateStr = inputControl[0].value;
-            if(dateStr){
-              var dateArr = dateStr.split('-');
-              var date = new Date(dateArr[0], dateArr[1] - 1, dateArr[2]);
-
-              {# Keeps a consistent formatting on the date. We could do this with native JS, but this is cleaner #}
-              saveText = $.datepicker.formatDate('M. d, yy', date);
-            } else{
-              saveText = '';
-            }
-          } else if(inputControl.is('i.checkbox-2')){
-            saveText = (inputControl.hasClass('checked') ? 'Yes' : 'No');
-          } else if(inputControl.is('.ui-autocomplete-input')){
-            saveText = (inputControl[0].value == inputControl.placeholder ? '' : inputControl[0].value);
-            var toSave;
-            if(saveText === ''){
-              toSave = '';
-            } else {
-              toSave = inputControl.attr('to-save');
-            }
-            {# More magic here, because the autocomplete widget sends the name value but we need the id #}
-            inputControl[1].setAttribute('value', toSave);
-          } else {
-            {# We don't want to display placeholder text #}
-            saveText = (inputControl[0].value == inputControl.placeholder ? '' : inputControl[0].value);
-          }
-
-          hasChanged = (saveText !== original) {# Here, blank values are considered a change #}
-          
-        } else { {# No inputControl - probably means this is the SOP field #}
-          inputControl = $('#sop-form-container');
-          var new_file_name = inputControl.find('[type="file"]').val();
-          if(new_file_name) new_file_name = new_file_name.formatFilename();
-          var new_description = inputControl.find('#inputDescription').val();
-
-          saveText = new_description || new_file_name || paragraph[0].textContent.trim();
-          hasChanged = (new_file_name !== '') ||
-                       (new_description !== inputControl.find('#file-description-default').attr('value'));
-        }
+        saveText = new_description || new_file_name || savedParagraph.text().trim();
+        hasChanged = (new_file_name !== '') ||
+                     (new_description !== inputControl.find('#file-description-default').attr('value'));
 
         if(hasChanged){ {# Have we made a change? #}
           inputControl.parents('div.form-group').addClass('list-group-item-warning has-warning');
@@ -200,7 +211,7 @@
         }
         $(window).trigger('pagechanges', hasChanged); {# Here's that event from earlier #}
 
-        paragraph[0].textContent = saveText;
+        savedParagraph.text(saveText);
 
         editClickHandler($(this));
       });

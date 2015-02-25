@@ -43,8 +43,8 @@ def _render_default_value(field_id, field_value):
         field_id -- The unique identifier of the field
         field_value -- The current value of the field
     '''
-    return u'''<span class="persist-hidden default-value" for="{0}">
-                {1}</span>'''.format(field_id, field_value or '')
+    return u'''<input class="persist-hidden default-value" value="{0}"
+                />'''.format(field_value or '')
 
 
 class AutocompleteInput(forms.Widget):
