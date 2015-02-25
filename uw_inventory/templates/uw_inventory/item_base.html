@@ -565,7 +565,40 @@
 
   {% if perms.uw_inventory.add_itemimage or perms.uw_inventory.change_itemimage %}
     <script type="text/html" id="image-detail-template">
-    {% include 'uw_inventory/image_detail.html' with form=formsets.image.empty_form.as_p %}
+      <div class="image-item">
+        <div class="col-xs-4">
+          <div class="thumbnail clearfix">
+            <div class="image-placeholder" style="height:91px;text-align:center">
+              <i class="fa-picture-o fa-fw fa-5x"></i>
+            </div>
+            <div class="pull-right">
+              <i class="menu-down details hidden"></i>
+              <i class="menu-up details"></i>
+              <i class="delete fa-fw"></i>
+              <i class="restore fa-fw hidden"></i>
+            </div>
+          </div>
+        </div>
+        <div class="col-xs-12 collapse in">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              Image Details
+              <div class="pull-right">
+                <i class="edit hidden"></i>
+                <i class="save"></i>
+                <i class="cancel"></i>
+              </div>
+            </div>
+            <div class="panel-body">
+              <p class="form-control-static image-description hidden">
+              </p>
+              <div class="image-form">
+                {{ formsets.image.empty_form.as_p }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </script>
     <script type="text/javascript">
       $('#images-list').on('click', '.details', function(){
@@ -584,11 +617,16 @@
       });
 
       $('#images-list').on('click', '.delete', function(){
-        $(this).closest('.image-item').find('[id*=to_display]').removeAttr('checked');
-        $(this).addClass('hidden');
-        $(this).siblings('.restore').removeClass('hidden');
-        $(this).closest('.thumbnail').find('img').addClass('disabled');
-        $(window).trigger('pagechanges', true);
+        if($(this).closest('image-item').find('.image-placeholder').length !== 0){
+          $(this).closest('.image-item').addClass('hidden');
+          $(this).closest('.image-item').find('[id*=DELETE]').attr('checked', 'checked');
+        } else{
+          $(this).closest('.image-item').find('[id*=to_display]').removeAttr('checked');
+          $(this).addClass('hidden');
+          $(this).siblings('.restore').removeClass('hidden');
+          $(this).closest('.thumbnail').find('img').addClass('disabled');
+          $(window).trigger('pagechanges', true);
+        }
       });
 
       $('#images-list').on('click', '.restore', function(){
@@ -604,14 +642,25 @@
         var newDescription = panelBody.find('#inputDescription').val();
         var newImageSrc = panelBody.find('[type="file"]').val();
         var oldImage = $(this).closest('.image-item').find('img');
+        var savedParagraph = panelBody.find('p.form-control-static');
 
-        var hasChanged = (panelBody.find('p').text().trim() !== newDescription) || newImageSrc;
-        panelBody.find('p').text(newDescription);
+        var hasChanged = (savedParagraph.text().trim() !== newDescription) || newImageSrc;
+        savedParagraph.text(newDescription);
 
         $(this).parent().children().toggleClass('hidden');
         panelBody.children().toggleClass('hidden');
 
         $(window).trigger('pagechanges', hasChanged);
+      });
+
+      $('#add-image').click(function(){
+        var count = parseInt($('#id_images-TOTAL_FORMS').val(), 10);
+        var template = $('#image-detail-template').html();
+        var compiledTemplate = template.replace(/__prefix__/g, count);
+
+        var newElement = $(compiledTemplate).appendTo('#images-list');
+        newElement.find('[id*=DELETE], [id*=to_display]').parent().addClass('hidden');
+        $('#id_images-TOTAL_FORMS').val(count+1);
       });
     </script>
   {% endif %}
