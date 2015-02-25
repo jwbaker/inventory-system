@@ -9,6 +9,7 @@ A Django-based inventory system. Developed for the University of Waterloo Depart
   `pip install -r requirements/base.txt`
 3. The django_case module may need to be installed manually. If so, the code and installation instructions can be found [here](https://bitbucket.org/amjoconn/django-cas)
 4. Copy `local_settings.template` to `local_settings.py`
+5. In `local_settings.py`, replace the empty `MEDIA_ROOT` option with the full path to the project root directory
 5. Add a value to the `SECRET_KEY` setting in `local_settings.py`:  
   1. In the terminal, run the following command:  
      `python -c 'import random; import string; print "".join([random.SystemRandom().choice(string.digits + string.letters + "!$&()*+,-./:;<=>?@[]^_{|}~") for i in range(100)])'`
