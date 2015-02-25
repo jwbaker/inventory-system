@@ -11,6 +11,10 @@
       /* prevent horizontal scrollbar */
       overflow-x: hidden;
     }
+    img.disabled {
+      opacity: 0.4;
+      filter: alpha(opacity=40); /* for IE */
+    }
   </style>
   <!-- jQuery UI theme for the autocomplete widget -->
   <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css">
@@ -555,6 +559,51 @@
         select: function(event, ui){
           $('input#inputOwner').attr('to-save', ui.item.id)
         }
+      });
+    </script>
+  {% endif %}
+
+  {% if perms.uw_inventory.add_itemimage or perms.uw_inventory.change_itemimage %}
+    <script type="text/javascript">
+      $('#images-list').on('click', '.details', function(){
+        $(this).closest('.image-item').find('.collapse').collapse('toggle');
+        $(this).parent().children('.details').toggleClass('hidden');
+      });
+      $('#images-list').on('click', '.edit', function(){
+        $(this).parent().children().toggleClass('hidden');
+        $(this).closest('.image-item').find('.panel-body').children().toggleClass('hidden');
+      });
+      $('#images-list').on('click', '.cancel', function(){
+        $(this).closest('.image-item').find('.panel-body').children().toggleClass('hidden');
+        $(this).parent().children().toggleClass('hidden');
+      });
+      $('#images-list').on('click', '.delete', function(){
+        $(this).closest('.image-item').find('[id*=to_display]').removeAttr('checked');
+        $(this).addClass('hidden');
+        $(this).siblings('.restore').removeClass('hidden');
+        $(this).closest('.thumbnail').find('img').addClass('disabled');
+        $(window).trigger('pagechanges', true);
+      });
+      $('#images-list').on('click', '.restore', function(){
+        $(this).closest('.image-item').find('[id*=to_display]').attr('checked', 'checked');
+        $(this).addClass('hidden');
+        $(this).siblings('.delete').removeClass('hidden');
+        $(this).closest('.thumbnail').find('img').removeClass('disabled');
+        $(window).trigger('pagechanges', true);
+      });
+      $('#images-list').on('click', '.save', function(){
+        var panelBody = $(this).closest('.panel').find('.panel-body');
+        var newDescription = panelBody.find('#inputDescription').val();
+        var newImageSrc = panelBody.find('[type="file"]').val();
+        var oldImage = $(this).closest('.image-item').find('img');
+
+        var hasChanged = (panelBody.find('p').text().trim() !== newDescription) || newImageSrc;
+        panelBody.find('p').text(newDescription);
+
+        $(this).parent().children().toggleClass('hidden');
+        panelBody.children().toggleClass('hidden');
+
+        $(window).trigger('pagechanges', hasChanged);
       });
     </script>
   {% endif %}

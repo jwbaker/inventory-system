@@ -71,6 +71,22 @@ class ItemFile(models.Model):
         return self.get_name_display()
 
 
+class ItemImage(models.Model):
+    class Meta:
+        permissions = (
+            ('view_deleted_itemimage', 'Can view deleted item images'),
+        )
+    description = models.TextField(blank=True, null=True)
+    file_field = models.ImageField(upload_to='images/%Y/%m/%d/')
+    inventory_item = models.ForeignKey(
+        'InventoryItem',
+        blank=True,
+        default=None,
+        null=True
+    )
+    to_display = models.BooleanField(default=True)
+
+
 class InventoryItem(models.Model):
     class Meta:
         permissions = (

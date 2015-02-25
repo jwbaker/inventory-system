@@ -6,6 +6,7 @@ from uw_inventory.models import (
     AutocompleteData,
     InventoryItem,
     ItemFile,
+    ItemImage,
     Comment,
 )
 
@@ -13,6 +14,20 @@ from uw_inventory.models import (
 class FileForm(forms.ModelForm):
     class Meta:
         model = ItemFile
+        fields = ['file_field', 'description', 'to_display']
+        widgets = {
+            'description': forms.Textarea({
+                'id': 'inputDescription',
+                'class': 'form-control',
+                'placeholder': 'Description',
+                'rows': 2,
+            }),
+        }
+
+
+class ImageForm(forms.ModelForm):
+    class Meta:
+        model = ItemImage
         fields = ['file_field', 'description', 'to_display']
         widgets = {
             'description': forms.Textarea({

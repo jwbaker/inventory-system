@@ -18,3 +18,11 @@ def show_comments(comment_set, can_add):
         'comment_set': comment_set,
         'can_add': can_add
     }
+
+
+@register.inclusion_tag('uw_inventory/images_list.html')
+def show_images(image_set, view_deleted):
+    return {
+        'image_set': image_set,
+        'view_deleted': view_deleted,
+    }
