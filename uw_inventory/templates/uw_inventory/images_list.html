@@ -6,48 +6,14 @@
     <div id="images-list">
       {% for image in image_set %}
         {% if image.instance.to_display or view_deleted %}
-          <div class="image-item">
-            <div class="col-xs-4">
-              <div class="thumbnail clearfix">
-                <a>
-                  <img src="{{ image.instance.file_field.url }}" alt="" class="{% if not image.instance.to_display %}disabled{% endif %} pull-left"/>
-                </a>
-                <div class="pull-right">
-                  <i class="menu-down details"></i>
-                  <i class="menu-up hidden details"></i>
-                  {% if image.instance.to_display %}
-                    <i class="delete fa-fw"></i>
-                    <i class="restore fa-fw hidden"></i>
-                  {% else %}
-                    <i class="delete fa-fw hidden"></i>
-                    <i class="restore fa-fw"></i>
-                  {% endif %}
-                </div>
-              </div>
-            </div>
-            <div class="col-xs-12 collapse">
-              <div class="panel panel-default">
-                <div class="panel-heading">
-                  Image Details
-                  <div class="pull-right">
-                    <i class="edit"></i>
-                    <i class="save hidden"></i>
-                    <i class="cancel hidden"></i>
-                  </div>
-                </div>
-                <div class="panel-body">
-                  <p class="form-control-static image-description">
-                    {{ image.instance.description }}
-                  </p>
-                  <div class="image-form hidden">
-                    {{ image }}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          {% include 'uw_inventory/image_detail.html' with form=image image=image.instance %}
         {% endif %}
       {% endfor %}
+    </div>
+    <div class="col-xs-12">
+      <div class="panel panel-default" style="text-align:center">
+        <i class="add-item fa-2x" id="add-image"></i>
+      </div>
     </div>
   </div>
 </div>
