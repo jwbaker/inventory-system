@@ -11,6 +11,10 @@
       /* prevent horizontal scrollbar */
       overflow-x: hidden;
     }
+    img.disabled {
+      opacity: 0.4;
+      filter: alpha(opacity=40); /* for IE */
+    }
   </style>
   <!-- jQuery UI theme for the autocomplete widget -->
   <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css">
@@ -273,17 +277,17 @@
           {{ formsets.comment.empty_form.as_p }}
         </div>
         <div class="col-xs-1">
-          <i class="fa save"></i>
-          <i class="fa cancel"></i>
-          <i class="fa delete"></i>
+          <i class="save"></i>
+          <i class="cancel"></i>
+          <i class="delete"></i>
         </div>
 
         <div class="col-xs-11 hidden static-comment">
           {% include 'uw_inventory/comment_detail.html' %}
         </div>
         <div class="col-xs-1 hidden">
-          <i class="fa edit"></i>
-          <i class="fa delete"></i>
+          <i class="edit"></i>
+          <i class="delete"></i>
         </div>
       </div>
     </script>
@@ -294,7 +298,7 @@
         var template = $('#comment-template').html().replace(/__prefix__/g, count);
         $('#id_comments-TOTAL_FORMS').val(parseInt(count)+1);
 
-        var newElement = $(template).insertBefore('.item-comment:first')
+        var newElement = $(template).prependTo('#comments-list');
 
         newElement.find('[id*=creation_date]').parent().addClass('persist-hidden');
 
@@ -365,14 +369,14 @@
         <td class="hidden file-description"></td>
         <td class="hidden file-size"></td>
         <td class="hidden">
-          <i class="fa file-edit"></i>
-          <i class="fa delete"></i>
+          <i class="file-edit"></i>
+          <i class="delete"></i>
         </td>
         <td colspan="2">__form__</td>
         <td>
-          <i class="fa save"></i>
-          <i class="fa cancel"></i>
-          <i class="fa delete"></i>
+          <i class="save"></i>
+          <i class="cancel"></i>
+          <i class="delete"></i>
         </td>
       </tr>
     </script>
@@ -421,7 +425,7 @@
         {% if perms.uw_inventory.view_deleted_itemfile %}
           row.addClass('disabled');
           row.find('i.file-hide').remove();
-          row.find('.file-menu').append('<i class="fa restore"></i>');
+          row.find('.file-menu').append('<i class="restore"></i>');
         {% else %}
           row.addClass('persist-hidden');
         {% endif %}
@@ -434,7 +438,7 @@
         row.find('[id*=to_display]').attr('checked', 'checked');
         row.removeClass('disabled');
         row.find('i.restore').remove();
-        row.find('.file-menu').append('<i class="fa file-hide"></i>');
+        row.find('.file-menu').append('<i class="file-hide"></i>');
 
         var hasChanged = row.find('span.initial-display').text() === 'False';
         $(window).trigger('pagechanges', hasChanged);
@@ -555,6 +559,108 @@
         select: function(event, ui){
           $('input#inputOwner').attr('to-save', ui.item.id)
         }
+      });
+    </script>
+  {% endif %}
+
+  {% if perms.uw_inventory.add_itemimage or perms.uw_inventory.change_itemimage %}
+    <script type="text/html" id="image-detail-template">
+      <div class="image-item">
+        <div class="col-xs-4">
+          <div class="thumbnail clearfix">
+            <div class="image-placeholder" style="height:91px;text-align:center">
+              <i class="fa-picture-o fa-fw fa-5x"></i>
+            </div>
+            <div class="pull-right">
+              <i class="menu-down details hidden"></i>
+              <i class="menu-up details"></i>
+              <i class="delete fa-fw"></i>
+              <i class="restore fa-fw hidden"></i>
+            </div>
+          </div>
+        </div>
+        <div class="col-xs-12 collapse in">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              Image Details
+              <div class="pull-right">
+                <i class="edit hidden"></i>
+                <i class="save"></i>
+                <i class="cancel"></i>
+              </div>
+            </div>
+            <div class="panel-body">
+              <p class="form-control-static image-description hidden">
+              </p>
+              <div class="image-form">
+                {{ formsets.image.empty_form.as_p }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </script>
+    <script type="text/javascript">
+      $('#images-list').on('click', '.details', function(){
+        $(this).closest('.image-item').find('.collapse').collapse('toggle');
+        $(this).parent().children('.details').toggleClass('hidden');
+      });
+
+      $('#images-list').on('click', '.edit', function(){
+        $(this).parent().children().toggleClass('hidden');
+        $(this).closest('.image-item').find('.panel-body').children().toggleClass('hidden');
+      });
+
+      $('#images-list').on('click', '.cancel', function(){
+        $(this).closest('.image-item').find('.panel-body').children().toggleClass('hidden');
+        $(this).parent().children().toggleClass('hidden');
+      });
+
+      $('#images-list').on('click', '.delete', function(){
+        if($(this).closest('image-item').find('.image-placeholder').length !== 0){
+          $(this).closest('.image-item').addClass('hidden');
+          $(this).closest('.image-item').find('[id*=DELETE]').attr('checked', 'checked');
+        } else{
+          $(this).closest('.image-item').find('[id*=to_display]').removeAttr('checked');
+          $(this).addClass('hidden');
+          $(this).siblings('.restore').removeClass('hidden');
+          $(this).closest('.thumbnail').find('img').addClass('disabled');
+          $(window).trigger('pagechanges', true);
+        }
+      });
+
+      $('#images-list').on('click', '.restore', function(){
+        $(this).closest('.image-item').find('[id*=to_display]').attr('checked', 'checked');
+        $(this).addClass('hidden');
+        $(this).siblings('.delete').removeClass('hidden');
+        $(this).closest('.thumbnail').find('img').removeClass('disabled');
+        $(window).trigger('pagechanges', true);
+      });
+
+      $('#images-list').on('click', '.save', function(){
+        var panelBody = $(this).closest('.panel').find('.panel-body');
+        var newDescription = panelBody.find('#inputDescription').val();
+        var newImageSrc = panelBody.find('[type="file"]').val();
+        var oldImage = $(this).closest('.image-item').find('img');
+        var savedParagraph = panelBody.find('p.form-control-static');
+
+        var hasChanged = (savedParagraph.text().trim() !== newDescription) || newImageSrc;
+        savedParagraph.text(newDescription);
+
+        $(this).parent().children().toggleClass('hidden');
+        panelBody.children().toggleClass('hidden');
+
+        $(window).trigger('pagechanges', hasChanged);
+      });
+
+      $('#add-image').click(function(){
+        var count = parseInt($('#id_images-TOTAL_FORMS').val(), 10);
+        var template = $('#image-detail-template').html();
+        var compiledTemplate = template.replace(/__prefix__/g, count);
+
+        var newElement = $(compiledTemplate).appendTo('#images-list');
+        newElement.find('[id*=DELETE], [id*=to_display]').parent().addClass('hidden');
+        $('#id_images-TOTAL_FORMS').val(count+1);
       });
     </script>
   {% endif %}

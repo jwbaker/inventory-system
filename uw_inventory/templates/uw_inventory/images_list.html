@@ -1,0 +1,21 @@
+<div class="form-group list-group-item clearfix">
+  <div class="col-xs-2">
+    <label class="control-label">Images</label>
+  </div>
+  <div class="col-xs-10">
+    <div id="images-list">
+      {% for image in image_set %}
+        {% if image.instance.to_display or view_deleted %}
+          {% include 'uw_inventory/image_detail.html' with form=image image=image.instance %}
+        {% endif %}
+      {% endfor %}
+    </div>
+    <div class="col-xs-4">
+      <div class="thumbnail clearfix">
+        <div class="image" style="height:91px;text-align:center" id="add-image">
+          <i class="add-item fa-2x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,3 +1,15 @@
+i {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+i,
+.alert-dismissible {
+  cursor: pointer;
+}
 .add-item::after {
   content: "\f055"; /* fa-plus-circle */
 }
@@ -62,6 +74,12 @@
 }
 .filter::after {
   content: "\f0b0"; /* fa-filter */
+}
+.menu-down::after {
+  content: "\f078"; /* fa-chevron-down */
+}
+.menu-up::after {
+  content: "\f077"; /* fa-chevron-up */
 }
 .restore::after {
   content: "\f0e2"; /* fa-undo */

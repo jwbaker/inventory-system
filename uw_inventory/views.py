@@ -13,15 +13,17 @@ from django.views.decorators.csrf import csrf_protect
 from django_cas.decorators import permission_required
 
 from uw_inventory.forms import (
+    CommentForm,
     FileForm,
-    ItemForm,
-    CommentForm
+    ImageForm,
+    ItemForm
 )
 from uw_inventory.models import (
     AutocompleteData,
+    Comment,
     InventoryItem,
     ItemFile,
-    Comment
+    ItemImage
 )
 
 
@@ -103,12 +105,18 @@ def inventory_detail(request, item_id):
         InventoryItem,
         Comment,
         form=CommentForm,
-        extra=0
+        extra=0,
     )
     FileUploadFormset = inlineformset_factory(
         InventoryItem,
         ItemFile,
         form=FileForm,
+        extra=0,
+    )
+    ImageUploadFormset = inlineformset_factory(
+        InventoryItem,
+        ItemImage,
+        form=ImageForm,
         extra=0,
     )
 
@@ -117,7 +125,6 @@ def inventory_detail(request, item_id):
         prefix='comments',
         instance=inventory_item
     )
-
     file_formset = FileUploadFormset(
         request.POST or None,
         request.FILES or None,
@@ -126,6 +133,12 @@ def inventory_detail(request, item_id):
         queryset=ItemFile.objects.exclude(
             id=inventory_item.sop_file_id
         )
+    )
+    image_formset = ImageUploadFormset(
+        request.POST or None,
+        request.FILES or None,
+        prefix='images',
+        instance=inventory_item
     )
     sop_formset = FileUploadFormset(
         request.POST or None,
@@ -143,6 +156,7 @@ def inventory_detail(request, item_id):
           form.is_valid() and
           comment_formset.is_valid() and
           file_formset.is_valid() and
+          image_formset.is_valid() and
           sop_formset.is_valid()
         ):
             new_item = form.save(commit=False)
@@ -154,6 +168,7 @@ def inventory_detail(request, item_id):
             new_item.save()
             comment_formset.save()
             file_formset.save()
+            image_formset.save()
 
             messages.success(request,
                              'Item saved successfully')
@@ -187,6 +202,7 @@ def inventory_detail(request, item_id):
         'formsets': {
             'comment': comment_formset,
             'file': file_formset,
+            'image': image_formset,
             'sop': sop_formset,
         }
     })
@@ -207,6 +223,12 @@ def inventory_add(request):
         form=FileForm,
         extra=0
     )
+    ImageUploadFormset = inlineformset_factory(
+        InventoryItem,
+        ItemImage,
+        form=ImageForm,
+        extra=0
+    )
 
     if request.method == 'POST':
         form = ItemForm(request.POST, request.FILES)
@@ -224,6 +246,12 @@ def inventory_add(request):
                 prefix='files',
                 instance=new_item
             )
+            image_formset = ImageUploadFormset(
+                request.POST,
+                request.FILES,
+                prefix='images',
+                instance=new_item
+            )
             sop_formset = FileUploadFormset(
                 request.POST,
                 request.FILES,
@@ -234,6 +262,7 @@ def inventory_add(request):
             if (
               comment_formset.is_valid() and
               file_formset.is_valid() and
+              image_formset.is_valid() and
               sop_formset.is_valid()
             ):
                 sop_files = sop_formset.save(commit=False)
@@ -243,6 +272,7 @@ def inventory_add(request):
                 new_item.save()
                 comment_formset.save()
                 file_formset.save()
+                image_formset.save()
                 map(
                     lambda x: setattr(x, 'inventory_item_id', new_item.id),
                     sop_files
@@ -273,6 +303,7 @@ def inventory_add(request):
         'formsets': {
             'comment': CommentCreateFormset(prefix='comments'),
             'file': FileUploadFormset(prefix='files'),
+            'image': ImageUploadFormset(prefix='images'),
             'sop': FileUploadFormset(prefix='sop'),
         }
     })
