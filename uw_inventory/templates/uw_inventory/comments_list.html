@@ -2,15 +2,17 @@
   <div class="col-xs-2">
     <label class="control-label">Comments</label>
   </div>
-  <div class="col-xs-10" id="comments-list">
+  <div class="col-xs-10">
     {% if can_add %}
       <div class="panel panel-default" align="center">
         <i class="add-item fa-2x" id="add-comment"></i>
       </div>
     {% endif %}
     
-    {% for comment in comment_set|dictsortreversed:"creation_date" %}
-      {% include 'uw_inventory/comment_detail.html' with comment=comment saved=True %}
-    {% endfor %}
+    <div id="comments-list">
+      {% for comment in comment_set|dictsortreversed:"creation_date" %}
+        {% include 'uw_inventory/comment_detail.html' with comment=comment saved=True %}
+      {% endfor %}
+    </div>
   </div>
 </div>

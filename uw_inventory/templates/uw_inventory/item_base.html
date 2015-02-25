@@ -298,7 +298,7 @@
         var template = $('#comment-template').html().replace(/__prefix__/g, count);
         $('#id_comments-TOTAL_FORMS').val(parseInt(count)+1);
 
-        var newElement = $(template).insertBefore('.item-comment:first')
+        var newElement = $(template).prependTo('#comments-list');
 
         newElement.find('[id*=creation_date]').parent().addClass('persist-hidden');
 
@@ -564,19 +564,25 @@
   {% endif %}
 
   {% if perms.uw_inventory.add_itemimage or perms.uw_inventory.change_itemimage %}
+    <script type="text/html" id="image-detail-template">
+    {% include 'uw_inventory/image_detail.html' with form=formsets.image.empty_form.as_p %}
+    </script>
     <script type="text/javascript">
       $('#images-list').on('click', '.details', function(){
         $(this).closest('.image-item').find('.collapse').collapse('toggle');
         $(this).parent().children('.details').toggleClass('hidden');
       });
+
       $('#images-list').on('click', '.edit', function(){
         $(this).parent().children().toggleClass('hidden');
         $(this).closest('.image-item').find('.panel-body').children().toggleClass('hidden');
       });
+
       $('#images-list').on('click', '.cancel', function(){
         $(this).closest('.image-item').find('.panel-body').children().toggleClass('hidden');
         $(this).parent().children().toggleClass('hidden');
       });
+
       $('#images-list').on('click', '.delete', function(){
         $(this).closest('.image-item').find('[id*=to_display]').removeAttr('checked');
         $(this).addClass('hidden');
@@ -584,6 +590,7 @@
         $(this).closest('.thumbnail').find('img').addClass('disabled');
         $(window).trigger('pagechanges', true);
       });
+
       $('#images-list').on('click', '.restore', function(){
         $(this).closest('.image-item').find('[id*=to_display]').attr('checked', 'checked');
         $(this).addClass('hidden');
@@ -591,6 +598,7 @@
         $(this).closest('.thumbnail').find('img').removeClass('disabled');
         $(window).trigger('pagechanges', true);
       });
+
       $('#images-list').on('click', '.save', function(){
         var panelBody = $(this).closest('.panel').find('.panel-body');
         var newDescription = panelBody.find('#inputDescription').val();
