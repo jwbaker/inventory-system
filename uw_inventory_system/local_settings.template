@@ -1,3 +1,6 @@
 DEBUG = True
 
 SECRET_KEY = ''
+
+MEDIA_ROOT = ''
+MEDIA_URL = '/'
