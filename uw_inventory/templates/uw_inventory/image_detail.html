@@ -1,4 +1,4 @@
-<div class="image-item" id="image-{{ image.id }}">
+<div class="image-item" id="image-{{ forloop.counter0 }}">
   <div class="col-md-6">
     <div class="thumbnail clearfix">
       <div class="image" style="height:150px">
@@ -27,7 +27,7 @@
           {{ image.description }}
         </p>
       </div>
-      <div class="image-form persist-hidden" for="image-{{ image.id }}">
+      <div class="image-form persist-hidden" for="image-{{ forloop.counter0 }}">
         {{ form }}
       </div>
     </div>

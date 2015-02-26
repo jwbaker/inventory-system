@@ -587,10 +587,39 @@
 
   {% if perms.uw_inventory.add_itemimage or perms.uw_inventory.change_itemimage %}
     <script type="text/html" id="image-detail-template">
-     
+     <div class="image-item" id="image-__prefix__">
+      <div class="col-md-6">
+        <div class="thumbnail clearfix">
+          <div class="image" style="height:150px;text-align:center">
+            <i class="fa-picture-o fa-fw fa-5x"></i>
+          </div>
+          <div class="pull-right">
+            <i class="menu-down details"></i>
+            <i class="menu-up hidden details"></i>
+            <i class="edit"></i>
+            <i class="delete fa-fw"></i>
+            <i class="restore fa-fw hidden"></i>
+          </div>
+          <div class="collapse image-detail col-xs-12">
+            <p class="form-control-static image-description">
+            </p>
+          </div>
+          <div class="image-form persist-hidden" for="image-__prefix__">
+          </div>
+        </div>
+      </div>
+    </div>
+    </script>
+
+    <script type="text/html" id="image-form-template">
+      <div class="image-form persist-hidden" for="image-__prefix__">
+        {{ formsets.image.empty_form }}
+      </div>
     </script>
 
     <script type="text/javascript">
+      var isNewImage = false;
+
       $('#images-list').on('click', '.details', function(){
         $(this).closest('.image-item').find('.collapse').collapse('toggle');
         $(this).parent().children('.details').toggleClass('hidden');
@@ -603,6 +632,16 @@
       });
 
       $('#imageEditSubmit').click(function(){
+        if(isNewImage){
+          var count = parseInt($('#id_images-TOTAL_FORMS').val(), 10);
+          var template = $('#image-detail-template').html();
+          var compiledTemplate = template.replace(/__prefix__/g, count);
+
+          var newElement = $(compiledTemplate).appendTo('#images-list');
+          newElement.find('[id*=DELETE], [id*=to_display]').parent().addClass('hidden');
+          $('#id_images-TOTAL_FORMS').val(count+1);
+        }
+
         var modal = $(this).closest('.modal');
         var newForm = modal.find('.image-form');
         var imageID = newForm.attr('for');
@@ -631,6 +670,7 @@
       });
 
       $('#imageEditModal').on('hidden.bs.modal', function(){
+        isNewImage = false;
         $(this).find('.image-form').remove();
       });
 
@@ -656,13 +696,13 @@
       });
 
       $('#add-image').click(function(){
+        isNewImage = true;
         var count = parseInt($('#id_images-TOTAL_FORMS').val(), 10);
-        var template = $('#image-detail-template').html();
-        var compiledTemplate = template.replace(/__prefix__/g, count);
-
-        var newElement = $(compiledTemplate).appendTo('#images-list');
-        newElement.find('[id*=DELETE], [id*=to_display]').parent().addClass('hidden');
-        $('#id_images-TOTAL_FORMS').val(count+1);
+        var template = $('#image-form-template').html();
+        var form = $(template.replace(/__prefix__/g, count)).removeClass('persist-hidden');
+        form.find('[id*="DELETE"], [id*="to_display"], [for*="DELETE"], [for*="to_display"]').addClass('persist-hidden');
+        $('#imageEditModal').find('.modal-body').append(form);
+        $('#imageEditModal').modal('show');
       });
     </script>
   {% endif %}
