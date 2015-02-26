@@ -587,41 +587,9 @@
 
   {% if perms.uw_inventory.add_itemimage or perms.uw_inventory.change_itemimage %}
     <script type="text/html" id="image-detail-template">
-      <div class="image-item">
-        <div class="col-md-4 col-sm-6">
-          <div class="thumbnail clearfix">
-            <div class="image-placeholder" style="min-height:91px;text-align:center">
-              <i class="fa-picture-o fa-fw fa-5x"></i>
-            </div>
-            <div class="pull-right">
-              <i class="menu-down details hidden"></i>
-              <i class="menu-up details"></i>
-              <i class="delete fa-fw"></i>
-              <i class="restore fa-fw hidden"></i>
-            </div>
-          </div>
-        </div>
-        <div class="col-xs-12 collapse in">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              Image Details
-              <div class="pull-right">
-                <i class="edit hidden"></i>
-                <i class="save"></i>
-                <i class="cancel"></i>
-              </div>
-            </div>
-            <div class="panel-body">
-              <p class="form-control-static image-description hidden">
-              </p>
-              <div class="image-form">
-                {{ formsets.image.empty_form.as_p }}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+     
     </script>
+
     <script type="text/javascript">
       $('#images-list').on('click', '.details', function(){
         $(this).closest('.image-item').find('.collapse').collapse('toggle');
@@ -638,9 +606,28 @@
         var modal = $(this).closest('.modal');
         var newForm = modal.find('.image-form');
         var imageID = newForm.attr('for');
-        $('#' + imageID).find('.image-form').replaceWith(newForm.addClass('persist-hidden'));
+        var oldForm = $('#' + imageID).find('.image-form');
+
+        var newDescription = newForm.find('#inputDescription');
+        var oldDescription = oldForm.find('#inputDescription');
+
+        newDescription.text(newDescription.val());
+
+        var newFile = newForm.find('[type="file"]').val();
+        var oldFile = oldForm.find('label[for$="file_field"] ~ a').text();
+
+        var fileChanged = newFile && !oldFile.endsWith(newFile.substring(newFile.lastIndexOf('\\')+1))
+        var hasChanges = (newDescription.val() !== oldDescription.val()) || fileChanged;
+
+        if(fileChanged){
+          oldForm.closest('.image-item').find('.image').empty().append('<div class="image-placeholder" style="min-height:91px;text-align:center"><i class="fa-picture-o fa-fw fa-5x"></i></div>');
+        }
+
+        oldForm.siblings('.image-detail').find('p').text(newDescription.val());
+
+        oldForm.replaceWith(newForm.addClass('persist-hidden'));
+        $(window).trigger('pagechanges', hasChanges);
         modal.modal('hide');
-        $(window).trigger('pagechanges', true);
       });
 
       $('#imageEditModal').on('hidden.bs.modal', function(){
