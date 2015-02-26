@@ -106,6 +106,20 @@
       </div>
     </div>
   </div>
+
+  <div class="modal fade" id="imageEditModal">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-body">
+          {# We're going to dynamically insert the ModelForm here #}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="imageEditSubmit">Done</button>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock modal %}
 
 {% block js_includes %}
@@ -615,13 +629,22 @@
       });
 
       $('#images-list').on('click', '.edit', function(){
-        $(this).parent().children().toggleClass('hidden');
-        $(this).closest('.image-item').find('.panel-body').children().toggleClass('hidden');
+        var form = $(this).closest('.image-item').find('.image-form').clone().removeClass('persist-hidden');
+        $('#imageEditModal').find('.modal-body').append(form);
+        $('#imageEditModal').modal('show');
       });
 
-      $('#images-list').on('click', '.cancel', function(){
-        $(this).closest('.image-item').find('.panel-body').children().toggleClass('hidden');
-        $(this).parent().children().toggleClass('hidden');
+      $('#imageEditSubmit').click(function(){
+        var modal = $(this).closest('.modal');
+        var newForm = modal.find('.image-form');
+        var imageID = newForm.attr('for');
+        $('#' + imageID).find('.image-form').replaceWith(newForm.addClass('persist-hidden'));
+        modal.modal('hide');
+        $(window).trigger('pagechanges', true);
+      });
+
+      $('#imageEditModal').on('hidden.bs.modal', function(){
+        $(this).find('.image-form').remove();
       });
 
       $('#images-list').on('click', '.delete', function(){
@@ -643,22 +666,6 @@
         $(this).siblings('.delete').removeClass('hidden');
         $(this).closest('.thumbnail').find('img').removeClass('disabled');
         $(window).trigger('pagechanges', true);
-      });
-
-      $('#images-list').on('click', '.save', function(){
-        var panelBody = $(this).closest('.panel').find('.panel-body');
-        var newDescription = panelBody.find('#inputDescription').val();
-        var newImageSrc = panelBody.find('[type="file"]').val();
-        var oldImage = $(this).closest('.image-item').find('img');
-        var savedParagraph = panelBody.find('p.form-control-static');
-
-        var hasChanged = (savedParagraph.text().trim() !== newDescription) || newImageSrc;
-        savedParagraph.text(newDescription);
-
-        $(this).parent().children().toggleClass('hidden');
-        panelBody.children().toggleClass('hidden');
-
-        $(window).trigger('pagechanges', hasChanged);
       });
 
       $('#add-image').click(function(){
