@@ -1,16 +1,19 @@
-<div class="image-item">
-  <div class="col-md-4 col-sm-6">
+<div class="image-item" id="image-{{ forloop.counter0 }}">
+  <div class="col-md-6">
     <div class="thumbnail clearfix">
-      <div class="image" style="min-height:91px">
+      <div class="image" style="height:150px">
         <a>
           <img src="{{ image.file_field.url }}" 
                alt=""
+               height="100%"
+               width="auto"
                class="{% if not image.to_display %}disabled{% endif %} pull-left" />
         </a>
       </div>
       <div class="pull-right">
         <i class="menu-down details"></i>
         <i class="menu-up hidden details"></i>
+        <i class="edit"></i>
         {% if image.to_display %}
           <i class="delete fa-fw"></i>
           <i class="restore fa-fw hidden"></i>
@@ -19,25 +22,13 @@
           <i class="restore fa-fw"></i>
         {% endif %}
       </div>
-    </div>
-  </div>
-  <div class="col-xs-12 collapse">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        Image Details
-        <div class="pull-right">
-          <i class="edit"></i>
-          <i class="save hidden"></i>
-          <i class="cancel hidden"></i>
-        </div>
-      </div>
-      <div class="panel-body">
+      <div class="collapse image-detail col-xs-12">
         <p class="form-control-static image-description">
           {{ image.description }}
         </p>
-        <div class="image-form hidden">
-          {{ form }}
-        </div>
+      </div>
+      <div class="image-form persist-hidden" for="image-{{ forloop.counter0 }}">
+        {{ form }}
       </div>
     </div>
   </div>
