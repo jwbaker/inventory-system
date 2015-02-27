@@ -5,11 +5,29 @@
     <div class="col-xs-4 col-xs-offset-4">
       <form action="{% url 'uw_file_io.views.file_import' %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <div class="form-group">
-          {{ form }}
-        </div>
+          <div class="form-group">
+            {{ form.file_up.label }}
+            {{ form.file_up }}
+            {{ form.file_up.errors }}
+          </div>
+          <div class="form-group">
+            {{ form.model.label }}
+            {{ form.model }}
+          </div>
         <button type="submit" class="btn btn-primary"><i class="fa-upload"></i> Import</button>
+        <i class="fa-spin fa-spinner fa-2x hidden"></i>
       </form>
     </div>
   </div>
 {% endblock content %}
+
+{% block js_includes %}
+  {{ block.super }}
+  
+  <script type="text/javascript">
+    $('button[type="submit"]').click(function(){
+      $(this).siblings('i.fa-spin').removeClass('hidden');
+      $(this).addClass('disabled');
+    });
+  </script>
+{% endblock js_includes %}
