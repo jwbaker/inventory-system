@@ -1,0 +1,15 @@
+{% extends 'uw_inventory_system/base.html' %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-xs-4 col-xs-offset-4">
+      <form action="{% url 'uw_file_io.views.file_import' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+          {{ form }}
+        </div>
+        <button type="submit" class="btn btn-primary"><i class="fa-upload"></i> Import</button>
+      </form>
+    </div>
+  </div>
+{% endblock content %}

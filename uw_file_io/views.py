@@ -1,8 +1,17 @@
 import os
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render
+from django.views.decorators.csrf import csrf_protect
 
-from uw_inventory.models import ItemFile
+import pyexcel
+import pyexcel.ext.xlsx
+
+from uw_file_io.forms import ImportForm
+from uw_inventory.models import (
+    InventoryItem,
+    ItemFile
+)
 
 
 def file_download(request, file_id):
@@ -29,3 +38,49 @@ def file_view(request, file_name):
             )
             return response
         file.closed
+
+
+@csrf_protect
+def file_import(request):
+    if request.method == 'POST':
+        extension = request.FILES['file_up'].name.split('.')[1]
+        sheet = pyexcel.load_from_memory(
+            extension,
+            request.FILES['file_up'].read(),
+            name_columns_by_row=0
+        )
+        data = sheet.to_records()
+        for row in data:
+            kwargs = {}
+
+            # Now for the flat fields
+            for (col, val) in row.iteritems():
+                if col in [
+                    'Attachements',
+                    'ID',
+                    'Location',
+                    'Manufacturer',
+                    'Technician',
+                    'Owner',
+                    'SOP',
+                    'Picture',
+                    'Lifting_Device_Inspected_By',
+                ]:
+                    continue
+                elif col in [
+                    'CSA_Required',
+                    'Factory_CSA',
+                    'CSA_Special',
+                    'Modified_Since_CSA',
+                ]:
+                    kwargs[col.lower()] = True if val == 'yes' else False
+                elif col == 'Apparatus':
+                    kwargs['name'] = val
+
+            item = InventoryItem(**kwargs)
+            item.save()
+        return HttpResponseRedirect('/list')
+
+    return render(request, 'uw_file_io/import.html', {
+        'form': ImportForm(),
+    })
