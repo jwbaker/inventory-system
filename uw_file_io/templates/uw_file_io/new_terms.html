@@ -1,0 +1,71 @@
+{% extends 'uw_inventory_system/base.html' %}
+{% load staticfiles %}
+
+{% block css_includes %}
+  <style type="text/css">
+    ol {
+      padding-left: 0;
+    }
+  </style>
+{% endblock css_includes %}
+
+{% block content %}
+  <div class="row">
+    <div class="tab-content">
+      <div role="tabpanel">
+        <ul class="nav nav-tabs" role="tablist">
+          {% for key in terms.keys %}
+            <li role="presentation" class="tab">
+              <a href="#{{ key }}" role="tab" data-toggle="tab">{{ key|capfirst }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+          {% for key, value in terms.items %}
+            <div role="tabpanel" class="tab-pane" id="{{ key }}">
+              <div class="row">
+                <div class="col-xs-4 col-xs-offset-4">
+                  <ol class="list-group term-list sortable">
+                    {% for term in value %}
+                      <li class="list-group-item">
+                        <div class="handle">{{ term }}</div>
+                      </li>
+                    {% endfor %}
+                  </ol>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-6 col-xs-offset-3">
+      <button class="btn btn-success pull-right" id="continue">Continue</button>
+      <button class="btn btn-danger pull-left" id="cancel">Cancel</button>
+    </div>
+  </div>
+{% endblock content %}
+
+{% block js_includes %}
+  <script src="//code.jquery.com/ui/1.11.3/jquery-ui.js"></script>
+  <script src="{% static 'uw_file_io/jquery.mjs.nestedSortable.js' %}"></script>
+
+  <script type="text/javascript">
+    $('.tab:first, .tab-pane:first').addClass('active');
+  </script>
+
+  <script type="text/javascript">
+    var nestedSortable = $('.sortable').nestedSortable({
+      handle: 'div',
+      items: 'li',
+      toleranceElement: '> div',
+      maxLevels: 2,
+      tabSize: 2,
+    });
+  </script>
+{% endblock js_includes %}

@@ -1,12 +1,12 @@
 import pyexcel
 import pyexcel.ext.xlsx
 
-from django.db import IntegrityError
+from django.core.exceptions import ValidationError
 
 from uw_inventory.models import AutocompleteData, InventoryItem
 
 
-def __get_autocomplete_term_or_insert(name, kind):
+def __get_autocomplete_term_or_insert(name, kind, new_terms_list):
     try:
         var = AutocompleteData.objects.get(
             name__iexact=name,
@@ -14,7 +14,25 @@ def __get_autocomplete_term_or_insert(name, kind):
         )
     except AutocompleteData.DoesNotExist:
         var = AutocompleteData(name=name, kind=kind)
-        var.save()
+        if kind not in new_terms_list:
+            new_terms_list[kind] = []
+
+        # This is another uniqueness test - we don't want to add the same item
+        # to our new_terms list twice.
+
+        # This function call essentially boils down to a long if-chain, so that
+        # array_contains = list[0] == var.name or list[1] == var.name or ...
+
+        # If any one element in the array fails the test, the whole thing will
+        # be false.
+        array_contains = reduce(
+            lambda b, i: b or i.name == var.name,
+            new_terms_list[kind],
+            False
+        )
+
+        if not array_contains:
+            new_terms_list[kind].append(var)
     return var
 
 
@@ -30,31 +48,34 @@ def parse(file_up):
         return {
             'status': False,
             'message': '''Invalid file type {0}. Please upload one of: xls, xlsx, csv.
-            '''.format(extension)
+            '''.format(extension),
+            'destination': 'uw_file_io.views.file_import',
         }
 
     else:
         data = sheet.to_records()
+        new_terms = {}
         for row in data:
             if row['ID']:
                 # If saving goes south, we're going to want to back out of
                 # any datatabse changes, so keep track of them
-                inserted_rows = []
                 kwargs = {}
 
                 location = __get_autocomplete_term_or_insert(
                     row['Location'],
-                    'location'
+                    'location',
+                    new_terms,
                 )
-                kwargs['location_id'] = location.id
-                inserted_rows.append(location)
+                kwargs['location_id'] = location.id or location.name
 
                 manufacturer = __get_autocomplete_term_or_insert(
                     row['Manufacturer'],
-                    'manufacturer'
+                    'manufacturer',
+                    new_terms,
                 )
-                kwargs['manufacturer_id'] = manufacturer.id
-                inserted_rows.append(manufacturer)
+                kwargs['manufacturer_id'] = (
+                    manufacturer.id or manufacturer.name
+                )
 
                 # Now for the flat fields
                 for (col, val) in row.iteritems():
@@ -86,19 +107,29 @@ def parse(file_up):
 
                 item = InventoryItem(**kwargs)
                 try:
-                    item.save()
-                except IntegrityError:
+                    item.full_clean(
+                        exclude=['uuid', 'location', 'manufacturer']
+                    )
+                except ValidationError as e:
+                    print e
                     # Back out of all changes so far
-                    map(lambda x: x.delete(), inserted_rows)
                     return {
                         'status': False,
                         'message': '''Failed to insert row {0}. Please look at your file
-                        and try again.'''.format(row['ID'])
+                                    and try again.'''.format(row['ID']),
+                        'destination': 'uw_file_io.views.file_import',
                     }
-                else:
-                    inserted_rows.append(item)
-
-            return {
-                'status': True,
-                'message': 'Import successful'
-            }
+        response = {
+            'status': True,
+            'message': 'Import successful',
+        }
+        if new_terms:
+            response.update({
+                'destination': 'uw_file_io.views.add_terms',
+                'new_terms': new_terms,
+            })
+        else:
+            response.update({
+                'destination': 'uw_inventory.views.inventory_list',
+            })
+        return response
