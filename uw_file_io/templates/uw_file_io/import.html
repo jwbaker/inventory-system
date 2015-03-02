@@ -1,5 +1,14 @@
 {% extends 'uw_inventory_system/base.html' %}
 
+{% block messages %}
+  {% if error %}
+    <div class="alert alert-danger alert-dismissible" data-dismiss="alert" role="alert">
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  {{ error }}
+</div>
+  {% endif %}
+{% endblock messages %}
+
 {% block content %}
   <div class="row">
     <div class="col-xs-4 col-xs-offset-4">

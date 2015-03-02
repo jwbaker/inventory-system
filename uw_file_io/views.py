@@ -1,6 +1,5 @@
 import os
 
-from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_protect
@@ -56,71 +55,78 @@ def __get_autocomplete_term_or_insert(name, kind):
 
 @csrf_protect
 def file_import(request):
+    error = None
     if request.method == 'POST':
         extension = request.FILES['file_up'].name.split('.')[1]
-        sheet = pyexcel.load_from_memory(
-            extension,
-            request.FILES['file_up'].read(),
-            name_columns_by_row=0
-        )
-        data = sheet.to_records()
-        for row in data:
-            # If saving goes south, we're going to want to back out of any
-            # datatabse changes, so keep track of them
-            inserted_rows = []
-            errors = []
-            kwargs = {}
+        try:
+            sheet = pyexcel.load_from_memory(
+                extension,
+                request.FILES['file_up'].read(),
+                name_columns_by_row=0
+            )
+        except NotImplementedError:
+            error = '''Invalid file type {0}.\n
+                    Please upload one of: xls, xlsx, csv.'''.format(extension)
+        else:
+            data = sheet.to_records()
+            for row in data:
+                # If saving goes south, we're going to want to back out of any
+                # datatabse changes, so keep track of them
+                inserted_rows = []
+                kwargs = {}
 
-            kwargs['location_id'] = __get_autocomplete_term_or_insert(
-                row['Location'],
-                'location'
-            ).id
-            inserted_rows.append(kwargs['location_id'])
+                location = __get_autocomplete_term_or_insert(
+                    row['Location'],
+                    'location'
+                )
+                kwargs['location_id'] = location.id
+                inserted_rows.append(location)
 
-            kwargs['manufacturer_id'] = __get_autocomplete_term_or_insert(
-                row['Manufacturer'],
-                'manufacturer'
-            ).id
-            inserted_rows.append(kwargs['manufacturer_id'])
+                manufacturer = __get_autocomplete_term_or_insert(
+                    row['Manufacturer'],
+                    'manufacturer'
+                )
+                kwargs['manufacturer_id'] = manufacturer.id
+                inserted_rows.append(manufacturer)
 
-            # Now for the flat fields
-            for (col, val) in row.iteritems():
-                if col in [
-                    'Attachements',
-                    'ID',
-                    'Location',
-                    'Manufacturer',
-                    'Technician',
-                    'Owner',
-                    'SOP',
-                    'Picture',
-                    'Lifting_Device_Inspected_By',
-                ]:
-                    continue
-                elif col in [
-                    'CSA_Required',
-                    'Factory_CSA',
-                    'CSA_Special',
-                    'Modified_Since_CSA',
-                ]:
-                    kwargs[col.lower()] = True if val == 'yes' else False
-                elif col == 'Apparatus':
-                    kwargs['name'] = val
-                elif col == 'Model':
-                    kwargs['model_number'] = val
+                # Now for the flat fields
+                for (col, val) in row.iteritems():
+                    if col in [
+                        'Attachements',
+                        'ID',
+                        'Location',
+                        'Manufacturer',
+                        'Technician',
+                        'Owner',
+                        'SOP',
+                        'Picture',
+                        'Lifting_Device_Inspected_By',
+                    ]:
+                        continue
+                    elif col in [
+                        'CSA_Required',
+                        'Factory_CSA',
+                        'CSA_Special',
+                        'Modified_Since_CSA',
+                    ]:
+                        kwargs[col.lower()] = True if val == 'yes' else False
+                    elif col == 'Apparatus':
+                        kwargs['name'] = val or None
+                    elif col == 'Model':
+                        kwargs['model_number'] = val or None
 
-            item = InventoryItem(**kwargs)
-
-            try:
-                item.save()
-            except:
-                map(lambda x: x.delete(), inserted_rows)
-                errors.append({
-                    'message': 'Failed to insert row {0}'.format(row['ID']),
-                })
-
-        return HttpResponseRedirect('/list')
+                item = InventoryItem(**kwargs)
+                try:
+                    item.save()
+                except Exception:
+                    # Back out of all changes so far
+                    map(lambda x: x.delete(), inserted_rows)
+                    error = '''Failed to insert row {0}.\n
+                            Please look at your file and try again.
+                            '''.format(row['ID'])
+                    break  # Kill the loop
 
     return render(request, 'uw_file_io/import.html', {
         'form': ImportForm(),
+        'error': error
     })
