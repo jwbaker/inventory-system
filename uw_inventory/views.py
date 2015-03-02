@@ -89,6 +89,7 @@ def _json_builder_autocomplete(obj):
 
 @permission_required('uw_inventory.view_item')
 def inventory_list(request):
+    request.session['_scrollY'] = 0
     message_list = _collect_messages(request)
     inventory_list = InventoryItem.objects.all()
     return render(request, 'uw_inventory/list.html', {
@@ -211,6 +212,7 @@ def inventory_detail(request, item_id):
 @csrf_protect
 @permission_required('uw_inventory.add_inventoryitem')
 def inventory_add(request):
+    request.session['_scrollY'] = 0
     CommentCreateFormset = inlineformset_factory(
         InventoryItem,
         Comment,
