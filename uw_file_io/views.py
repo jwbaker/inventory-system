@@ -1,5 +1,7 @@
 import os
 
+from django.contrib import messages
+from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_protect
@@ -13,6 +15,30 @@ from uw_inventory.models import (
     InventoryItem,
     ItemFile
 )
+
+
+def _collect_messages(request):
+    '''
+    Loops through stored messages and packages them for consumption.
+
+    We need to iterate through in order to mark the message as seen, otherwise
+    it will keep displaying on every page.
+
+    This method also converts the 'error' class into the 'danger' class, so
+    bootstrap will recognize and render it properly.
+
+    Positional arguments:
+        request - The request object passed to the view
+    '''
+    storage = messages.get_messages(request)
+    message_list = []
+    for msg in storage:
+        msg_class = msg.tags
+        message_list.append({
+            'message': msg.message,
+            'class': 'danger' if ('error' in msg_class) else msg_class,
+        })
+    return message_list
 
 
 def file_download(request, file_id):
@@ -55,7 +81,6 @@ def __get_autocomplete_term_or_insert(name, kind):
 
 @csrf_protect
 def file_import(request):
-    error = None
     if request.method == 'POST':
         extension = request.FILES['file_up'].name.split('.')[1]
         try:
@@ -65,68 +90,84 @@ def file_import(request):
                 name_columns_by_row=0
             )
         except NotImplementedError:
-            error = '''Invalid file type {0}.\n
-                    Please upload one of: xls, xlsx, csv.'''.format(extension)
+            messages.error(
+                request,
+                '''Invalid file type {0}. Please upload one of: xls, xlsx, csv.
+                '''.format(extension)
+            )
         else:
             data = sheet.to_records()
             for row in data:
-                # If saving goes south, we're going to want to back out of any
-                # datatabse changes, so keep track of them
-                inserted_rows = []
-                kwargs = {}
+                if row['ID']:
+                    error = False
+                    # If saving goes south, we're going to want to back out of
+                    # any datatabse changes, so keep track of them
+                    inserted_rows = []
+                    kwargs = {}
 
-                location = __get_autocomplete_term_or_insert(
-                    row['Location'],
-                    'location'
-                )
-                kwargs['location_id'] = location.id
-                inserted_rows.append(location)
+                    location = __get_autocomplete_term_or_insert(
+                        row['Location'],
+                        'location'
+                    )
+                    kwargs['location_id'] = location.id
+                    inserted_rows.append(location)
 
-                manufacturer = __get_autocomplete_term_or_insert(
-                    row['Manufacturer'],
-                    'manufacturer'
-                )
-                kwargs['manufacturer_id'] = manufacturer.id
-                inserted_rows.append(manufacturer)
+                    manufacturer = __get_autocomplete_term_or_insert(
+                        row['Manufacturer'],
+                        'manufacturer'
+                    )
+                    kwargs['manufacturer_id'] = manufacturer.id
+                    inserted_rows.append(manufacturer)
 
-                # Now for the flat fields
-                for (col, val) in row.iteritems():
-                    if col in [
-                        'Attachements',
-                        'ID',
-                        'Location',
-                        'Manufacturer',
-                        'Technician',
-                        'Owner',
-                        'SOP',
-                        'Picture',
-                        'Lifting_Device_Inspected_By',
-                    ]:
-                        continue
-                    elif col in [
-                        'CSA_Required',
-                        'Factory_CSA',
-                        'CSA_Special',
-                        'Modified_Since_CSA',
-                    ]:
-                        kwargs[col.lower()] = True if val == 'yes' else False
-                    elif col == 'Apparatus':
-                        kwargs['name'] = val or None
-                    elif col == 'Model':
-                        kwargs['model_number'] = val or None
+                    # Now for the flat fields
+                    for (col, val) in row.iteritems():
+                        if col in [
+                            'Attachements',
+                            'ID',
+                            'Location',
+                            'Manufacturer',
+                            'Technician',
+                            'Owner',
+                            'SOP',
+                            'Picture',
+                            'Lifting_Device_Inspected_By',
+                        ]:
+                            continue
+                        elif col in [
+                            'CSA_Required',
+                            'Factory_CSA',
+                            'CSA_Special',
+                            'Modified_Since_CSA',
+                        ]:
+                            kwargs[col.lower()] = (
+                                True if val == 'yes' else False
+                            )
+                        elif col == 'Apparatus':
+                            kwargs['name'] = val or None
+                        elif col == 'Model':
+                            kwargs['model_number'] = val or None
 
-                item = InventoryItem(**kwargs)
-                try:
-                    item.save()
-                except Exception:
-                    # Back out of all changes so far
-                    map(lambda x: x.delete(), inserted_rows)
-                    error = '''Failed to insert row {0}.\n
-                            Please look at your file and try again.
-                            '''.format(row['ID'])
-                    break  # Kill the loop
+                    item = InventoryItem(**kwargs)
+                    try:
+                        item.save()
+                    except IntegrityError:
+                        # Back out of all changes so far
+                        map(lambda x: x.delete(), inserted_rows)
+                        messages.error(
+                            request,
+                            '''Failed to insert row {0}. Please look at your file
+                            and try again.'''.format(row['ID'])
+                        )
+                        error = True
+                        break  # Kill the loop
+                    else:
+                        inserted_rows.append(item)
+                if not error:
+                    messages.success(request, 'Import successful')
+                    return HttpResponseRedirect('/list')
 
+    message_list = _collect_messages(request)
     return render(request, 'uw_file_io/import.html', {
         'form': ImportForm(),
-        'error': error
+        'page_messages': message_list,
     })
