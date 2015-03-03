@@ -55,6 +55,7 @@ def parse(file_up):
     else:
         data = sheet.to_records()
         new_terms = {}
+        new_items = []
         for row in data:
             if row['ID']:
                 # If saving goes south, we're going to want to back out of
@@ -119,6 +120,8 @@ def parse(file_up):
                                     and try again.'''.format(row['ID']),
                         'destination': 'uw_file_io.views.file_import',
                     }
+                else:
+                    new_items.append(item)
         response = {
             'status': True,
             'message': 'Import successful',
@@ -127,9 +130,11 @@ def parse(file_up):
             response.update({
                 'destination': 'uw_file_io.views.add_terms',
                 'new_terms': new_terms,
+                'new_item_args': new_items,
             })
         else:
             response.update({
                 'destination': 'uw_inventory.views.inventory_list',
+                'new_item_args': new_items,
             })
         return response

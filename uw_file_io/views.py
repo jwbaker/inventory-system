@@ -2,7 +2,7 @@ import os
 
 from django.contrib import messages
 from django.http import HttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import render
 from django.views.decorators.csrf import csrf_protect
 
 from uw_file_io.forms import ImportForm
@@ -64,24 +64,8 @@ def file_view(request, file_name):
 
 @csrf_protect
 def file_import(request):
-    if request.method == 'POST':
-        parse_response = parse(request.FILES['file_up'])
-        if not parse_response['status']:
-            messages.error(
-                request,
-                parse_response['message']
-            )
-        if parse_response['new_terms']:
-            return add_terms(request, parse_response['new_terms'])
-        return redirect(parse_response['destination'])
     message_list = _collect_messages(request)
     return render(request, 'uw_file_io/import.html', {
         'form': ImportForm(),
         'page_messages': message_list,
-    })
-
-
-def add_terms(request, new_terms):
-    return render(request, 'uw_file_io/new_terms.html', {
-        'terms': new_terms,
     })
