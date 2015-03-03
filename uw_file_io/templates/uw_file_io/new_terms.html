@@ -124,30 +124,40 @@
     });
 
     var flatten = function(label){
-      var retObject = {}
-
+      var retObject = []
 
       $('#' + label + ' li').each(function(index, element){
-        var temp = {};
-
-        if($(element).parents('ol').length > 1){
-          temp['parent'] = $(element).closest('ol').parent().children('div.handle').text();
+        var elem = $(element);
+        var temp = {
+          'name': elem.children('div.handle').text(),
+          'kind': label,
         }
 
-        retObject[$(element).children('div.handle').text()] = temp;
+        var isChild = (elem.parents('ol').length == 2);
+
+        if(isChild){
+          temp['action'] = 'rename';
+          temp['replace'] = elem.closest('ol').siblings('div.handle').text();
+        } else if(elem.is('.old-term')){
+          temp['action'] = 'skip';
+        } else{
+          temp['action'] = 'create';
+        }
+
+        retObject.push(temp);
       });
 
       return retObject;
     }
 
     $('#continue').click(function(){
-      nestingStructure = {};
+      termList = [];
       $('.sortable').each(function(index, element){
         var label = $(element).closest('[role="tabpanel"]').attr('id');
-        nestingStructure[label] = flatten(label);
+        termList = flatten(label);
       });
       
-      $('#termHierarchy').val(JSON.stringify(nestingStructure));
+      $('#termHierarchy').val(JSON.stringify(termList));
 
       $('#constructTermsForm').submit();
     });
