@@ -11,6 +11,11 @@
 
 {% block content %}
   <div class="row">
+    <div>
+      <p>It looks like you're trying to create new terms for one or more autocomplete fields. To reduce unneeded duplicates, please verify that none of the new terms already exist.</p>
+      <p>If you find a term that should be merged, drag it onto the term it should be merged with. The top-most term only will be saved.</p>
+    </div>
+
     <div class="tab-content">
       <div role="tabpanel">
         <ul class="nav nav-tabs" role="tablist">
@@ -27,13 +32,16 @@
             <div role="tabpanel" class="tab-pane" id="{{ key }}">
               <div class="row">
                 <div class="col-xs-4 col-xs-offset-4">
-                  <ol class="list-group term-list sortable">
-                    {% for term in value %}
-                      <li class="list-group-item">
-                        <div class="handle">{{ term }}</div>
-                      </li>
-                    {% endfor %}
-                  </ol>
+                  <div class="panel panel-default">
+                    <div class="panel-heading">New Terms</div>
+                    <ol class="list-group term-list sortable">
+                      {% for term in value %}
+                        <li class="list-group-item new-term">
+                          <div class="handle">{{ term }}</div>
+                        </li>
+                      {% endfor %}
+                    </ol>
+                  </div>
                 </div>
               </div>
             </div>
@@ -45,11 +53,36 @@
 
   <div class="row">
     <div class="col-xs-6 col-xs-offset-3">
-      <button class="btn btn-success pull-right" id="continue">Continue</button>
-      <button class="btn btn-danger pull-left" id="cancel">Cancel</button>
+      <button class="btn btn-success pull-right" id="continue">Continue import</button>
+      <button class="btn btn-danger pull-left" id="cancel">Cancel import</button>
     </div>
   </div>
+
+  <form action="{% url 'uw_file_io.views.add_terms' %}" method="POST" id="constructTermsForm" class="hidden">
+    {% csrf_token %}
+    <input type="text" id="termHierarchy" name="termHierarchy" class="form-control" />
+  </form>
 {% endblock content %}
+
+{% block modal %}
+  <div class="modal fade" id="confirmCancelModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Are you sure?</h4>
+        </div>
+        <div class="modal-body">
+          <p>All changes will be lost.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+          <button type="button" class="btn btn-primary" id="confirmCancel">Yes</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+{% endblock modal %}
 
 {% block js_includes %}
   <script src="//code.jquery.com/ui/1.11.3/jquery-ui.js"></script>
@@ -66,6 +99,42 @@
       toleranceElement: '> div',
       maxLevels: 2,
       tabSize: 2,
+    });
+
+    $('#cancel').click(function(){
+      $('#confirmCancelModal').modal('show');
+    });
+    $('#confirmCancel').click(function(){
+      window.location = "{% url 'uw_file_io.views.file_import' %}"
+    });
+
+    var flatten = function(label){
+      var retObject = {}
+
+
+      $('#' + label + ' li').each(function(index, element){
+        var temp = {};
+
+        if($(element).parents('ol').length > 1){
+          temp['parent'] = $(element).closest('ol').parent().children('div.handle').text();
+        }
+
+        retObject[$(element).children('div.handle').text()] = temp;
+      });
+
+      return retObject;
+    }
+
+    $('#continue').click(function(){
+      nestingStructure = {};
+      $('.sortable').each(function(index, element){
+        var label = $(element).closest('[role="tabpanel"]').attr('id');
+        nestingStructure[label] = flatten(label);
+      });
+      
+      $('#termHierarchy').val(JSON.stringify(nestingStructure));
+
+      $('#constructTermsForm').submit();
     });
   </script>
 {% endblock js_includes %}

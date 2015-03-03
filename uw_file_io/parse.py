@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 from uw_inventory.models import AutocompleteData, InventoryItem
 
 
-def __get_autocomplete_term_or_insert(name, kind, new_terms_list):
+def __get_autocomplete_term_or_create(name, kind, new_terms_list):
     try:
         var = AutocompleteData.objects.get(
             name__iexact=name,
@@ -36,7 +36,7 @@ def __get_autocomplete_term_or_insert(name, kind, new_terms_list):
     return var
 
 
-def parse(file_up):
+def parse_file(file_up):
     extension = file_up.name.split('.')[1]
     try:
         sheet = pyexcel.load_from_memory(
@@ -62,14 +62,14 @@ def parse(file_up):
                 # any datatabse changes, so keep track of them
                 kwargs = {}
 
-                location = __get_autocomplete_term_or_insert(
+                location = __get_autocomplete_term_or_create(
                     row['Location'],
                     'location',
                     new_terms,
                 )
                 kwargs['location_id'] = location.id or location.name
 
-                manufacturer = __get_autocomplete_term_or_insert(
+                manufacturer = __get_autocomplete_term_or_create(
                     row['Manufacturer'],
                     'manufacturer',
                     new_terms,
@@ -121,20 +121,38 @@ def parse(file_up):
                         'destination': 'uw_file_io.views.file_import',
                     }
                 else:
-                    new_items.append(item)
+                    new_items.append(kwargs)
         response = {
             'status': True,
             'message': 'Import successful',
+            'new_items': new_items,
+            'destination': 'uw_file_io.views.add_terms',
+            'new_terms': new_terms,
         }
-        if new_terms:
-            response.update({
-                'destination': 'uw_file_io.views.add_terms',
-                'new_terms': new_terms,
-                'new_item_args': new_items,
-            })
-        else:
-            response.update({
-                'destination': 'uw_inventory.views.inventory_list',
-                'new_item_args': new_items,
-            })
         return response
+
+
+def __flatten_terms(term_hierarchy):
+    return [{'kind': x, 'name': k} for (x, y) in term_hierarchy.iteritems()
+            for (k, v) in y.iteritems() if v == {}]
+
+
+def associate_terms(item_list, term_hierarchy):
+    locations = term_hierarchy['location']
+    manufacturers = term_hierarchy['manufacturer']
+    for item in item_list:
+        location_id = item['location_id']
+        if (
+            location_id in locations and
+            'parent' in locations[location_id]
+        ):
+            item['location_id'] = locations[location_id]['parent']
+
+        manufacturer_id = item['manufacturer_id']
+        if (
+            manufacturer_id in manufacturers and
+            'parent' in manufacturers[manufacturer_id]
+        ):
+            item['manufacturer_id'] = manufacturers[manufacturer_id]['parent']
+
+    return __flatten_terms(term_hierarchy)
