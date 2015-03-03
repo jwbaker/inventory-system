@@ -1,5 +1,6 @@
 {% extends 'uw_inventory_system/base.html' %}
 {% load staticfiles %}
+{% load uw_utility_tags %}
 
 {% block css_includes %}
   <style type="text/css">
@@ -19,7 +20,7 @@
     <div class="tab-content">
       <div role="tabpanel">
         <ul class="nav nav-tabs" role="tablist">
-          {% for key in terms.keys %}
+          {% for key in new_terms.keys %}
             <li role="presentation" class="tab">
               <a href="#{{ key }}" role="tab" data-toggle="tab">{{ key|capfirst }}</a>
             </li>
@@ -28,15 +29,28 @@
 
         <!-- Tab panes -->
         <div class="tab-content">
-          {% for key, value in terms.items %}
+          {% for key, value in new_terms.items %}
             <div role="tabpanel" class="tab-pane" id="{{ key }}">
               <div class="row">
-                <div class="col-xs-4 col-xs-offset-4">
+                <div class="col-xs-3 col-xs-offset-3">
                   <div class="panel panel-default">
                     <div class="panel-heading">New Terms</div>
-                    <ol class="list-group term-list sortable">
+                    <ol class="list-group term-list sortable" style="min-height:35px">
                       {% for term in value %}
                         <li class="list-group-item new-term">
+                          <div class="handle">{{ term }}</div>
+                        </li>
+                      {% endfor %}
+                    </ol>
+                  </div>
+                </div>
+
+                <div class="col-xs-3">
+                  <div class="panel panel-default">
+                    <div class="panel-heading">Existing Terms</div>
+                    <ol class="list-group term-list sortable" style="min-height:35px">
+                      {% for term in old_terms|get:key %}
+                        <li class="list-group-item old-term">
                           <div class="handle">{{ term }}</div>
                         </li>
                       {% endfor %}
@@ -99,6 +113,7 @@
       toleranceElement: '> div',
       maxLevels: 2,
       tabSize: 2,
+      connectWith: '.sortable',
     });
 
     $('#cancel').click(function(){

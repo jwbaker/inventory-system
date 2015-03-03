@@ -9,6 +9,7 @@ from django.views.decorators.csrf import csrf_protect
 from uw_file_io.forms import ImportForm
 from uw_file_io.parse import associate_terms, parse_file
 from uw_inventory.models import (
+    AutocompleteData,
     ItemFile
 )
 
@@ -99,5 +100,13 @@ def add_terms(request):
 
         return redirect('uw_inventory.views.inventory_list')
     return render(request, 'uw_file_io/new_terms.html', {
-        'terms': request.session['NewTerms'],
+        'new_terms': request.session['NewTerms'],
+        'old_terms': {
+            'location': [t.name for t in
+                         AutocompleteData.objects.filter(kind='location')],
+            'manufacturer': [t.name for t in
+                             AutocompleteData.objects.filter(
+                                kind='manufacturer'
+                             )],
+        }
     })
