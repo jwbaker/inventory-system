@@ -8,6 +8,124 @@ from django.core.exceptions import ValidationError
 from uw_inventory.models import AutocompleteData, InventoryItem
 
 
+IMPORT_FIELD_DATA = {
+    'ID': {
+        'type': 'skip',
+    },
+    'Attachements': {
+        'type': 'skip',
+    },
+    'Location': {
+        'type': 'autocomplete',
+        'autocomplete_kind': 'location',
+        'field_name': 'location_id',
+    },
+    'Manufacturer': {
+        'type': 'autocomplete',
+        'autocomplete_kind': 'manufacturer',
+        'field_name': 'manufacturer_id',
+    },
+    'Supplier': {
+        'type': 'autocomplete',
+        'autocomplete_kind': 'supplier',
+        'field_name': 'supplier_id',
+    },
+    'Technician': {
+        'type': 'skip',
+    },
+    'Status': {
+        'type': 'skip',
+    },
+    'Owner': {
+        'type': 'skip',
+    },
+    'SOP': {
+        'type': 'skip',
+    },
+    'Picture': {
+        'type': 'skip',
+    },
+    'Lifting_Device_Inspected_By': {
+        'type': 'skip',
+    },
+    'CSA_Required': {
+        'type': 'boolean',
+        'field_name': 'csa_required',
+    },
+    'Factory_CSA': {
+        'type': 'boolean',
+        'field_name': 'factory_csa',
+    },
+    'CSA_Special': {
+        'type': 'boolean',
+        'field_name': 'csa_special',
+    },
+    'Modified_Since_CSA': {
+        'type': 'boolean',
+        'field_name': 'modified_since_csa',
+    },
+    'Undergraduate': {
+        'type': 'boolean',
+        'field_name': 'undergraduate',
+    },
+    'Manufacture_Date': {
+        'type': 'date',
+        'field_name': 'manufacture_date',
+    },
+    'Purchase_Date': {
+        'type': 'date',
+        'field_name': 'purchase_date',
+    },
+    'Replacement_Cost_Date': {
+        'type': 'date',
+        'field_name': 'replacement_cost_date',
+    },
+    'CSA_Special_Date': {
+        'type': 'date',
+        'field_name': 'csa_special_date',
+    },
+    'Purchase_Price': {
+        'type': 'currency',
+        'field_name': 'purchase_price',
+    },
+    'Replacement_Cost': {
+        'type': 'currency',
+        'field_name': 'replacement_cost',
+    },
+    'CSA_Cost': {
+        'type': 'currency',
+        'field_name': 'csa_cost',
+    },
+    'Apparatus': {
+        'type': 'rename',
+        'field_name': 'name',
+    },
+    'Model': {
+        'type': 'rename',
+        'field_name': 'model_number',
+    },
+    'Serial': {
+        'type': 'rename',
+        'field_name': 'serial_number',
+    },
+    'Tech_ID': {
+        'type': 'rename',
+        'field_name': 'tech_id',
+    },
+    'Notes': {
+        'type': 'rename',
+        'field_name': 'notes',
+    },
+    'MME_ID': {
+        'type': 'skip',
+    },
+    'Description': {
+        'type': 'rename',
+        'field_name': 'description',
+    },
+}
+
+
 def __get_autocomplete_term_or_create(name, kind, new_terms_list):
     try:
         var = AutocompleteData.objects.get(
@@ -60,104 +178,48 @@ def parse_file(file_up):
         new_items = []
         for row in data:
             if row['ID']:
-                # If saving goes south, we're going to want to back out of
-                # any datatabse changes, so keep track of them
                 kwargs = {}
 
-                if 'Location' in row and row['Location']:
-                    location = __get_autocomplete_term_or_create(
-                        row['Location'],
-                        'location',
-                        new_terms,
-                    )
-                    kwargs['location_id'] = location.id or location.name
-
-                if 'Manufacturer' in row and row['Manufacturer']:
-                    manufacturer = __get_autocomplete_term_or_create(
-                        row['Manufacturer'],
-                        'manufacturer',
-                        new_terms,
-                    )
-                    kwargs['manufacturer_id'] = (
-                        manufacturer.id or manufacturer.name
-                    )
-
-                if 'Supplier' in row and row['Supplier']:
-                    supplier = __get_autocomplete_term_or_create(
-                        row['Supplier'],
-                        'supplier',
-                        new_terms,
-                    )
-                    kwargs['supplier_id'] = (
-                        supplier.id or supplier.name
-                    )
-
-                # Now for the flat fields
                 for (col, val) in row.iteritems():
-                    if col in [
-                        'Attachements',
-                        'ID',
-                        'Location',
-                        'Manufacturer',
-                        'Supplier',
-                        'Technician',
-                        'Status',
-                        'Owner',
-                        'SOP',
-                        'Picture',
-                        'Lifting_Device_Inspected_By',
-                    ]:
-                        continue
-                    elif col in [
-                        'CSA_Required',
-                        'Factory_CSA',
-                        'CSA_Special',
-                        'Modified_Since_CSA',
-                        'Undergraduate',
-                    ]:
-                        kwargs[col.lower()] = (
-                            True if val == 'yes' else False
-                        )
-                    elif col in [
-                        'Manufacture_Date',
-                        'Purchase_Date',
-                        'Replacement_Cost_Date',
-                        'CSA_Special_Date',
-                    ]:
-                        if val:
-                            date_components = val.split('-')
-                            assembled_date = '{0}-{1}-{2}'.format(
-                                date_components[2],
-                                date_components[1],
-                                date_components[0]
+                    try:
+                        field_meta = IMPORT_FIELD_DATA[col]
+                        if field_meta['type'] == 'skip':
+                            continue
+                        elif field_meta['type'] == 'autocomplete':
+                            if val:
+                                temp = __get_autocomplete_term_or_create(
+                                    val,
+                                    field_meta['autocomplete_kind'],
+                                    new_terms
+                                )
+                                store_value = temp.id or temp.name
+                        elif field_meta['type'] == 'boolean':
+                            store_value = (
+                                True if val == 'yes' else False
                             )
-                            kwargs[col.lower()] = assembled_date
-                        else:
-                            kwargs[col.lower()] = None
-                    elif col in [
-                        'Purchase_Price',
-                        'Replacement_Cost',
-                        'CSA_Cost',
-                    ]:
-                        currencyRE = re.match(r'^\$(\d+)\.\d{2}$', val)
-                        if currencyRE:
-                            kwargs[col.lower()] = int(currencyRE.group(1))
-                        else:
-                            kwargs[col.lower()] = 0
-                    elif col == 'Apparatus':
-                        kwargs['name'] = val or None
-                    elif col == 'Model':
-                        kwargs['model_number'] = val or None
-                    elif col == 'Tech_ID':
-                        kwargs['tech_id'] = val or None
-                    elif col == 'Serial':
-                        kwargs['serial_number'] = val or None
-                    elif col == 'Model':
-                        kwargs['model_number'] = val or None
-                    elif col == 'Notes':
-                        kwargs['notes'] = val or None
-                    elif col == 'Description':
-                        kwargs['description'] = val or None
+                        elif field_meta['type'] == 'date':
+                            if val:
+                                date_components = val.split('-')
+                                assembled_date = '{0}-{1}-{2}'.format(
+                                    date_components[2],
+                                    date_components[1],
+                                    date_components[0]
+                                )
+                                store_value = assembled_date
+                            else:
+                                store_value = None
+                        elif field_meta['type'] == 'currency':
+                            currencyRE = re.match(r'^\$(\d+)\.\d{2}$', val)
+                            if currencyRE:
+                                store_value = int(currencyRE.group(1))
+                            else:
+                                store_value = 0
+                        elif field_meta['type'] == 'rename':
+                            store_value = val or None
+
+                        kwargs[field_meta['field_name']] = store_value
+                    except KeyError:
+                        pass
 
                 item = InventoryItem(**kwargs)
                 try:

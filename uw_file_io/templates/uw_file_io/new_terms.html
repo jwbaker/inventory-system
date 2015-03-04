@@ -73,7 +73,7 @@
     <i class="fa fa-spinner spinner fa-spin fa-2x hidden"></i>
   </div>
 
-  <form action="{% url 'uw_file_io.views.add_terms' %}" method="POST" id="constructTermsForm" class="">
+  <form action="{% url 'uw_file_io.views.add_terms' %}" method="POST" id="constructTermsForm" class="hidden">
     {% csrf_token %}
     <input type="text" id="termHierarchy" name="termHierarchy" class="form-control" />
   </form>
