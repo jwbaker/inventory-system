@@ -106,10 +106,6 @@ def parse_file(file_up):
                         'SOP',
                         'Picture',
                         'Lifting_Device_Inspected_By',
-                        'Manufacture_Date',
-                        'Purchase_Date',
-                        'Replacement_Cost_Date',
-                        'CSA_Special_Date',
                     ]:
                         continue
                     elif col in [
@@ -122,6 +118,22 @@ def parse_file(file_up):
                         kwargs[col.lower()] = (
                             True if val == 'yes' else False
                         )
+                    elif col in [
+                        'Manufacture_Date',
+                        'Purchase_Date',
+                        'Replacement_Cost_Date',
+                        'CSA_Special_Date',
+                    ]:
+                        if val:
+                            date_components = val.split('-')
+                            assembled_date = '{0}-{1}-{2}'.format(
+                                date_components[2],
+                                date_components[1],
+                                date_components[0]
+                            )
+                            kwargs[col.lower()] = assembled_date
+                        else:
+                            kwargs[col.lower()] = None
                     elif col in [
                         'Purchase_Price',
                         'Replacement_Cost',
