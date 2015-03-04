@@ -238,7 +238,6 @@ def parse_file(file_up):
                         'status': False,
                         'message': '''Failed to insert row {0}. Please look at your file
                                     and try again.'''.format(row['ID']),
-                        'destination': 'uw_file_io.views.file_import',
                     }
                 else:
                     new_items.append(kwargs)
@@ -246,7 +245,6 @@ def parse_file(file_up):
             'status': True,
             'message': 'Import successful',
             'new_items': new_items,
-            'destination': 'uw_file_io.views.add_terms',
             'new_terms': new_terms,
         }
         return response

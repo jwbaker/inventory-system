@@ -79,15 +79,14 @@ def file_import(request):
             )
         else:
             request.session['IntermediateItems'] = parse_response['new_items']
-            if parse_response['new_terms']:
-                request.session['NewTerms'] = parse_response['new_terms']
-            else:
-                return __process_import(
-                    request,
-                    parse_response['new_items'],
-                    []
-                )
-        return redirect(parse_response['destination'])
+            request.session['NewTerms'] = parse_response['new_terms']
+
+        if 'NewTerms' in request.session:
+            destination = 'uw_file_io.views.add_terms'
+        else:
+            destination = 'uw_file_io.views.finish_import'
+
+        return redirect(destination)
 
     message_list = _collect_messages(request)
     return render(request, 'uw_file_io/import.html', {
@@ -96,7 +95,34 @@ def file_import(request):
     })
 
 
-def __process_import(request, item_list, term_list):
+@csrf_protect
+def add_terms(request):
+    if request.method == 'POST':
+        request.session['NewTerms'] = json.loads(request.POST['termHierarchy'])
+
+        return redirect('uw_file_io.views.finish_import')
+
+    return render(request, 'uw_file_io/new_terms.html', {
+        'new_terms': request.session['NewTerms'],
+        'old_terms': {
+            'location': [t.name for t in
+                         AutocompleteData.objects.filter(kind='location')],
+            'manufacturer': [t.name for t in
+                             AutocompleteData.objects.filter(
+                                 kind='manufacturer'
+                             )],
+            'supplier': [t.name for t in
+                         AutocompleteData.objects.filter(
+                             kind='supplier'
+                         )],
+        }
+    })
+
+
+def finish_import(request):
+    item_list = request.session['IntermediateItems']
+    term_list = request.session['NewTerms']
+
     term_to_index = process_terms_transactions(term_list)
     new_items = []
 
@@ -128,35 +154,9 @@ def __process_import(request, item_list, term_list):
         item.save()
         new_items.append(item)
 
-    if 'IntermediateItems' in request.session:
-        del request.session['IntermediateItems']
-    if 'NewTerms' in request.session:
-        del request.session['NewTerms']
+    del request.session['IntermediateItems']
+    del request.session['NewTerms']
 
     return render(request, 'uw_file_io/import_done.html', {
         'item_list': new_items,
-    })
-
-
-@csrf_protect
-def add_terms(request):
-    if request.method == 'POST':
-        item_list = request.session['IntermediateItems']
-        new_terms = json.loads(request.POST['termHierarchy'])
-
-        return __process_import(request, item_list, new_terms)
-    return render(request, 'uw_file_io/new_terms.html', {
-        'new_terms': request.session['NewTerms'],
-        'old_terms': {
-            'location': [t.name for t in
-                         AutocompleteData.objects.filter(kind='location')],
-            'manufacturer': [t.name for t in
-                             AutocompleteData.objects.filter(
-                                 kind='manufacturer'
-                             )],
-            'supplier': [t.name for t in
-                         AutocompleteData.objects.filter(
-                             kind='supplier'
-                         )],
-        }
     })
