@@ -98,7 +98,7 @@ def __process_import(request, item_list, term_list):
         if isinstance(item_args['location_id'], unicode):
             item_args['location_id'] = term_to_index[item_args['location_id']]
         if isinstance(item_args['manufacturer_id'], unicode):
-            item_args['location_id'] = term_to_index[
+            item_args['manufacturer_id'] = term_to_index[
                 item_args['manufacturer_id']
             ]
 
