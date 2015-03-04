@@ -6,6 +6,8 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_protect
 
+from django_cas.decorators import permission_required
+
 from uw_file_io.forms import ImportForm
 from uw_file_io.parse import process_terms_transactions, parse_file
 from uw_inventory.models import (
@@ -66,6 +68,7 @@ def file_view(request, file_name):
 
 
 @csrf_protect
+@permission_required('uw_inventory.add_inventoryitem')
 def file_import(request):
     if request.method == 'POST':
         parse_response = parse_file(request.FILES['file_up'])
