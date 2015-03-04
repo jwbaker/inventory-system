@@ -64,7 +64,7 @@ def parse_file(file_up):
                 # any datatabse changes, so keep track of them
                 kwargs = {}
 
-                if row['Location']:
+                if 'Location' in row and row['Location']:
                     location = __get_autocomplete_term_or_create(
                         row['Location'],
                         'location',
@@ -72,7 +72,7 @@ def parse_file(file_up):
                     )
                     kwargs['location_id'] = location.id or location.name
 
-                if row['Manufacturer']:
+                if 'Manufacturer' in row and row['Manufacturer']:
                     manufacturer = __get_autocomplete_term_or_create(
                         row['Manufacturer'],
                         'manufacturer',
@@ -82,7 +82,7 @@ def parse_file(file_up):
                         manufacturer.id or manufacturer.name
                     )
 
-                if row['Supplier']:
+                if 'Supplier' in row and row['Supplier']:
                     supplier = __get_autocomplete_term_or_create(
                         row['Supplier'],
                         'supplier',
