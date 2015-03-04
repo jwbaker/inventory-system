@@ -81,6 +81,12 @@ def file_import(request):
             request.session['IntermediateItems'] = parse_response['new_items']
             if parse_response['new_terms']:
                 request.session['NewTerms'] = parse_response['new_terms']
+            else:
+                return __process_import(
+                    request,
+                    parse_response['new_items'],
+                    []
+                )
         return redirect(parse_response['destination'])
 
     message_list = _collect_messages(request)
@@ -122,6 +128,11 @@ def __process_import(request, item_list, term_list):
         item.save()
         new_items.append(item)
 
+    if 'IntermediateItems' in request.session:
+        del request.session['IntermediateItems']
+    if 'NewTerms' in request.session:
+        del request.session['NewTerms']
+
     return render(request, 'uw_file_io/import_done.html', {
         'item_list': new_items,
     })
@@ -132,9 +143,6 @@ def add_terms(request):
     if request.method == 'POST':
         item_list = request.session['IntermediateItems']
         new_terms = json.loads(request.POST['termHierarchy'])
-
-        del request.session['IntermediateItems']
-        del request.session['NewTerms']
 
         return __process_import(request, item_list, new_terms)
     return render(request, 'uw_file_io/new_terms.html', {

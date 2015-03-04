@@ -70,6 +70,7 @@
       <button class="btn btn-success pull-right" id="continue">Continue import</button>
       <button class="btn btn-danger pull-left" id="cancel">Cancel import</button>
     </div>
+    <i class="fa fa-spinner spinner fa-spin fa-2x hidden"></i>
   </div>
 
   <form action="{% url 'uw_file_io.views.add_terms' %}" method="POST" id="constructTermsForm" class="">
@@ -153,6 +154,8 @@
     }
 
     $('#continue').click(function(){
+      $('.btn').addClass('disabled');
+      $('.spinner').removeClass('hidden');
       termList = [];
       $('.sortable').closest('[role="tabpanel"]').each(function(index, element){
         var label = $(element).attr('id');
