@@ -132,27 +132,45 @@ def parse_file(file_up):
         return response
 
 
-def __flatten_terms(term_hierarchy):
-    return [{'kind': x, 'name': k} for (x, y) in term_hierarchy.iteritems()
-            for (k, v) in y.iteritems() if v == {}]
+def process_terms_transactions(term_list):
+    term_to_index = {}
 
+    while len(term_list) > 0:
+        term = term_list.pop(0)
 
-def associate_terms(item_list, term_hierarchy):
-    locations = term_hierarchy['location']
-    manufacturers = term_hierarchy['manufacturer']
-    for item in item_list:
-        location_id = item['location_id']
-        if (
-            location_id in locations and
-            'parent' in locations[location_id]
-        ):
-            item['location_id'] = locations[location_id]['parent']
+        if term['action'] == 'skip':
+            continue
+        elif term['action'] == 'create':
+            temp = AutocompleteData(
+                kind=term['kind'],
+                name=term['name']
+            )
+            temp.save()
 
-        manufacturer_id = item['manufacturer_id']
-        if (
-            manufacturer_id in manufacturers and
-            'parent' in manufacturers[manufacturer_id]
-        ):
-            item['manufacturer_id'] = manufacturers[manufacturer_id]['parent']
+            term_to_index[term['name']] = temp.id
+        elif term['action'] == 'rename':
+            if term['type'] == 'new->new':  # Assoc new with new
+                if term['replace'] in term_to_index:
+                    term_to_index[term['name']] = term_to_index[
+                        term['replace']
+                    ]
+                else:
+                    term_list.append(term)
+            elif term['type'] == 'new->old':  # Assoc new with existing
+                temp = AutocompleteData.objects.get(
+                    kind=term['kind'],
+                    name=term['replace']
+                )
+                term_to_index[term['name']] = temp.id
+                term_to_index[term['replace']] = temp.id
+            elif term['type'] == 'old->new':
+                temp = AutocompleteData.objects.get(
+                    kind=term['kind'],
+                    name=term['name']
+                )
+                temp.name = term['replace']
+                temp.save()
+                term_to_index[term['replace']] = temp.id
+                term_to_index[term['name']] = temp.id
 
-    return __flatten_terms(term_hierarchy)
+    return term_to_index

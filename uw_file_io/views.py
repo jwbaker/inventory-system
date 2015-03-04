@@ -7,9 +7,10 @@ from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_protect
 
 from uw_file_io.forms import ImportForm
-from uw_file_io.parse import associate_terms, parse_file
+from uw_file_io.parse import process_terms_transactions, parse_file
 from uw_inventory.models import (
     AutocompleteData,
+    InventoryItem,
     ItemFile
 )
 
@@ -86,19 +87,37 @@ def file_import(request):
     })
 
 
+def __process_import(request, item_list, term_list):
+    term_to_index = process_terms_transactions(term_list)
+    new_items = []
+
+    for item_args in item_list:
+        if isinstance(item_args['location_id'], unicode):
+            item_args['location_id'] = term_to_index[item_args['location_id']]
+        if isinstance(item_args['manufacturer_id'], unicode):
+            item_args['location_id'] = term_to_index[
+                item_args['manufacturer_id']
+            ]
+
+        item = InventoryItem(**item_args)
+        item.save()
+        new_items.append(item)
+
+    return render(request, 'uw_file_io/import_done.html', {
+        'item_list': new_items,
+    })
+
+
 @csrf_protect
 def add_terms(request):
     if request.method == 'POST':
         item_list = request.session['IntermediateItems']
-        new_terms = associate_terms(
-            item_list,
-            json.loads(request.POST['termHierarchy'])
-        )
+        new_terms = json.loads(request.POST['termHierarchy'])
 
-        request.session['IntermediateItems'] = item_list
-        request.session['NewTerms'] = new_terms
+        del request.session['IntermediateItems']
+        del request.session['NewTerms']
 
-        return redirect('uw_inventory.views.inventory_list')
+        return __process_import(request, item_list, new_terms)
     return render(request, 'uw_file_io/new_terms.html', {
         'new_terms': request.session['NewTerms'],
         'old_terms': {
@@ -106,7 +125,7 @@ def add_terms(request):
                          AutocompleteData.objects.filter(kind='location')],
             'manufacturer': [t.name for t in
                              AutocompleteData.objects.filter(
-                                kind='manufacturer'
+                                 kind='manufacturer'
                              )],
         }
     })

@@ -1,0 +1,9 @@
+{% extends 'uw_inventory_system/base.html' %}
+
+{% block content %}
+  <ul>
+    {% for item in item_list %}
+      <li>{{ item }}</li>
+    {% endfor %}
+  </ul>
+{% endblock content %}

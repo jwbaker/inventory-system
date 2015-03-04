@@ -72,7 +72,7 @@
     </div>
   </div>
 
-  <form action="{% url 'uw_file_io.views.add_terms' %}" method="POST" id="constructTermsForm" class="hidden">
+  <form action="{% url 'uw_file_io.views.add_terms' %}" method="POST" id="constructTermsForm" class="">
     {% csrf_token %}
     <input type="text" id="termHierarchy" name="termHierarchy" class="form-control" />
   </form>
@@ -138,6 +138,8 @@
         if(isChild){
           temp['action'] = 'rename';
           temp['replace'] = elem.closest('ol').siblings('div.handle').text();
+          temp['type'] = (elem.is('.old-term') ? 'old' : 'new') + '->' + 
+                          (elem.closest('ol').parent().is('.old-term') ? 'old' : 'new');
         } else if(elem.is('.old-term')){
           temp['action'] = 'skip';
         } else{
