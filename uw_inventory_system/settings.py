@@ -36,6 +36,7 @@ INSTALLED_APPS = (
     'uw_inventory',
     'uw_users',
     'uw_forms',
+    'uw_file_io',
 )
 
 MIDDLEWARE_CLASSES = (
