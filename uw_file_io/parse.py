@@ -64,30 +64,33 @@ def parse_file(file_up):
                 # any datatabse changes, so keep track of them
                 kwargs = {}
 
-                location = __get_autocomplete_term_or_create(
-                    row['Location'],
-                    'location',
-                    new_terms,
-                )
-                kwargs['location_id'] = location.id or location.name
+                if row['Location']:
+                    location = __get_autocomplete_term_or_create(
+                        row['Location'],
+                        'location',
+                        new_terms,
+                    )
+                    kwargs['location_id'] = location.id or location.name
 
-                manufacturer = __get_autocomplete_term_or_create(
-                    row['Manufacturer'],
-                    'manufacturer',
-                    new_terms,
-                )
-                kwargs['manufacturer_id'] = (
-                    manufacturer.id or manufacturer.name
-                )
+                if row['Manufacturer']:
+                    manufacturer = __get_autocomplete_term_or_create(
+                        row['Manufacturer'],
+                        'manufacturer',
+                        new_terms,
+                    )
+                    kwargs['manufacturer_id'] = (
+                        manufacturer.id or manufacturer.name
+                    )
 
-                supplier = __get_autocomplete_term_or_create(
-                    row['Supplier'],
-                    'supplier',
-                    new_terms,
-                )
-                kwargs['supplier_id'] = (
-                    supplier.id or supplier.name
-                )
+                if row['Supplier']:
+                    supplier = __get_autocomplete_term_or_create(
+                        row['Supplier'],
+                        'supplier',
+                        new_terms,
+                    )
+                    kwargs['supplier_id'] = (
+                        supplier.id or supplier.name
+                    )
 
                 # Now for the flat fields
                 for (col, val) in row.iteritems():

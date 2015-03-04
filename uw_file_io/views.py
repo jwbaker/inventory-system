@@ -95,21 +95,24 @@ def __process_import(request, item_list, term_list):
     new_items = []
 
     for item_args in item_list:
-        if item_args['location_id'] and isinstance(
-                item_args['location_id'],
-                unicode
+        if (
+                'location_id' in item_args and
+                item_args['location_id'] and
+                isinstance(item_args['location_id'], unicode)
         ):
             item_args['location_id'] = term_to_index[item_args['location_id']]
-        if item_args['manufacturer_id'] and isinstance(
-                item_args['manufacturer_id'],
-                unicode
+        if (
+                'manufacturer_id' in item_args and
+                item_args['manufacturer_id'] and
+                isinstance(item_args['manufacturer_id'], unicode)
         ):
             item_args['manufacturer_id'] = term_to_index[
                 item_args['manufacturer_id']
             ]
-        if item_args['supplier_id'] and isinstance(
-                item_args['supplier_id'],
-                unicode
+        if (
+                'supplier_id' in item_args and
+                item_args['supplier_id'] and
+                isinstance(item_args['supplier_id'], unicode)
         ):
             item_args['supplier_id'] = term_to_index[
                 item_args['supplier_id']
