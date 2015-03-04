@@ -66,7 +66,7 @@ class AutocompleteInput(forms.Widget):
 
         try:
             data_source = self.attrs['data-set']
-            value_label = data_source.get(pk=value).get_name_display()
+            value_label = data_source.get(pk=value).name
         except:
             value_label = ''
 

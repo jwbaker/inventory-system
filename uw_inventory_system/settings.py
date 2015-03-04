@@ -78,6 +78,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 # We want messages to be per-user, so store them in SessionStorage
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
+SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
+
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 

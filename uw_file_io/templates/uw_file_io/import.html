@@ -1,0 +1,42 @@
+{% extends 'uw_inventory_system/base.html' %}
+
+{% block messages %}
+  {% if error %}
+    <div class="alert alert-danger alert-dismissible" data-dismiss="alert" role="alert">
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  {{ error }}
+</div>
+  {% endif %}
+{% endblock messages %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-xs-4 col-xs-offset-4">
+      <form action="{% url 'uw_file_io.views.file_import' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+          <div class="form-group">
+            {{ form.file_up.label }}
+            {{ form.file_up }}
+            {{ form.file_up.errors }}
+          </div>
+          <div class="form-group">
+            {{ form.model.label }}
+            {{ form.model }}
+          </div>
+        <button type="submit" class="btn btn-primary"><i class="fa-upload"></i> Import</button>
+        <i class="fa-spin fa-spinner fa-2x hidden"></i>
+      </form>
+    </div>
+  </div>
+{% endblock content %}
+
+{% block js_includes %}
+  {{ block.super }}
+  
+  <script type="text/javascript">
+    $('button[type="submit"]').click(function(){
+      $(this).siblings('i.fa-spin').removeClass('hidden');
+      $(this).addClass('disabled');
+    });
+  </script>
+{% endblock js_includes %}

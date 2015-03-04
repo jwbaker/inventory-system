@@ -1,0 +1,166 @@
+{% extends 'uw_inventory_system/base.html' %}
+{% load staticfiles %}
+{% load uw_utility_tags %}
+
+{% block css_includes %}
+  <style type="text/css">
+    ol {
+      padding-left: 0;
+    }
+  </style>
+{% endblock css_includes %}
+
+{% block content %}
+  <div class="row">
+    <div>
+      <p>It looks like you're trying to create new terms for one or more autocomplete fields. To reduce unneeded duplicates, please verify that none of the new terms already exist.</p>
+      <p>If you find a term that should be merged, drag it onto the term it should be merged with. The top-most term only will be saved.</p>
+    </div>
+
+    <div class="tab-content">
+      <div role="tabpanel">
+        <ul class="nav nav-tabs" role="tablist">
+          {% for key in new_terms.keys %}
+            <li role="presentation" class="tab">
+              <a href="#{{ key }}" role="tab" data-toggle="tab">{{ key|capfirst }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+          {% for key, value in new_terms.items %}
+            <div role="tabpanel" class="tab-pane" id="{{ key }}">
+              <div class="row">
+                <div class="col-xs-3 col-xs-offset-3">
+                  <div class="panel panel-default">
+                    <div class="panel-heading">New Terms</div>
+                    <ol class="list-group term-list sortable" style="min-height:35px">
+                      {% for term in value %}
+                        <li class="list-group-item new-term">
+                          <div class="handle">{{ term }}</div>
+                        </li>
+                      {% endfor %}
+                    </ol>
+                  </div>
+                </div>
+
+                <div class="col-xs-3">
+                  <div class="panel panel-default">
+                    <div class="panel-heading">Existing Terms</div>
+                    <ol class="list-group term-list sortable" style="min-height:35px">
+                      {% for term in old_terms|get:key %}
+                        <li class="list-group-item old-term">
+                          <div class="handle">{{ term }}</div>
+                        </li>
+                      {% endfor %}
+                    </ol>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-6 col-xs-offset-3">
+      <button class="btn btn-success pull-right" id="continue">Continue import</button>
+      <button class="btn btn-danger pull-left" id="cancel">Cancel import</button>
+    </div>
+  </div>
+
+  <form action="{% url 'uw_file_io.views.add_terms' %}" method="POST" id="constructTermsForm" class="">
+    {% csrf_token %}
+    <input type="text" id="termHierarchy" name="termHierarchy" class="form-control" />
+  </form>
+{% endblock content %}
+
+{% block modal %}
+  <div class="modal fade" id="confirmCancelModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Are you sure?</h4>
+        </div>
+        <div class="modal-body">
+          <p>All changes will be lost.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+          <button type="button" class="btn btn-primary" id="confirmCancel">Yes</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+{% endblock modal %}
+
+{% block js_includes %}
+  <script src="//code.jquery.com/ui/1.11.3/jquery-ui.js"></script>
+  <script src="{% static 'uw_file_io/jquery.mjs.nestedSortable.js' %}"></script>
+
+  <script type="text/javascript">
+    $('.tab:first, .tab-pane:first').addClass('active');
+  </script>
+
+  <script type="text/javascript">
+    var nestedSortable = $('.sortable').nestedSortable({
+      handle: 'div',
+      items: 'li',
+      toleranceElement: '> div',
+      maxLevels: 2,
+      tabSize: 2,
+      connectWith: '.sortable',
+    });
+
+    $('#cancel').click(function(){
+      $('#confirmCancelModal').modal('show');
+    });
+    $('#confirmCancel').click(function(){
+      window.location = "{% url 'uw_file_io.views.file_import' %}"
+    });
+
+    var flatten = function(label){
+      var retObject = []
+
+      $('#' + label + ' li').each(function(index, element){
+        var elem = $(element);
+        var temp = {
+          'name': elem.children('div.handle').text(),
+          'kind': label,
+        }
+
+        var isChild = (elem.parents('ol').length == 2);
+
+        if(isChild){
+          temp['action'] = 'rename';
+          temp['replace'] = elem.closest('ol').siblings('div.handle').text();
+          temp['type'] = (elem.is('.old-term') ? 'old' : 'new') + '->' + 
+                          (elem.closest('ol').parent().is('.old-term') ? 'old' : 'new');
+        } else if(elem.is('.old-term')){
+          temp['action'] = 'skip';
+        } else{
+          temp['action'] = 'create';
+        }
+
+        retObject.push(temp);
+      });
+
+      return retObject;
+    }
+
+    $('#continue').click(function(){
+      termList = [];
+      $('.sortable').closest('[role="tabpanel"]').each(function(index, element){
+        var label = $(element).attr('id');
+        termList = termList.concat(flatten(label));
+      });
+      $('#termHierarchy').val(JSON.stringify(termList));
+
+      $('#constructTermsForm').submit();
+    });
+  </script>
+{% endblock js_includes %}
