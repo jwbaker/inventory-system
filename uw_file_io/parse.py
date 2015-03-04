@@ -1,3 +1,5 @@
+import re
+
 import pyexcel
 import pyexcel.ext.xlsx
 
@@ -78,6 +80,15 @@ def parse_file(file_up):
                     manufacturer.id or manufacturer.name
                 )
 
+                supplier = __get_autocomplete_term_or_create(
+                    row['Supplier'],
+                    'supplier',
+                    new_terms,
+                )
+                kwargs['supplier_id'] = (
+                    supplier.id or supplier.name
+                )
+
                 # Now for the flat fields
                 for (col, val) in row.iteritems():
                     if col in [
@@ -85,11 +96,17 @@ def parse_file(file_up):
                         'ID',
                         'Location',
                         'Manufacturer',
+                        'Supplier',
                         'Technician',
+                        'Status',
                         'Owner',
                         'SOP',
                         'Picture',
                         'Lifting_Device_Inspected_By',
+                        'Manufacture_Date',
+                        'Purchase_Date',
+                        'Replacement_Cost_Date',
+                        'CSA_Special_Date',
                     ]:
                         continue
                     elif col in [
@@ -97,19 +114,45 @@ def parse_file(file_up):
                         'Factory_CSA',
                         'CSA_Special',
                         'Modified_Since_CSA',
+                        'Undergraduate',
                     ]:
                         kwargs[col.lower()] = (
                             True if val == 'yes' else False
                         )
+                    elif col in [
+                        'Purchase_Price',
+                        'Replacement_Cost',
+                        'CSA_Cost',
+                    ]:
+                        currencyRE = re.match(r'^\$(\d+)\.\d{2}$', val)
+                        if currencyRE:
+                            kwargs[col.lower()] = int(currencyRE.group(1))
+                        else:
+                            kwargs[col.lower()] = 0
                     elif col == 'Apparatus':
                         kwargs['name'] = val or None
                     elif col == 'Model':
                         kwargs['model_number'] = val or None
+                    elif col == 'Tech_ID':
+                        kwargs['tech_id'] = val or None
+                    elif col == 'Serial':
+                        kwargs['serial_number'] = val or None
+                    elif col == 'Model':
+                        kwargs['model_number'] = val or None
+                    elif col == 'Notes':
+                        kwargs['notes'] = val or None
+                    elif col == 'Description':
+                        kwargs['description'] = val or None
 
                 item = InventoryItem(**kwargs)
                 try:
                     item.full_clean(
-                        exclude=['uuid', 'location', 'manufacturer']
+                        exclude=[
+                            'uuid',
+                            'location',
+                            'manufacturer',
+                            'supplier'
+                        ]
                     )
                 except ValidationError as e:
                     print e

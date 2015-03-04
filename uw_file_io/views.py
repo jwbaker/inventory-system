@@ -95,11 +95,24 @@ def __process_import(request, item_list, term_list):
     new_items = []
 
     for item_args in item_list:
-        if isinstance(item_args['location_id'], unicode):
+        if item_args['location_id'] and isinstance(
+                item_args['location_id'],
+                unicode
+        ):
             item_args['location_id'] = term_to_index[item_args['location_id']]
-        if isinstance(item_args['manufacturer_id'], unicode):
+        if item_args['manufacturer_id'] and isinstance(
+                item_args['manufacturer_id'],
+                unicode
+        ):
             item_args['manufacturer_id'] = term_to_index[
                 item_args['manufacturer_id']
+            ]
+        if item_args['supplier_id'] and isinstance(
+                item_args['supplier_id'],
+                unicode
+        ):
+            item_args['supplier_id'] = term_to_index[
+                item_args['supplier_id']
             ]
 
         item = InventoryItem(**item_args)
@@ -130,5 +143,9 @@ def add_terms(request):
                              AutocompleteData.objects.filter(
                                  kind='manufacturer'
                              )],
+            'supplier': [t.name for t in
+                         AutocompleteData.objects.filter(
+                             kind='supplier'
+                         )],
         }
     })
