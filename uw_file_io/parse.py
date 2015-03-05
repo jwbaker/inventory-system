@@ -34,12 +34,14 @@ IMPORT_FIELD_DATA = {
     },
     'Technician': {
         'type': 'user',
+        'field_name': 'technician_id',
     },
     'Status': {
         'type': 'skip',
     },
     'Owner': {
         'type': 'user',
+        'field_name': 'owner_id',
     },
     'SOP': {
         'type': 'skip',
@@ -310,14 +312,33 @@ def process_terms_transactions(term_list):
                 )
                 term_to_index[term['name']] = temp.id
                 term_to_index[term['replace']] = temp.id
-            elif term['type'] == 'old->new':
-                temp = AutocompleteData.objects.get(
-                    kind=term['kind'],
-                    name=term['name']
-                )
-                temp.name = term['replace']
-                temp.save()
-                term_to_index[term['replace']] = temp.id
-                term_to_index[term['name']] = temp.id
 
     return term_to_index
+
+
+def process_user_transactions(user_list):
+    user_to_index = {}
+
+    while len(user_list) > 0:
+        user = user_list.pop(0)
+
+        if user['action'] == 'skip':
+            continue
+        elif user['action'] == 'create':
+            temp = User(**user['data'])
+            temp.save()
+            user_to_index[user['name']] = temp.id
+        elif user['action'] == 'rename':
+            if user['type'] == 'new->new':
+                if user['replace'] in user_to_index:
+                    user_to_index[user['name']] = user_to_index[
+                        user['replace']
+                    ]
+                else:
+                    user_list.append(user)
+            elif user['type'] == 'new->old':
+                temp = User.objects.get(username=user['replace'])
+                user_to_index[user['name']] = temp.id
+                user_to_index[user['replace']] = temp.id
+
+    return user_to_index

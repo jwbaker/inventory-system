@@ -10,7 +10,11 @@ from django.views.decorators.csrf import csrf_protect
 from django_cas.decorators import permission_required
 
 from uw_file_io.forms import ImportForm
-from uw_file_io.parse import process_terms_transactions, parse_file
+from uw_file_io.parse import (
+    process_terms_transactions,
+    process_user_transactions,
+    parse_file
+)
 from uw_inventory.models import (
     AutocompleteData,
     InventoryItem,
@@ -126,7 +130,11 @@ def add_terms(request):
     })
 
 
+@csrf_protect
 def add_users(request):
+    if request.method == 'POST':
+        request.session['NewUsers'] = json.loads(request.POST['userHierarchy'])
+        return redirect('uw_file_io.views.finish_import')
     return render(request, 'uw_file_io/new_users.html', {
         'new_users': request.session['NewUsers'],
         'old_users': User.objects.all(),
@@ -136,11 +144,12 @@ def add_users(request):
 def finish_import(request):
     item_list = request.session['IntermediateItems']
     term_list = request.session['NewTerms']
-    # user_list = request.session['NewUsers']
+    user_list = request.session['NewUsers']
 
     term_to_index = process_terms_transactions(term_list)
+    user_to_index = process_user_transactions(user_list)
     new_items = []
-
+    print user_to_index
     for item_args in item_list:
         if (
                 'location_id' in item_args and
@@ -163,6 +172,23 @@ def finish_import(request):
         ):
             item_args['supplier_id'] = term_to_index[
                 item_args['supplier_id']
+            ]
+        if (
+                'technician_id' in item_args and
+                item_args['technician_id'] and
+                isinstance(item_args['technician_id'], unicode)
+        ):
+            item_args['technician_id'] = user_to_index[
+                item_args['technician_id']
+            ]
+        if (
+                'owner_id' in item_args and
+                item_args['owner_id'] and
+                isinstance(item_args['owner_id'], unicode)
+        ):
+            print item_args['owner_id']
+            item_args['owner_id'] = user_to_index[
+                item_args['owner_id']
             ]
 
         item = InventoryItem(**item_args)

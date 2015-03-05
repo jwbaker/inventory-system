@@ -44,7 +44,7 @@
       <div class="panel panel-default">
         <div class="panel-heading">Existing Users</div>
         <ol class="list-group user-list sortable" style="min-height:35px">
-          {% for user in old_users.items %}
+          {% for user in old_users %}
             <li class="list-group-item old-user">
               <div class="user-label">{{ user.username }}</div>
             </li>
@@ -116,26 +116,26 @@
       
       var isChild = (elem.parents('ol').length == 2);
 
+      retObject['name'] = elem.children('.user-label').text().trim();
+
       if(isChild){
         retObject['action'] = 'rename';
-        retObject['replace'] = elem.closest('ol').siblings('div.user-label').text();
+        retObject['replace'] = elem.closest('ol').siblings('div.user-label').text().trim();
         retObject['type'] = (elem.is('.old-user') ? 'old' : 'new') + '->' + 
                           (elem.closest('ol').parent().is('.old-user') ? 'old' : 'new');
       } else if(elem.is('.old-user')){
         retObject['action'] = 'skip';
       } else {
         retObject['action'] = 'create';
+
         retObject['data'] = {
           'username': elem.children('.user-detail').find('.username input').val(),
           'first_name': elem.children('.user-detail').find('.first_name input').val(),
           'last_name': elem.children('.user-detail').find('.last_name input').val(),
         }
 
-        if(!retObject['username']){
-          throw {
-            'type': 'Required',
-            'element': elem.attr('id'),
-          }
+        if(!retObject['data']['username']){
+          throw 'No username';
         }
       }
 
