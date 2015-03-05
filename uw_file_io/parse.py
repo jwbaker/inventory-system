@@ -10,6 +10,7 @@ from django.db.models import Q
 from uw_inventory.models import AutocompleteData, InventoryItem
 
 
+# Having this data structure makes some things later much easier
 IMPORT_FIELD_DATA = {
     'ID': {
         'type': 'skip',
@@ -131,6 +132,19 @@ IMPORT_FIELD_DATA = {
 
 
 def __get_autocomplete_term_or_create(name, kind, new_terms_list):
+    '''
+    Attempts to retrieve a record from the AutocompleteData model tables.
+
+    If it cannot find one, it will create a new dictionary with the relevant
+    data, and appends to the provided list
+
+    Positional arguments:
+        name -- A name to search for. The search will be case-insensitive, but
+                for an exact match only
+        kind -- The kind of AutocompleteData to search for
+        new_terms_list -- A list of terms that have been created this session.
+                            This is an "out" parameter, modified by the method
+    '''
     try:
         var = AutocompleteData.objects.get(
             name__iexact=name,
@@ -161,6 +175,20 @@ def __get_autocomplete_term_or_create(name, kind, new_terms_list):
 
 
 def __get_user_id_or_create(user_value, new_users):
+    '''
+    Attempts to retrieve a User record
+
+    If it cannot find one, it will create a new dictionary with the relevant
+    data, and appends to the provided list.
+
+    This is more complicated than searching for an Autocomplete term, so it
+    may generate a set of results.
+
+    Positional arguments:
+        user_value -- A name value to search for
+        new_users -- A list of users that have been created this session.
+                        This is an "out" parameter, modified by the method
+    '''
     matches = User.objects.filter(
         Q(username=user_value) |
         Q(first_name__icontains=user_value) |
@@ -178,6 +206,19 @@ def __get_user_id_or_create(user_value, new_users):
 
 
 def parse_file(file_up):
+    '''
+    Parses an extract file into an list of InventoryItems.
+
+    This method does basic validation on non-relational fields.
+
+    Positional arguments:
+        file_up -- The Django file object corresponding to the uploaded
+                    extract. Accepted file formats are .xls, .xlsx, and .csv
+
+    Returns:
+        A dictionary containing lists of the objects that must be created for
+        the upload. These lists will be processed by later functions
+    '''
     extension = file_up.name.split('.')[1]
     try:
         sheet = pyexcel.load_from_memory(
@@ -282,6 +323,32 @@ def parse_file(file_up):
 
 
 def process_terms_transactions(term_list, transactions):
+    '''
+    Creates Autocomplete terms according to a given list
+
+    Positional arguments:
+        term_list -- A list of term instructions to follow. The objects must
+                        have the following format:
+
+                        {
+                            'action': 'skip' | 'create' | 'rename',
+                            'kind': str,
+                            'name': name,
+                            'type': 'new->new' | 'new->old' (rename only),
+                            'replace': str (rename only),
+                        }
+
+                        A type of 'new->new' will associate an uncreated term
+                        with another uncreated term.
+
+                        A type of 'new->old' will associate an uncreated term
+                        with an existing term.
+
+        transactions -- A list of database changes commited over this import.
+                        This list is updated in the method to include saved
+                        terms, and will later be used as a reference if
+                        the import fails and changes must be reverted
+    '''
     term_to_index = {}
 
     while len(term_list) > 0:
@@ -320,6 +387,36 @@ def process_terms_transactions(term_list, transactions):
 
 
 def process_user_transactions(user_list, transactions):
+    '''
+    Creates Users according to a given list
+
+    Positional arguments:
+        user_list -- A list of user instructions to follow. The objects must
+                        have the following format:
+
+                        {
+                            'action': 'skip' | 'create' | 'rename',
+                            'kind': str,
+                            'name': name,
+                            'type': 'new->new' | 'new->old' (rename only),
+                            'replace': str (rename only),
+                            'data' : {} (create only)
+                        }
+
+                        A type of 'new->new' will associate an uncreated user
+                        with another uncreated user.
+
+                        A type of 'new->old' will associate an uncreated user
+                        with an existing user.
+
+                        The data field contains all of the field data to be
+                        filled in with the new user.
+
+        transactions -- A list of database changes commited over this import.
+                        This list is updated in the method to include saved
+                        terms, and will later be used as a reference if
+                        the import fails and changes must be reverted
+    '''
     user_to_index = {}
 
     while len(user_list) > 0:
@@ -359,6 +456,19 @@ STRING_TO_MODEL = {
 
 
 def __tokenize_transaction(transaction):
+    '''
+    Converts a transaction string into a computer-readable dictionary
+
+    Positional arguments:
+        transaction -- A transaction string. This string is expected to have
+                        the following form:
+
+                        {command} {model} with {argname}={argvalue}...
+
+                        {command} can currently only be 'Create'
+
+                        {model} is defined by the constant STRING_TO_MODEL
+    '''
     retObject = {}
 
     retObject['command'] = transaction.split(None, 1)[0]
@@ -376,6 +486,13 @@ def __tokenize_transaction(transaction):
 
 
 def reverse_transactions(transactions_list):
+    '''
+    Processes a list of database transactions and undoes them
+
+    Positional arguments:
+        transactions_list -- A list of transaction strings. See the docblock
+                                for __tokenize_transaction for more details
+    '''
     for transaction in transactions_list:
         tokens = __tokenize_transaction(transaction)
 

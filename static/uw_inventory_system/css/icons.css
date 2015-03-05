@@ -1,3 +1,11 @@
+/*
+ * Defines icon styles for entire project
+ */
+
+/* 
+ * We're emulating the default FontAwesome styling here,
+ * so that we don't need to include class="fa" on all icons
+ */
 i {
   display: inline-block;
   font: normal normal normal 14px/1 FontAwesome;

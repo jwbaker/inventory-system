@@ -57,6 +57,7 @@
           <th class="column-hidden">Lifting Device?</th>
           <th class="column-hidden">Lifting Device Inspection Date</th>
           <th class="column-hidden">Comments</th>
+          <th class="column-hidden">Notes</th>
         </tr>
         <tr id="column-filters" class="hidden">
           <th><i class="fa-2x checkbox-3"></i></th>
@@ -123,6 +124,7 @@
               <td>{{ item.lifting_device }}</td>
               <td>{{ item.lifting_device_inspection_date }}</td>
               <td>{{ item.get_comments_as_string }}</td>
+              <td>{{ item.notes }}</td>
             </tr>
           {% endif %}
         {% endfor %}
