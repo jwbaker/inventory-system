@@ -281,7 +281,7 @@ def parse_file(file_up):
         return response
 
 
-def process_terms_transactions(term_list):
+def process_terms_transactions(term_list, transactions):
     term_to_index = {}
 
     while len(term_list) > 0:
@@ -297,6 +297,9 @@ def process_terms_transactions(term_list):
             temp.save()
 
             term_to_index[term['name']] = temp.id
+            transactions.append(
+                'Create AutocompleteData with id={0}'.format(temp.id)
+            )
         elif term['action'] == 'rename':
             if term['type'] == 'new->new':  # Assoc new with new
                 if term['replace'] in term_to_index:
@@ -316,7 +319,7 @@ def process_terms_transactions(term_list):
     return term_to_index
 
 
-def process_user_transactions(user_list):
+def process_user_transactions(user_list, transactions):
     user_to_index = {}
 
     while len(user_list) > 0:
@@ -328,6 +331,10 @@ def process_user_transactions(user_list):
             temp = User(**user['data'])
             temp.save()
             user_to_index[user['name']] = temp.id
+
+            transactions.append(
+                'Create User with id={0}'.format(temp.id)
+            )
         elif user['action'] == 'rename':
             if user['type'] == 'new->new':
                 if user['replace'] in user_to_index:
@@ -342,3 +349,37 @@ def process_user_transactions(user_list):
                 user_to_index[user['replace']] = temp.id
 
     return user_to_index
+
+
+STRING_TO_MODEL = {
+    'AutocompleteData': AutocompleteData,
+    'InventoryItem': InventoryItem,
+    'User': User,
+}
+
+
+def __tokenize_transaction(transaction):
+    retObject = {}
+
+    retObject['command'] = transaction.split(None, 1)[0]
+    retObject['model'] = transaction.split(None, 2)[1]
+    retObject['args'] = {}
+
+    for token in transaction.split(None, 2)[2].split():
+        if token == 'with':
+            continue
+        else:
+            args = token.split('=')
+            retObject['args'][args[0]] = args[1]
+
+    return retObject
+
+
+def reverse_transactions(transactions_list):
+    for transaction in transactions_list:
+        tokens = __tokenize_transaction(transaction)
+
+        if tokens['command'] == 'Create':
+            Model = STRING_TO_MODEL[tokens['model']]
+            item = Model.objects.get(**tokens['args'])
+            item.delete()

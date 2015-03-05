@@ -3,6 +3,7 @@ import os
 
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_protect
@@ -13,7 +14,8 @@ from uw_file_io.forms import ImportForm
 from uw_file_io.parse import (
     process_terms_transactions,
     process_user_transactions,
-    parse_file
+    parse_file,
+    reverse_transactions
 )
 from uw_inventory.models import (
     AutocompleteData,
@@ -145,11 +147,12 @@ def finish_import(request):
     item_list = request.session['IntermediateItems']
     term_list = request.session['NewTerms']
     user_list = request.session['NewUsers']
+    transactions = []
 
-    term_to_index = process_terms_transactions(term_list)
-    user_to_index = process_user_transactions(user_list)
+    term_to_index = process_terms_transactions(term_list, transactions)
+    user_to_index = process_user_transactions(user_list, transactions)
     new_items = []
-    print user_to_index
+
     for item_args in item_list:
         if (
                 'location_id' in item_args and
@@ -192,8 +195,20 @@ def finish_import(request):
             ]
 
         item = InventoryItem(**item_args)
-        item.save()
-        new_items.append(item)
+        try:
+            item.save()
+        except ValidationError:
+            messages.error(
+                request,
+                'There was a problem with your file.'
+            )
+            reverse_transactions(transactions)
+            return redirect('uw_file_io.views.file_import')
+        else:
+            transactions.append(
+                'Create InventoryItem with id={0}'.format(item.id)
+            )
+            new_items.append(item)
 
     del request.session['IntermediateItems']
     del request.session['NewTerms']
