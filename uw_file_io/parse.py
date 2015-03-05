@@ -3,7 +3,9 @@ import re
 import pyexcel
 import pyexcel.ext.xlsx
 
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 
 from uw_inventory.models import AutocompleteData, InventoryItem
 
@@ -31,13 +33,13 @@ IMPORT_FIELD_DATA = {
         'field_name': 'supplier_id',
     },
     'Technician': {
-        'type': 'skip',
+        'type': 'user',
     },
     'Status': {
         'type': 'skip',
     },
     'Owner': {
-        'type': 'skip',
+        'type': 'user',
     },
     'SOP': {
         'type': 'skip',
@@ -156,6 +158,23 @@ def __get_autocomplete_term_or_create(name, kind, new_terms_list):
     return var
 
 
+def __get_user_id_or_create(user_value, new_users):
+    matches = User.objects.filter(
+        Q(username=user_value) |
+        Q(first_name__icontains=user_value) |
+        Q(last_name__icontains=user_value)
+    )
+
+    if len(matches) == 0:
+        new_users[user_value] = None
+    elif len(matches) == 1:
+        return matches[0].id
+    else:
+        new_users[user_value] = matches
+
+    return user_value
+
+
 def parse_file(file_up):
     extension = file_up.name.split('.')[1]
     try:
@@ -172,80 +191,90 @@ def parse_file(file_up):
             'destination': 'uw_file_io.views.file_import',
         }
 
-    else:
-        data = sheet.to_records()
-        new_terms = {}
-        new_items = []
-        for row in data:
-            if row['ID']:
-                kwargs = {}
+    data = sheet.to_records()
+    new_terms = {}
+    new_users = {}
+    new_items = []
+    for row in data:
+        if row['ID']:
+            kwargs = {}
 
-                for (col, val) in row.iteritems():
-                    try:
-                        field_meta = IMPORT_FIELD_DATA[col]
-                        if field_meta['type'] == 'skip':
-                            continue
-                        elif field_meta['type'] == 'autocomplete':
-                            if val:
-                                temp = __get_autocomplete_term_or_create(
-                                    val,
-                                    field_meta['autocomplete_kind'],
-                                    new_terms
-                                )
-                                store_value = temp.id or temp.name
-                        elif field_meta['type'] == 'boolean':
-                            store_value = (
-                                True if val == 'yes' else False
-                            )
-                        elif field_meta['type'] == 'date':
-                            if val:
-                                date_components = val.split('-')
-                                assembled_date = '{0}-{1}-{2}'.format(
-                                    date_components[2],
-                                    date_components[1],
-                                    date_components[0]
-                                )
-                                store_value = assembled_date
-                            else:
-                                store_value = None
-                        elif field_meta['type'] == 'currency':
-                            currencyRE = re.match(r'^\$(\d+)\.\d{2}$', val)
-                            if currencyRE:
-                                store_value = int(currencyRE.group(1))
-                            else:
-                                store_value = 0
-                        elif field_meta['type'] == 'rename':
-                            store_value = val or None
-
-                        kwargs[field_meta['field_name']] = store_value
-                    except KeyError:
-                        pass
-
-                item = InventoryItem(**kwargs)
+            for (col, val) in row.iteritems():
                 try:
-                    item.full_clean(
-                        exclude=[
-                            'uuid',
-                            'location',
-                            'manufacturer',
-                            'supplier'
-                        ]
-                    )
-                except ValidationError as e:
-                    print e
-                    # Back out of all changes so far
-                    return {
-                        'status': False,
-                        'message': '''Failed to insert row {0}. Please look at your file
-                                    and try again.'''.format(row['ID']),
-                    }
-                else:
-                    new_items.append(kwargs)
+                    field_meta = IMPORT_FIELD_DATA[col]
+                    if field_meta['type'] == 'skip':
+                        continue
+                    elif field_meta['type'] == 'user':
+                        if val:
+                            temp = __get_user_id_or_create(
+                                val,
+                                new_users
+                            )
+                            store_value = temp or val
+                    elif field_meta['type'] == 'autocomplete':
+                        if val:
+                            temp = __get_autocomplete_term_or_create(
+                                val,
+                                field_meta['autocomplete_kind'],
+                                new_terms
+                            )
+                            store_value = temp.id or temp.name
+                    elif field_meta['type'] == 'boolean':
+                        store_value = (
+                            True if val == 'yes' else False
+                        )
+                    elif field_meta['type'] == 'date':
+                        if val:
+                            date_components = val.split('-')
+                            assembled_date = '{0}-{1}-{2}'.format(
+                                date_components[2],
+                                date_components[1],
+                                date_components[0]
+                            )
+                            store_value = assembled_date
+                        else:
+                            store_value = None
+                    elif field_meta['type'] == 'currency':
+                        currencyRE = re.match(r'^\$(\d+)\.\d{2}$', val)
+                        if currencyRE:
+                            store_value = int(currencyRE.group(1))
+                        else:
+                            store_value = 0
+                    elif field_meta['type'] == 'rename':
+                        store_value = val or None
+
+                    kwargs[field_meta['field_name']] = store_value
+                except KeyError:
+                    pass
+
+            item = InventoryItem(**kwargs)
+            try:
+                item.full_clean(
+                    exclude=[
+                        'uuid',
+                        'location',
+                        'manufacturer',
+                        'supplier',
+                        'owner',
+                        'technician',
+                    ]
+                )
+            except ValidationError as e:
+                print e
+                # Back out of all changes so far
+                return {
+                    'status': False,
+                    'message': '''Failed to insert row {0}. Please look at your file
+                                and try again.'''.format(row['ID']),
+                }
+            else:
+                new_items.append(kwargs)
         response = {
             'status': True,
             'message': 'Import successful',
             'new_items': new_items,
             'new_terms': new_terms,
+            'new_users': new_users,
         }
         return response
 

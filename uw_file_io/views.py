@@ -2,6 +2,7 @@ import json
 import os
 
 from django.contrib import messages
+from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_protect
@@ -80,9 +81,12 @@ def file_import(request):
         else:
             request.session['IntermediateItems'] = parse_response['new_items']
             request.session['NewTerms'] = parse_response['new_terms']
+            request.session['NewUsers'] = parse_response['new_users']
 
-        if 'NewTerms' in request.session:
+        if 'NewTerms' in request.session and request.session['NewTerms']:
             destination = 'uw_file_io.views.add_terms'
+        elif 'NewUsers' in request.session and request.session['NewUsers']:
+            return redirect('uw_file_io.views.add_users')
         else:
             destination = 'uw_file_io.views.finish_import'
 
@@ -100,7 +104,10 @@ def add_terms(request):
     if request.method == 'POST':
         request.session['NewTerms'] = json.loads(request.POST['termHierarchy'])
 
-        return redirect('uw_file_io.views.finish_import')
+        if 'NewUsers' in request.session and request.session['NewUsers']:
+            return redirect('uw_file_io.views.add_users')
+        else:
+            return redirect('uw_file_io.views.finish_import')
 
     return render(request, 'uw_file_io/new_terms.html', {
         'new_terms': request.session['NewTerms'],
@@ -119,9 +126,17 @@ def add_terms(request):
     })
 
 
+def add_users(request):
+    return render(request, 'uw_file_io/new_users.html', {
+        'new_users': request.session['NewUsers'],
+        'old_users': User.objects.all(),
+    })
+
+
 def finish_import(request):
     item_list = request.session['IntermediateItems']
     term_list = request.session['NewTerms']
+    # user_list = request.session['NewUsers']
 
     term_to_index = process_terms_transactions(term_list)
     new_items = []
@@ -156,6 +171,7 @@ def finish_import(request):
 
     del request.session['IntermediateItems']
     del request.session['NewTerms']
+    del request.session['NewUsers']
 
     return render(request, 'uw_file_io/import_done.html', {
         'item_list': new_items,

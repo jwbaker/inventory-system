@@ -1,5 +1,175 @@
 {% extends 'uw_inventory_system/base.html' %}
+{% load staticfiles %}
+
+{% block messages %}
+  <div class="alert alert-danger hidden" id="error-message" role="alert">
+    You have not completed all required fields on this page. Please check below for errors.
+  </div>
+{% endblock messages %}
 
 {% block content %}
-    
+  <div class="row">
+    <div class="col-xs-3 col-xs-offset-3">
+      <div class="panel panel-default">
+        <div class="panel-heading">New Users</div>
+        <ol class="list-group user-list sortable" style="min-height:35px">
+          {% for key, value in new_users.items %}
+            <li class="list-group-item new-user" id="{{ forloop.counter }}">
+              <div class="user-label">
+                {{ key }}
+                <i class="fa fa-exclamation-triangle text-danger hidden warning"></i>
+                <i class="menu-down pull-right" data-toggle="collapse" data-target="#{{ forloop.counter }}-detail"></i>
+              </div>
+              <div class="user-detail collapse" id="{{ forloop.counter }}-detail">
+                <div class="form-group username">
+                  <label for="{{ forloop.counter }}-username">Username</label>
+                  <input type="text" class="form-control" id="{{ forloop.counter }}-username">
+                </div>
+                <div class="form-group first-name">
+                  <label for="{{ forloop.counter }}-first-name">First Name</label>
+                  <input type="text" class="form-control" id="{{ forloop.counter }}-first-name">
+                </div>
+                <div class="form-group last-name">
+                  <label for="{{ forloop.counter }}-last-name">Last Name</label>
+                  <input type="text" class="form-control" id="{{ forloop.counter }}-last-name">
+                </div>
+              </div>
+            </li>
+          {% endfor %}
+        </ol>
+      </div>
+    </div>
+
+    <div class="col-xs-3">
+      <div class="panel panel-default">
+        <div class="panel-heading">Existing Users</div>
+        <ol class="list-group user-list sortable" style="min-height:35px">
+          {% for user in old_users.items %}
+            <li class="list-group-item old-user">
+              <div class="user-label">{{ user.username }}</div>
+            </li>
+          {% endfor %}
+        </ol>
+      </div>
+    </div>
+  </div>
+
+    <div class="row">
+    <div class="col-xs-6 col-xs-offset-3">
+      <button class="btn btn-success pull-right" id="continue">Continue import</button>
+      <button class="btn btn-danger pull-left" id="cancel">Cancel import</button>
+    </div>
+    <i class="fa fa-spinner spinner fa-spin fa-2x hidden"></i>
+  </div>
+
+  <form action="{% url 'uw_file_io.views.add_users' %}" method="POST" id="constructUsersForm" class="hidden">
+    {% csrf_token %}
+    <input type="text" id="userHierarchy" name="userHierarchy" class="form-control" />
+  </form>
 {% endblock content %}
+
+{% block modal %}
+  <div class="modal fade" id="confirmCancelModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Are you sure?</h4>
+        </div>
+        <div class="modal-body">
+          <p>All changes will be lost.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+          <button type="button" class="btn btn-primary" id="confirmCancel">Yes</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+{% endblock modal %}
+
+
+{% block js_includes %}
+  <script src="//code.jquery.com/ui/1.11.3/jquery-ui.js"></script>
+  <script src="{% static 'uw_file_io/jquery.mjs.nestedSortable.js' %}"></script>
+
+  <script type="text/javascript">
+    var nestedSortable = $('.sortable').nestedSortable({
+      handle: 'div.user-label',
+      items: 'li',
+      toleranceElement: '> div',
+      maxLevels: 2,
+      tabSize: 2,
+      connectWith: '.sortable',
+    });
+
+    $('#cancel').click(function(){
+      $('#confirmCancelModal').modal('show');
+    });
+    $('#confirmCancel').click(function(){
+      window.location = "{% url 'uw_file_io.views.file_import' %}"
+    });
+
+    var flatten = function(list_item){
+      var elem = $(list_item);
+      var retObject = {};
+      
+      var isChild = (elem.parents('ol').length == 2);
+
+      if(isChild){
+        retObject['action'] = 'rename';
+        retObject['replace'] = elem.closest('ol').siblings('div.user-label').text();
+        retObject['type'] = (elem.is('.old-user') ? 'old' : 'new') + '->' + 
+                          (elem.closest('ol').parent().is('.old-user') ? 'old' : 'new');
+      } else if(elem.is('.old-user')){
+        retObject['action'] = 'skip';
+      } else {
+        retObject['action'] = 'create';
+        retObject['data'] = {
+          'username': elem.children('.user-detail').find('.username input').val(),
+          'first_name': elem.children('.user-detail').find('.first_name input').val(),
+          'last_name': elem.children('.user-detail').find('.last_name input').val(),
+        }
+
+        if(!retObject['username']){
+          throw {
+            'type': 'Required',
+            'element': elem.attr('id'),
+          }
+        }
+      }
+
+      return retObject;
+    }
+
+    $('#continue').click(function(){
+      $('.btn').addClass('disabled');
+      $('.spinner').removeClass('hidden');
+      $('.username').removeClass('has-error');
+      $('.warning').addClass('hidden');
+      $('#error-message').addClass('hidden');
+      var userList = [];
+      var errorsCount = 0;
+
+      $('.sortable li').each(function(index, element){
+        try{
+          userList.push(flatten(element));
+        } catch(e){
+          $(element).find('.user-detail .username').addClass('has-error');
+          $(element).children('.user-label').find('.warning').removeClass('hidden');
+          $('#error-message').removeClass('hidden');
+          errorsCount++;
+        }
+      });
+
+      if(!errorsCount){
+        $('#userHierarchy').val(JSON.stringify(userList));
+
+        $('#constructUsersForm').submit();
+      } else {
+        $('.btn').removeClass('disabled');
+        $('.spinner').addClass('hidden');
+      }
+    });
+  </script>
+{% endblock js_includes %}
