@@ -143,7 +143,7 @@
                           (elem.closest('ol').parent().is('.old-term') ? 'old' : 'new');
         } else if(elem.is('.old-term')){
           temp['action'] = 'skip';
-        } else{
+        } else{ {# If the row is a new term and not a child, then we need to create a new record #}
           temp['action'] = 'create';
         }
 
@@ -157,6 +157,8 @@
       $('.btn').addClass('disabled');
       $('.spinner').removeClass('hidden');
       termList = [];
+      {# We're going to iterate through each 'kind' of available AutocompleteData term, #}
+      {# and create separate lists. Keeps things easier later #}
       $('.sortable').closest('[role="tabpanel"]').each(function(index, element){
         var label = $(element).attr('id');
         termList = termList.concat(flatten(label));

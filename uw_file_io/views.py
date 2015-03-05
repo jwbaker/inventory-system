@@ -154,45 +154,21 @@ def finish_import(request):
     new_items = []
 
     for item_args in item_list:
-        if (
-                'location_id' in item_args and
-                item_args['location_id'] and
-                isinstance(item_args['location_id'], unicode)
-        ):
-            item_args['location_id'] = term_to_index[item_args['location_id']]
-        if (
-                'manufacturer_id' in item_args and
-                item_args['manufacturer_id'] and
-                isinstance(item_args['manufacturer_id'], unicode)
-        ):
-            item_args['manufacturer_id'] = term_to_index[
-                item_args['manufacturer_id']
-            ]
-        if (
-                'supplier_id' in item_args and
-                item_args['supplier_id'] and
-                isinstance(item_args['supplier_id'], unicode)
-        ):
-            item_args['supplier_id'] = term_to_index[
-                item_args['supplier_id']
-            ]
-        if (
-                'technician_id' in item_args and
-                item_args['technician_id'] and
-                isinstance(item_args['technician_id'], unicode)
-        ):
-            item_args['technician_id'] = user_to_index[
-                item_args['technician_id']
-            ]
-        if (
-                'owner_id' in item_args and
-                item_args['owner_id'] and
-                isinstance(item_args['owner_id'], unicode)
-        ):
-            print item_args['owner_id']
-            item_args['owner_id'] = user_to_index[
-                item_args['owner_id']
-            ]
+        for field in ['location_id', 'manufacturer_id', 'supplier_id']:
+            if (
+                    field in item_args and
+                    item_args[field] and
+                    isinstance(item_args[field], unicode)
+            ):
+                item_args[field] = term_to_index[item_args[field]]
+
+        for field in ['technician_id', 'owner_id']:
+            if (
+                    field in item_args and
+                    item_args[field] and
+                    isinstance(item_args[field], unicode)
+            ):
+                item_args[field] = user_to_index[item_args[field]]
 
         item = InventoryItem(**item_args)
         try:
