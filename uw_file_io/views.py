@@ -2,6 +2,8 @@ import json
 import os
 
 from django.contrib import messages
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_protect
@@ -9,7 +11,12 @@ from django.views.decorators.csrf import csrf_protect
 from django_cas.decorators import permission_required
 
 from uw_file_io.forms import ImportForm
-from uw_file_io.parse import process_terms_transactions, parse_file
+from uw_file_io.parse import (
+    process_terms_transactions,
+    process_user_transactions,
+    parse_file,
+    reverse_transactions
+)
 from uw_inventory.models import (
     AutocompleteData,
     InventoryItem,
@@ -79,15 +86,17 @@ def file_import(request):
             )
         else:
             request.session['IntermediateItems'] = parse_response['new_items']
-            if parse_response['new_terms']:
-                request.session['NewTerms'] = parse_response['new_terms']
-            else:
-                return __process_import(
-                    request,
-                    parse_response['new_items'],
-                    []
-                )
-        return redirect(parse_response['destination'])
+            request.session['NewTerms'] = parse_response['new_terms']
+            request.session['NewUsers'] = parse_response['new_users']
+
+        if 'NewTerms' in request.session and request.session['NewTerms']:
+            destination = 'uw_file_io.views.add_terms'
+        elif 'NewUsers' in request.session and request.session['NewUsers']:
+            return redirect('uw_file_io.views.add_users')
+        else:
+            destination = 'uw_file_io.views.finish_import'
+
+        return redirect(destination)
 
     message_list = _collect_messages(request)
     return render(request, 'uw_file_io/import.html', {
@@ -96,8 +105,52 @@ def file_import(request):
     })
 
 
-def __process_import(request, item_list, term_list):
-    term_to_index = process_terms_transactions(term_list)
+@csrf_protect
+def add_terms(request):
+    if request.method == 'POST':
+        request.session['NewTerms'] = json.loads(request.POST['termHierarchy'])
+
+        if 'NewUsers' in request.session and request.session['NewUsers']:
+            return redirect('uw_file_io.views.add_users')
+        else:
+            return redirect('uw_file_io.views.finish_import')
+
+    return render(request, 'uw_file_io/new_terms.html', {
+        'new_terms': request.session['NewTerms'],
+        'old_terms': {
+            'location': [t.name for t in
+                         AutocompleteData.objects.filter(kind='location')],
+            'manufacturer': [t.name for t in
+                             AutocompleteData.objects.filter(
+                                 kind='manufacturer'
+                             )],
+            'supplier': [t.name for t in
+                         AutocompleteData.objects.filter(
+                             kind='supplier'
+                         )],
+        }
+    })
+
+
+@csrf_protect
+def add_users(request):
+    if request.method == 'POST':
+        request.session['NewUsers'] = json.loads(request.POST['userHierarchy'])
+        return redirect('uw_file_io.views.finish_import')
+    return render(request, 'uw_file_io/new_users.html', {
+        'new_users': request.session['NewUsers'],
+        'old_users': User.objects.all(),
+    })
+
+
+def finish_import(request):
+    item_list = request.session['IntermediateItems']
+    term_list = request.session['NewTerms']
+    user_list = request.session['NewUsers']
+    transactions = []
+
+    term_to_index = process_terms_transactions(term_list, transactions)
+    user_to_index = process_user_transactions(user_list, transactions)
     new_items = []
 
     for item_args in item_list:
@@ -123,40 +176,44 @@ def __process_import(request, item_list, term_list):
             item_args['supplier_id'] = term_to_index[
                 item_args['supplier_id']
             ]
+        if (
+                'technician_id' in item_args and
+                item_args['technician_id'] and
+                isinstance(item_args['technician_id'], unicode)
+        ):
+            item_args['technician_id'] = user_to_index[
+                item_args['technician_id']
+            ]
+        if (
+                'owner_id' in item_args and
+                item_args['owner_id'] and
+                isinstance(item_args['owner_id'], unicode)
+        ):
+            print item_args['owner_id']
+            item_args['owner_id'] = user_to_index[
+                item_args['owner_id']
+            ]
 
         item = InventoryItem(**item_args)
-        item.save()
-        new_items.append(item)
+        try:
+            item.save()
+        except ValidationError:
+            messages.error(
+                request,
+                'There was a problem with your file.'
+            )
+            reverse_transactions(transactions)
+            return redirect('uw_file_io.views.file_import')
+        else:
+            transactions.append(
+                'Create InventoryItem with id={0}'.format(item.id)
+            )
+            new_items.append(item)
 
-    if 'IntermediateItems' in request.session:
-        del request.session['IntermediateItems']
-    if 'NewTerms' in request.session:
-        del request.session['NewTerms']
+    del request.session['IntermediateItems']
+    del request.session['NewTerms']
+    del request.session['NewUsers']
 
     return render(request, 'uw_file_io/import_done.html', {
         'item_list': new_items,
-    })
-
-
-@csrf_protect
-def add_terms(request):
-    if request.method == 'POST':
-        item_list = request.session['IntermediateItems']
-        new_terms = json.loads(request.POST['termHierarchy'])
-
-        return __process_import(request, item_list, new_terms)
-    return render(request, 'uw_file_io/new_terms.html', {
-        'new_terms': request.session['NewTerms'],
-        'old_terms': {
-            'location': [t.name for t in
-                         AutocompleteData.objects.filter(kind='location')],
-            'manufacturer': [t.name for t in
-                             AutocompleteData.objects.filter(
-                                 kind='manufacturer'
-                             )],
-            'supplier': [t.name for t in
-                         AutocompleteData.objects.filter(
-                             kind='supplier'
-                         )],
-        }
     })
