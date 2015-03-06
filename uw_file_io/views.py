@@ -84,6 +84,8 @@ def file_import(request):
         request.session.pop('IntermediateItems', None)
         request.session.pop('NewTerms', None)
         request.session.pop('NewUsers', None)
+        request.session.pop('NewFiles', None)
+        request.session.pop('NewImages', None)
 
         try:
             parse_response = parse_file(request.FILES['file_up'])
@@ -99,6 +101,8 @@ def file_import(request):
             ]
             request.session['NewTerms'] = parse_response['new_terms']
             request.session['NewUsers'] = parse_response['new_users']
+            request.session['NewFiles'] = parse_response['new_files']
+            request.session['NewImages'] = parse_response['new_images']
 
             if request.session.get('NewTerms', False):
                 destination = 'uw_file_io.views.add_terms'
@@ -192,6 +196,8 @@ def finish_import(request):
     request.session.pop('IntermediateItems', None)
     request.session.pop('NewTerms', None)
     request.session.pop('NewUsers', None)
+    request.session.pop('NewFiles', None)
+    request.session.pop('NewImages', None)
 
     return render(request, 'uw_file_io/import_done.html', {
         'item_list': new_items,
