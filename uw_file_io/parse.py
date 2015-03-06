@@ -228,12 +228,10 @@ def parse_file(file_up):
             name_columns_by_row=0
         )
     except NotImplementedError:
-        return {
-            'status': False,
-            'message': '''Invalid file type {0}. Please upload one of: xls, xlsx, csv.
-            '''.format(extension),
-            'destination': 'uw_file_io.views.file_import',
-        }
+        raise ValidationError(
+            '''Invalid file type "{0}". Please upload one of: xls, xlsx, csv.
+            '''.format(extension)
+        )
 
     data = sheet.to_records()
     new_terms = {}
@@ -308,11 +306,10 @@ def parse_file(file_up):
             except ValidationError as e:
                 print e
                 # Back out of all changes so far
-                return {
-                    'status': False,
-                    'message': '''Failed to insert row {0}. Please look at your file
-                                and try again.'''.format(row['ID']),
-                }
+                raise ValidationError(
+                    '''Failed to insert row {0}. Please look at your file
+                                and try again.'''.format(row['ID'])
+                )
             else:
                 new_items.append(kwargs)
     response = {

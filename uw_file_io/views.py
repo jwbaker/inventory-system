@@ -15,7 +15,7 @@ from uw_file_io.parse import (
     process_terms_transactions,
     process_user_transactions,
     parse_file,
-    reverse_transactions
+    reverse_transactions,
 )
 from uw_inventory.models import (
     AutocompleteData,
@@ -85,27 +85,29 @@ def file_import(request):
         request.session.pop('NewTerms', None)
         request.session.pop('NewUsers', None)
 
-        parse_response = parse_file(request.FILES['file_up'])
-        if not parse_response['status']:
+        try:
+            parse_response = parse_file(request.FILES['file_up'])
+        except (TypeError, ValidationError) as e:
             messages.error(
                 request,
-                parse_response['message']
+                str(e[0])
             )
+            return redirect('uw_file_io.views.file_import')
         else:
-            request.session['IntermediateItems'] = parse_response['new_items']
+            request.session['IntermediateItems'] = parse_response[
+                'new_items'
+            ]
             request.session['NewTerms'] = parse_response['new_terms']
             request.session['NewUsers'] = parse_response['new_users']
 
-        if request.session.get('NewTerms', False):
-            destination = 'uw_file_io.views.add_terms'
-        elif request.session.get('NewUsers', False):
-            return redirect('uw_file_io.views.add_users')
-        elif parse_response['status']:
-            destination = 'uw_file_io.views.finish_import'
-        else:
-            destination = 'uw_file_io.views.file_import'
+            if request.session.get('NewTerms', False):
+                destination = 'uw_file_io.views.add_terms'
+            elif request.session.get('NewUsers', False):
+                return redirect('uw_file_io.views.add_users')
+            else:
+                destination = 'uw_file_io.views.finish_import'
 
-        return redirect(destination)
+            return redirect(destination)
 
     message_list = _collect_messages(request)
     return render(request, 'uw_file_io/import.html', {
