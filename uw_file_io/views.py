@@ -93,8 +93,10 @@ def file_import(request):
             destination = 'uw_file_io.views.add_terms'
         elif 'NewUsers' in request.session and request.session['NewUsers']:
             return redirect('uw_file_io.views.add_users')
-        else:
+        elif parse_response['status']:
             destination = 'uw_file_io.views.finish_import'
+        else:
+            destination = 'uw_file_io.views.file_import'
 
         return redirect(destination)
 
@@ -144,9 +146,9 @@ def add_users(request):
 
 
 def finish_import(request):
-    item_list = request.session['IntermediateItems']
-    term_list = request.session['NewTerms']
-    user_list = request.session['NewUsers']
+    item_list = request.session.get('IntermediateItems', [])
+    term_list = request.session.get('NewTerms', [])
+    user_list = request.session.get('NewUsers', [])
     transactions = []
 
     term_to_index = process_terms_transactions(term_list, transactions)

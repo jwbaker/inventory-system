@@ -285,9 +285,7 @@ def parse_file(file_up):
                         else:
                             store_value = 0
                     elif field_meta['type'] == 'choice':
-                        store_value = InventoryItem.get_status_key(
-                            field_meta['field_name']
-                        ) or None
+                        store_value = InventoryItem.get_status_key(val) or None
                     elif field_meta['type'] == 'rename':
                         store_value = val or None
 
