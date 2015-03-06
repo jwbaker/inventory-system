@@ -32,12 +32,6 @@ class ItemFile(models.Model):
             ('view_deleted_itemfile', 'Can view deleted item files'),
         )
 
-    MIMETYPES = {
-        'txt': 'text/plain',
-        'pdf': 'application/pdf',
-        'doc': 'application/msword',
-        'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-    }
     description = models.TextField(blank=True, null=True)
     file_field = models.FileField(upload_to='files/%Y/%m/%d/')
     inventory_item = models.ForeignKey(
@@ -66,8 +60,7 @@ class ItemFile(models.Model):
         return self.description or self.file_field.name
 
     def save(self, *args, **kwargs):
-        extension = re.search('.(\w+)$', self.file_field.name).group(1)
-        self.mimetype = ItemFile.MIMETYPES.get(extension, '')
+        self.mimetype = self.file_field.file.content_type
         super(ItemFile, self).save(*args, **kwargs)
 
     def __unicode__(self):
