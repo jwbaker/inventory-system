@@ -22,6 +22,9 @@ class AutocompleteData(models.Model):
     def __unicode__(self):
         return self.name
 
+    def get_name_display(self):
+        return self.name
+
 
 class ItemFile(models.Model):
     class Meta:
