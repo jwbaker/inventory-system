@@ -96,9 +96,9 @@ def file_import(request):
             request.session['NewTerms'] = parse_response['new_terms']
             request.session['NewUsers'] = parse_response['new_users']
 
-        if 'NewTerms' in request.session and request.session['NewTerms']:
+        if request.session.get('NewTerms', False):
             destination = 'uw_file_io.views.add_terms'
-        elif 'NewUsers' in request.session and request.session['NewUsers']:
+        elif request.session.get('NewUsers', False):
             return redirect('uw_file_io.views.add_users')
         elif parse_response['status']:
             destination = 'uw_file_io.views.finish_import'
@@ -119,7 +119,7 @@ def add_terms(request):
     if request.method == 'POST':
         request.session['NewTerms'] = json.loads(request.POST['termHierarchy'])
 
-        if 'NewUsers' in request.session and request.session['NewUsers']:
+        if request.session.get('NewUsers', False):
             return redirect('uw_file_io.views.add_users')
         else:
             return redirect('uw_file_io.views.finish_import')
@@ -164,19 +164,11 @@ def finish_import(request):
 
     for item_args in item_list:
         for field in ['location_id', 'manufacturer_id', 'supplier_id']:
-            if (
-                    field in item_args and
-                    item_args[field] and
-                    isinstance(item_args[field], unicode)
-            ):
+            if (isinstance(item_args.get(field, None), unicode)):
                 item_args[field] = term_to_index[item_args[field]]
 
         for field in ['technician_id', 'owner_id']:
-            if (
-                    field in item_args and
-                    item_args[field] and
-                    isinstance(item_args[field], unicode)
-            ):
+            if (isinstance(item_args.get(field, None), unicode)):
                 item_args[field] = user_to_index[item_args[field]]
 
         item = InventoryItem(**item_args)
