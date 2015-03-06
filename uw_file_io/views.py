@@ -16,6 +16,7 @@ from uw_file_io.parse import (
     process_user_transactions,
     parse_file,
     reverse_transactions,
+    unpack_files,
 )
 from uw_inventory.models import (
     AutocompleteData,
@@ -86,7 +87,8 @@ def file_import(request):
         request.session.pop('NewUsers', None)
 
         try:
-            parse_response = parse_file(request.FILES['file_up'])
+            files = unpack_files(request.FILES['file_up'])
+            parse_response = parse_file(files['extract'])
         except (TypeError, ValidationError) as e:
             messages.error(
                 request,

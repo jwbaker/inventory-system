@@ -131,6 +131,18 @@ IMPORT_FIELD_DATA = {
     },
 }
 
+ALLOWABLE_MIMETYPES = {
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': {
+        'type': 'extract',
+    },
+    'application/vnd.ms-excel': {
+        'type': 'extract',
+    },
+    'text/csv': {
+        'type': 'extract',
+    },
+}
+
 
 def __get_autocomplete_term_or_create(name, kind, new_terms_list):
     '''
@@ -204,6 +216,23 @@ def __get_user_id_or_create(user_value, new_users):
         new_users[user_value] = matches
 
     return user_value
+
+
+def unpack_files(file_up):
+    try:
+        file_kind = ALLOWABLE_MIMETYPES[file_up.content_type]
+    except KeyError:
+        extension = re.search('.(\w+)$', file_up.name)
+        extension = extension.group(1) if extension else 'N/A'
+        raise TypeError(
+            '''File type "{0}" not allowed. Please upload one of:
+            xls, xlsx, csv'''.format(extension)
+        )
+    else:
+        if file_kind['type'] == 'extract':
+            return {'extract': file_up}
+        else:
+            raise NotImplementedError
 
 
 def parse_file(file_up):
