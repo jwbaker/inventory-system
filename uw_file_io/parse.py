@@ -38,7 +38,8 @@ IMPORT_FIELD_DATA = {
         'field_name': 'technician_id',
     },
     'Status': {
-        'type': 'skip',
+        'type': 'choice',
+        'field_name': 'status',
     },
     'Owner': {
         'type': 'user',
@@ -283,6 +284,10 @@ def parse_file(file_up):
                             store_value = int(currencyRE.group(1))
                         else:
                             store_value = 0
+                    elif field_meta['type'] == 'choice':
+                        store_value = InventoryItem.get_status_key(
+                            field_meta['field_name']
+                        ) or None
                     elif field_meta['type'] == 'rename':
                         store_value = val or None
 

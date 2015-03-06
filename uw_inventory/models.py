@@ -109,14 +109,26 @@ class InventoryItem(models.Model):
 
         Positional arguments:
             status_key -- The value of a status field.
-                            One of: '', STATUS_OTHER, STATUS_SURPLUS,
-                            STATUS_STORAGE, or STATUS_STAY
+                            One of: '', SA, SO, SU, LO, DI
         '''
         if status_key:
             return [v[1] for i, v in enumerate(InventoryItem.STATUS_CHOICES)
                     if v[0] == status_key][0]
         # We return '' rather than None because the combination of Django and
         # JavaScript used in the detail page renders None as 'None' (a string)
+        return ''
+
+    @staticmethod
+    def get_status_key(status):
+        '''
+        Looks up the key of a given status text
+
+        Positional arguments:
+            status -- The display text of a status field
+        '''
+        if status:
+            return [v[0] for v in InventoryItem.STATUS_CHOICES
+                    if v[1] == status][0]
         return ''
 
     def get_comments_as_string(self):
