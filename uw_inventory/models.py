@@ -22,6 +22,9 @@ class AutocompleteData(models.Model):
     def __unicode__(self):
         return self.name
 
+    def get_name_display(self):
+        return self.name
+
 
 class ItemFile(models.Model):
     class Meta:
@@ -29,12 +32,6 @@ class ItemFile(models.Model):
             ('view_deleted_itemfile', 'Can view deleted item files'),
         )
 
-    MIMETYPES = {
-        'txt': 'text/plain',
-        'pdf': 'application/pdf',
-        'doc': 'application/msword',
-        'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-    }
     description = models.TextField(blank=True, null=True)
     file_field = models.FileField(upload_to='files/%Y/%m/%d/')
     inventory_item = models.ForeignKey(
@@ -63,8 +60,7 @@ class ItemFile(models.Model):
         return self.description or self.file_field.name
 
     def save(self, *args, **kwargs):
-        extension = re.search('.(\w+)$', self.file_field.name).group(1)
-        self.mimetype = ItemFile.MIMETYPES.get(extension, '')
+        self.mimetype = self.file_field.file.content_type
         super(ItemFile, self).save(*args, **kwargs)
 
     def __unicode__(self):
@@ -109,15 +105,30 @@ class InventoryItem(models.Model):
 
         Positional arguments:
             status_key -- The value of a status field.
-                            One of: '', STATUS_OTHER, STATUS_SURPLUS,
-                            STATUS_STORAGE, or STATUS_STAY
+                            One of: '', SA, SO, SU, LO, DI
         '''
-        if status_key:
-            return [v[1] for i, v in enumerate(InventoryItem.STATUS_CHOICES)
+        try:
+            return [v[1] for v in InventoryItem.STATUS_CHOICES
                     if v[0] == status_key][0]
-        # We return '' rather than None because the combination of Django and
-        # JavaScript used in the detail page renders None as 'None' (a string)
-        return ''
+        except IndexError:
+            # We return '' rather than None because the combination of Django
+            # and JavaScript used in the detail page renders None as 'None'
+            # (a string)
+            return ''
+
+    @staticmethod
+    def get_status_key(status):
+        '''
+        Looks up the key of a given status text
+
+        Positional arguments:
+            status -- The display text of a status field
+        '''
+        try:
+            return [v[0] for v in InventoryItem.STATUS_CHOICES
+                    if v[1].lower() == status.lower()][0]
+        except IndexError:
+            return ''
 
     def get_comments_as_string(self):
         '''

@@ -38,7 +38,8 @@ IMPORT_FIELD_DATA = {
         'field_name': 'technician_id',
     },
     'Status': {
-        'type': 'skip',
+        'type': 'choice',
+        'field_name': 'status',
     },
     'Owner': {
         'type': 'user',
@@ -283,6 +284,8 @@ def parse_file(file_up):
                             store_value = int(currencyRE.group(1))
                         else:
                             store_value = 0
+                    elif field_meta['type'] == 'choice':
+                        store_value = InventoryItem.get_status_key(val) or None
                     elif field_meta['type'] == 'rename':
                         store_value = val or None
 
@@ -312,14 +315,14 @@ def parse_file(file_up):
                 }
             else:
                 new_items.append(kwargs)
-        response = {
-            'status': True,
-            'message': 'Import successful',
-            'new_items': new_items,
-            'new_terms': new_terms,
-            'new_users': new_users,
-        }
-        return response
+    response = {
+        'status': True,
+        'message': 'Import successful',
+        'new_items': new_items,
+        'new_terms': new_terms,
+        'new_users': new_users,
+    }
+    return response
 
 
 def process_terms_transactions(term_list, transactions):
