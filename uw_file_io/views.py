@@ -78,6 +78,13 @@ def file_view(request, file_name):
 @permission_required('uw_inventory.add_inventoryitem')
 def file_import(request):
     if request.method == 'POST':
+        # Clear these session tokens on every file upload
+        # This will (hopefully) prevent unexpected behaviour if the user
+        # does some silliness
+        request.session.pop('IntermediateItems', None)
+        request.session.pop('NewTerms', None)
+        request.session.pop('NewUsers', None)
+
         parse_response = parse_file(request.FILES['file_up'])
         if not parse_response['status']:
             messages.error(
@@ -188,9 +195,9 @@ def finish_import(request):
             )
             new_items.append(item)
 
-    del request.session['IntermediateItems']
-    del request.session['NewTerms']
-    del request.session['NewUsers']
+    request.session.pop('IntermediateItems', None)
+    request.session.pop('NewTerms', None)
+    request.session.pop('NewUsers', None)
 
     return render(request, 'uw_file_io/import_done.html', {
         'item_list': new_items,
