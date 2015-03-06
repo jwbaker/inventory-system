@@ -315,14 +315,14 @@ def parse_file(file_up):
                 }
             else:
                 new_items.append(kwargs)
-        response = {
-            'status': True,
-            'message': 'Import successful',
-            'new_items': new_items,
-            'new_terms': new_terms,
-            'new_users': new_users,
-        }
-        return response
+    response = {
+        'status': True,
+        'message': 'Import successful',
+        'new_items': new_items,
+        'new_terms': new_terms,
+        'new_users': new_users,
+    }
+    return response
 
 
 def process_terms_transactions(term_list, transactions):
