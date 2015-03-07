@@ -32,6 +32,12 @@ class ItemFile(models.Model):
             ('view_deleted_itemfile', 'Can view deleted item files'),
         )
 
+    MIMETYPES = {
+        'txt': 'text/plain',
+        'pdf': 'application/pdf',
+        'doc': 'application/msword',
+        'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'   
+    }
     description = models.TextField(blank=True, null=True)
     file_field = models.FileField(upload_to='files/%Y/%m/%d/')
     inventory_item = models.ForeignKey(
