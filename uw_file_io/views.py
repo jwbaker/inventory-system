@@ -15,7 +15,7 @@ from uw_file_io.parse import (
     process_terms_transactions,
     process_user_transactions,
     parse_file,
-    reverse_transactions
+    reverse_transactions,
 )
 from uw_inventory.models import (
     AutocompleteData,
@@ -78,27 +78,36 @@ def file_view(request, file_name):
 @permission_required('uw_inventory.add_inventoryitem')
 def file_import(request):
     if request.method == 'POST':
-        parse_response = parse_file(request.FILES['file_up'])
-        if not parse_response['status']:
+        # Clear these session tokens on every file upload
+        # This will (hopefully) prevent unexpected behaviour if the user
+        # does some silliness
+        request.session.pop('IntermediateItems', None)
+        request.session.pop('NewTerms', None)
+        request.session.pop('NewUsers', None)
+
+        try:
+            parse_response = parse_file(request.FILES['file_up'])
+        except (TypeError, ValidationError) as e:
             messages.error(
                 request,
-                parse_response['message']
+                str(e[0])
             )
+            return redirect('uw_file_io.views.file_import')
         else:
-            request.session['IntermediateItems'] = parse_response['new_items']
+            request.session['IntermediateItems'] = parse_response[
+                'new_items'
+            ]
             request.session['NewTerms'] = parse_response['new_terms']
             request.session['NewUsers'] = parse_response['new_users']
 
-        if 'NewTerms' in request.session and request.session['NewTerms']:
-            destination = 'uw_file_io.views.add_terms'
-        elif 'NewUsers' in request.session and request.session['NewUsers']:
-            return redirect('uw_file_io.views.add_users')
-        elif parse_response['status']:
-            destination = 'uw_file_io.views.finish_import'
-        else:
-            destination = 'uw_file_io.views.file_import'
+            if request.session.get('NewTerms', False):
+                destination = 'uw_file_io.views.add_terms'
+            elif request.session.get('NewUsers', False):
+                return redirect('uw_file_io.views.add_users')
+            else:
+                destination = 'uw_file_io.views.finish_import'
 
-        return redirect(destination)
+            return redirect(destination)
 
     message_list = _collect_messages(request)
     return render(request, 'uw_file_io/import.html', {
@@ -112,7 +121,7 @@ def add_terms(request):
     if request.method == 'POST':
         request.session['NewTerms'] = json.loads(request.POST['termHierarchy'])
 
-        if 'NewUsers' in request.session and request.session['NewUsers']:
+        if request.session.get('NewUsers', False):
             return redirect('uw_file_io.views.add_users')
         else:
             return redirect('uw_file_io.views.finish_import')
@@ -157,19 +166,11 @@ def finish_import(request):
 
     for item_args in item_list:
         for field in ['location_id', 'manufacturer_id', 'supplier_id']:
-            if (
-                    field in item_args and
-                    item_args[field] and
-                    isinstance(item_args[field], unicode)
-            ):
+            if (isinstance(item_args.get(field, None), unicode)):
                 item_args[field] = term_to_index[item_args[field]]
 
         for field in ['technician_id', 'owner_id']:
-            if (
-                    field in item_args and
-                    item_args[field] and
-                    isinstance(item_args[field], unicode)
-            ):
+            if (isinstance(item_args.get(field, None), unicode)):
                 item_args[field] = user_to_index[item_args[field]]
 
         item = InventoryItem(**item_args)
@@ -188,9 +189,9 @@ def finish_import(request):
             )
             new_items.append(item)
 
-    del request.session['IntermediateItems']
-    del request.session['NewTerms']
-    del request.session['NewUsers']
+    request.session.pop('IntermediateItems', None)
+    request.session.pop('NewTerms', None)
+    request.session.pop('NewUsers', None)
 
     return render(request, 'uw_file_io/import_done.html', {
         'item_list': new_items,
