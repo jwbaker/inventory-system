@@ -1,4 +1,4 @@
-{% extends 'uw_inventory_system/base.html' %}
+{% extends 'uw_file_io/import/base.html' %}
 {% load staticfiles %}
 {% load uw_utility_tags %}
 
@@ -65,13 +65,7 @@
     </div>
   </div>
 
-  <div class="row">
-    <div class="col-xs-6 col-xs-offset-3">
-      <button class="btn btn-success pull-right" id="continue">Continue import</button>
-      <button class="btn btn-danger pull-left" id="cancel">Cancel import</button>
-    </div>
-    <i class="fa fa-spinner spinner fa-spin fa-2x hidden"></i>
-  </div>
+  {{ block.super }}
 
   <form action="{% url 'uw_file_io.views.add_terms' %}" method="POST" id="constructTermsForm" class="hidden">
     {% csrf_token %}
@@ -79,27 +73,9 @@
   </form>
 {% endblock content %}
 
-{% block modal %}
-  <div class="modal fade" id="confirmCancelModal">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title">Are you sure?</h4>
-        </div>
-        <div class="modal-body">
-          <p>All changes will be lost.</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
-          <button type="button" class="btn btn-primary" id="confirmCancel">Yes</button>
-        </div>
-      </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-  </div><!-- /.modal -->
-{% endblock modal %}
-
 {% block js_includes %}
+  {{ block.super }}
+
   <script src="//code.jquery.com/ui/1.11.3/jquery-ui.js"></script>
   <script src="{% static 'uw_file_io/jquery.mjs.nestedSortable.js' %}"></script>
 
@@ -115,13 +91,6 @@
       maxLevels: 2,
       tabSize: 2,
       connectWith: '.sortable',
-    });
-
-    $('#cancel').click(function(){
-      $('#confirmCancelModal').modal('show');
-    });
-    $('#confirmCancel').click(function(){
-      window.location = "{% url 'uw_file_io.views.file_import' %}"
     });
 
     var flatten = function(label){
@@ -154,8 +123,6 @@
     }
 
     $('#continue').click(function(){
-      $('.btn').addClass('disabled');
-      $('.spinner').removeClass('hidden');
       termList = [];
       {# We're going to iterate through each 'kind' of available AutocompleteData term, #}
       {# and create separate lists. Keeps things easier later #}

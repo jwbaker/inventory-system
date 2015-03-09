@@ -9,5 +9,6 @@ urlpatterns = patterns(
     url(r'^import/$', views.file_import),
     url(r'^import/add-terms/$', views.add_terms),
     url(r'^import/add-users/$', views.add_users),
+    url(r'^import/add-images/$', views.add_images),
     url(r'^import/done/$', views.finish_import),
 )
