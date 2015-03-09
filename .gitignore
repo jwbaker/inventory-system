@@ -59,6 +59,7 @@ target/
 # Files directories
 files/
 images/
+media/*
 
 uml.png
 
