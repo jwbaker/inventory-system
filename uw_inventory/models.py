@@ -1,5 +1,4 @@
 from datetime import datetime
-import re
 
 from django.contrib.auth.models import User
 from django.core.files import File
@@ -32,11 +31,11 @@ class ItemFile(models.Model):
             ('view_deleted_itemfile', 'Can view deleted item files'),
         )
 
-    MIMETYPES = {
-        'txt': 'text/plain',
-        'pdf': 'application/pdf',
-        'doc': 'application/msword',
-        'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'   
+    MIMETYPE_TO_EXTENSION = {
+        'text/plain': 'txt',
+        'application/pdf': 'pdf',
+        'application/msword': 'doc',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
     }
     description = models.TextField(blank=True, null=True)
     file_field = models.FileField(upload_to='files/%Y/%m/%d/')
