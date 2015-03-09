@@ -37,6 +37,28 @@ class ItemFile(models.Model):
         'application/msword': 'doc',
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
     }
+    TYPE_CHOICES = [
+        ('other', 'Other'),
+        ('manual', 'Manual'),
+    ]
+
+    @staticmethod
+    def get_type(type_key):
+        '''
+        Looks up the display text of a given type key.
+
+        Positional arguments:
+            type_key -- The value of a type field.
+        '''
+        try:
+            return [v[1] for v in ItemFile.TYPE_CHOICES
+                    if v[0] == type_key][0]
+        except IndexError:
+            # We return '' rather than None because the combination of Django
+            # and JavaScript used in the detail page renders None as 'None'
+            # (a string)
+            return ''
+
     description = models.TextField(blank=True, null=True)
     file_field = models.FileField(upload_to='files/%Y/%m/%d/')
     inventory_item = models.ForeignKey(
@@ -47,6 +69,7 @@ class ItemFile(models.Model):
         default=None,
         null=True
     )
+    file_type = models.CharField(choices=TYPE_CHOICES, max_length=255)
     mimetype = models.CharField(max_length=255)
     to_display = models.BooleanField(default=True)
 
