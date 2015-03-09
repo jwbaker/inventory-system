@@ -46,10 +46,10 @@ IMPORT_FIELD_DATA = {
         'field_name': 'owner_id',
     },
     'SOP': {
-        'type': 'skip',
+        'type': 'file',
     },
     'Picture': {
-        'type': 'skip',
+        'type': 'image',
     },
     'Lifting_Device_Inspected_By': {
         'type': 'skip',
@@ -237,6 +237,8 @@ def parse_file(file_up):
     new_terms = {}
     new_users = {}
     new_items = []
+    new_files = []
+    new_images = []
     for row in data:
         if row['ID']:
             kwargs = {}
@@ -286,7 +288,10 @@ def parse_file(file_up):
                         store_value = InventoryItem.get_status_key(val) or None
                     elif field_meta['type'] == 'rename':
                         store_value = val or None
-
+                    elif field_meta['type'] == 'file':
+                        new_files.append(re.search('/([^/]*\.[^/]*)$', val))
+                    elif field_meta['type'] == 'image':
+                        new_images.append(re.search('/([^/]*\.[^/]*)$', val))
                     kwargs[field_meta['field_name']] = store_value
                 except KeyError:
                     pass
@@ -318,6 +323,8 @@ def parse_file(file_up):
         'new_items': new_items,
         'new_terms': new_terms,
         'new_users': new_users,
+        'new_files': new_files,
+        'new_images': new_images,
     }
     return response
 

@@ -1,4 +1,4 @@
-{% extends 'uw_inventory_system/base.html' %}
+{% extends 'uw_file_io/import/base.html' %}
 {% load staticfiles %}
 
 {% block messages %}
@@ -54,13 +54,7 @@
     </div>
   </div>
 
-    <div class="row">
-    <div class="col-xs-6 col-xs-offset-3">
-      <button class="btn btn-success pull-right" id="continue">Continue import</button>
-      <button class="btn btn-danger pull-left" id="cancel">Cancel import</button>
-    </div>
-    <i class="fa fa-spinner spinner fa-spin fa-2x hidden"></i>
-  </div>
+  {{ block.super }}
 
   <form action="{% url 'uw_file_io.views.add_users' %}" method="POST" id="constructUsersForm" class="hidden">
     {% csrf_token %}
@@ -90,6 +84,8 @@
 
 
 {% block js_includes %}
+  {{ block.super }}
+  
   <script src="//code.jquery.com/ui/1.11.3/jquery-ui.js"></script>
   <script src="{% static 'uw_file_io/jquery.mjs.nestedSortable.js' %}"></script>
 
@@ -101,13 +97,6 @@
       maxLevels: 2,
       tabSize: 2,
       connectWith: '.sortable',
-    });
-
-    $('#cancel').click(function(){
-      $('#confirmCancelModal').modal('show');
-    });
-    $('#confirmCancel').click(function(){
-      window.location = "{% url 'uw_file_io.views.file_import' %}"
     });
 
     var flatten = function(list_item){
@@ -143,8 +132,6 @@
     }
 
     $('#continue').click(function(){
-      $('.btn').addClass('disabled');
-      $('.spinner').removeClass('hidden');
       $('.username').removeClass('has-error');
       $('.warning').addClass('hidden');
       $('#error-message').addClass('hidden');

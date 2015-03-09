@@ -1,0 +1,26 @@
+{% extends 'uw_file_io/import/base.html' %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-xs-4 col-xs-offset-4">
+      <form action="{% url form_action %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+          <div class="form-group">
+            {{ form.file_up.label }}
+            {{ form.file_up }}
+            {{ form.file_up.errors }}
+          </div>
+      </form>
+    </div>
+  </div>
+
+  {{ block.super }}
+{% endblock content %}
+
+{% block js_includes %}
+  <script type="text/javascript">
+    $('#continue').click(function(){
+      $('form').submit();
+    });
+  </script>
+{% endblock js_includes %}

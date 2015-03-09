@@ -84,6 +84,8 @@ def file_import(request):
         request.session.pop('IntermediateItems', None)
         request.session.pop('NewTerms', None)
         request.session.pop('NewUsers', None)
+        request.session.pop('NewFiles', None)
+        request.session.pop('NewImages', None)
 
         try:
             parse_response = parse_file(request.FILES['file_up'])
@@ -99,18 +101,13 @@ def file_import(request):
             ]
             request.session['NewTerms'] = parse_response['new_terms']
             request.session['NewUsers'] = parse_response['new_users']
+            request.session['NewImages'] = parse_response['new_images']
+            request.session['NewFiles'] = parse_response['new_files']
 
-            if request.session.get('NewTerms', False):
-                destination = 'uw_file_io.views.add_terms'
-            elif request.session.get('NewUsers', False):
-                return redirect('uw_file_io.views.add_users')
-            else:
-                destination = 'uw_file_io.views.finish_import'
-
-            return redirect(destination)
+            return redirect('uw_file_io.views.add_terms')
 
     message_list = _collect_messages(request)
-    return render(request, 'uw_file_io/import.html', {
+    return render(request, 'uw_file_io/import/start.html', {
         'form': ImportForm(),
         'page_messages': message_list,
     })
@@ -121,12 +118,11 @@ def add_terms(request):
     if request.method == 'POST':
         request.session['NewTerms'] = json.loads(request.POST['termHierarchy'])
 
-        if request.session.get('NewUsers', False):
-            return redirect('uw_file_io.views.add_users')
-        else:
-            return redirect('uw_file_io.views.finish_import')
+        return redirect('uw_file_io.views.add_users')
 
-    return render(request, 'uw_file_io/new_terms.html', {
+    if not request.session.get('NewTerms', None):
+        return redirect('uw_file_io.views.add_users')
+    return render(request, 'uw_file_io/import/new_terms.html', {
         'new_terms': request.session['NewTerms'],
         'old_terms': {
             'location': [t.name for t in
@@ -147,10 +143,24 @@ def add_terms(request):
 def add_users(request):
     if request.method == 'POST':
         request.session['NewUsers'] = json.loads(request.POST['userHierarchy'])
-        return redirect('uw_file_io.views.finish_import')
-    return render(request, 'uw_file_io/new_users.html', {
+        return redirect('uw_file_io.views.add_images')
+
+    if not request.session.get('NewUsers', None):
+        return redirect('uw_file_io.views.add_images')
+
+    return render(request, 'uw_file_io/import/new_users.html', {
         'new_users': request.session['NewUsers'],
         'old_users': User.objects.all(),
+    })
+
+
+def add_images(request):
+    if not request.session.get('NewImages', None):
+        return redirect('uw_file_io.views.finish_import')
+
+    return render(request, 'uw_file_io/import/file_upload.html', {
+        'form': ImportForm(),
+        'form_action': 'uw_file_io.views.add_images'
     })
 
 
@@ -192,7 +202,9 @@ def finish_import(request):
     request.session.pop('IntermediateItems', None)
     request.session.pop('NewTerms', None)
     request.session.pop('NewUsers', None)
+    request.session.pop('NewFiles', None)
+    request.session.pop('NewImages', None)
 
-    return render(request, 'uw_file_io/import_done.html', {
+    return render(request, 'uw_file_io/import/done.html', {
         'item_list': new_items,
     })
