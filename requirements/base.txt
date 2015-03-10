@@ -1,4 +1,7 @@
 Django==1.7
 django-cas==2.1.1
 Pillow==2.7.0
-
+pyexcel==0.1.4
+pyexcel-io==0.0.3
+pyexcel-xlsx==0.0.5
+texttable==0.8.2
