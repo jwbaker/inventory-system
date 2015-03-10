@@ -14,13 +14,16 @@ from uw_file_io.forms import ImportForm
 from uw_file_io.parse import (
     process_terms_transactions,
     process_user_transactions,
-    parse_file,
+    process_image_transactions,
+    parse_extract,
+    parse_zip,
     reverse_transactions,
 )
 from uw_inventory.models import (
     AutocompleteData,
     InventoryItem,
-    ItemFile
+    ItemFile,
+    ItemImage
 )
 
 
@@ -88,7 +91,7 @@ def file_import(request):
         request.session.pop('NewImages', None)
 
         try:
-            parse_response = parse_file(request.FILES['file_up'])
+            parse_response = parse_extract(request.FILES['file_up'])
         except (TypeError, ValidationError) as e:
             messages.error(
                 request,
@@ -155,6 +158,10 @@ def add_users(request):
 
 
 def add_images(request):
+    if request.method == 'POST':
+        request.session['NewImages'] = parse_zip(request.FILES['file_up'])
+        return redirect('uw_file_io.views.finish_import')
+
     if not request.session.get('NewImages', None):
         return redirect('uw_file_io.views.finish_import')
 
@@ -168,10 +175,12 @@ def finish_import(request):
     item_list = request.session.get('IntermediateItems', [])
     term_list = request.session.get('NewTerms', [])
     user_list = request.session.get('NewUsers', [])
+    images_list = request.session.get('NewImages', {})
     transactions = []
 
     term_to_index = process_terms_transactions(term_list, transactions)
     user_to_index = process_user_transactions(user_list, transactions)
+    image_to_index = process_image_transactions(images_list, transactions)
     new_items = []
 
     for item_args in item_list:
@@ -182,6 +191,9 @@ def finish_import(request):
         for field in ['technician_id', 'owner_id']:
             if (isinstance(item_args.get(field, None), unicode)):
                 item_args[field] = user_to_index[item_args[field]]
+        if 'image_id' in item_args:
+            picture_id = item_args['image_id']
+            del item_args['image_id']
 
         item = InventoryItem(**item_args)
         try:
@@ -194,6 +206,12 @@ def finish_import(request):
             reverse_transactions(transactions)
             return redirect('uw_file_io.views.file_import')
         else:
+            if picture_id:
+                picture_id = image_to_index[picture_id]
+                image = ItemImage.objects.get(id=picture_id)
+                image.inventory_item_id = item.id
+                image.save()
+
             transactions.append(
                 'Create InventoryItem with id={0}'.format(item.id)
             )

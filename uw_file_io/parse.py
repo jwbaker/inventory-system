@@ -1,13 +1,21 @@
+import os
 import re
+from tempfile import NamedTemporaryFile
+from zipfile import BadZipfile, ZipFile
 
 import pyexcel
 import pyexcel.ext.xlsx
 
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.core.files import File
 from django.db.models import Q
 
-from uw_inventory.models import AutocompleteData, InventoryItem
+from uw_inventory.models import (
+    AutocompleteData,
+    InventoryItem,
+    ItemImage
+)
 
 
 # Having this data structure makes some things later much easier
@@ -206,7 +214,7 @@ def __get_user_id_or_create(user_value, new_users):
     return user_value
 
 
-def parse_file(file_up):
+def parse_extract(file_up):
     '''
     Parses an extract file into an list of InventoryItems.
 
@@ -289,9 +297,10 @@ def parse_file(file_up):
                     elif field_meta['type'] == 'rename':
                         store_value = val or None
                     elif field_meta['type'] == 'file':
-                        new_files.append(re.search('/([^/]*\.[^/]*)$', val))
+                        new_files.append(val.split('/')[-1])
                     elif field_meta['type'] == 'image':
-                        new_images.append(re.search('/([^/]*\.[^/]*)$', val))
+                        picture = val
+                        new_images.append(val.split('/')[-1])
                     kwargs[field_meta['field_name']] = store_value
                 except KeyError:
                     pass
@@ -316,6 +325,7 @@ def parse_file(file_up):
                                 and try again.'''.format(row['ID'])
                 )
             else:
+                kwargs['image_id'] = picture
                 new_items.append(kwargs)
     response = {
         'status': True,
@@ -327,6 +337,23 @@ def parse_file(file_up):
         'new_images': new_images,
     }
     return response
+
+
+def parse_zip(file_up):
+    new_files = {}
+
+    try:
+        with ZipFile(file_up, mode='r') as archive:
+            for filename in archive.namelist():
+                with archive.open(filename, mode='r') as curr_file:
+                    with NamedTemporaryFile(delete=False) as temp_file:
+                        temp_file.write(curr_file.read())
+                        new_files[filename] = temp_file.name
+
+    except BadZipfile:
+        raise IOError('File was not a *.zip archive.')
+
+    return new_files
 
 
 def process_terms_transactions(term_list, transactions):
@@ -453,6 +480,25 @@ def process_user_transactions(user_list, transactions):
                 user_to_index[user['replace']] = temp.id
 
     return user_to_index
+
+
+def process_image_transactions(image_list, transactions):
+    image_to_index = {}
+
+    for (filename, temp_file) in image_list.iteritems():
+        with open(temp_file) as fd:
+            temp = ItemImage()
+            temp.file_field.save(
+                filename.split('/')[-1],
+                File(fd),
+                save=True
+            )
+            image_to_index[filename] = temp.id
+
+        transactions.append('Create ItemImage with id={0}'.format(temp.id))
+        os.remove(temp_file)
+
+    return image_to_index
 
 
 STRING_TO_MODEL = {
