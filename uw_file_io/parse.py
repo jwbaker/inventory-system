@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 import re
 from tempfile import NamedTemporaryFile
@@ -6,6 +7,7 @@ from zipfile import BadZipfile, ZipFile
 import pyexcel
 import pyexcel.ext.xlsx
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.files import File
@@ -482,21 +484,29 @@ def process_user_transactions(user_list, transactions):
     return user_to_index
 
 
+def __move_tempfile_of_type(tempfile_path, file_name):
+    os.renames(
+        tempfile_path,
+        '{0}{1}'.format(settings.MEDIA_URL, file_name)
+    )
+
+
 def process_image_transactions(image_list, transactions):
     image_to_index = {}
 
-    for (filename, temp_file) in image_list.iteritems():
+    for (file_path, temp_file) in image_list.iteritems():
+        filename = file_path.split('/')[-1]
         with open(temp_file) as fd:
             temp = ItemImage()
             temp.file_field.save(
-                filename.split('/')[-1],
+                filename,
                 File(fd),
                 save=True
             )
-            image_to_index[filename] = temp.id
+            image_to_index[file_path] = temp.id
 
         transactions.append('Create ItemImage with id={0}'.format(temp.id))
-        os.remove(temp_file)
+        __move_tempfile_of_type(temp_file, temp.file_field.name)
 
     return image_to_index
 
