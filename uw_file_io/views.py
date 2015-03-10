@@ -260,6 +260,11 @@ def finish_import(request):
     request.session.pop('NewFiles', None)
     request.session.pop('NewImages', None)
 
+    messages.success(
+        request,
+        'Import successful. {0} records created'.format(len(new_items))
+    )
+
     return render(request, 'uw_file_io/import/done.html', {
         'item_list': new_items,
     })
