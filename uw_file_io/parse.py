@@ -1,13 +1,23 @@
+import os
 import re
+from tempfile import NamedTemporaryFile
+from zipfile import BadZipfile, ZipFile
 
 import pyexcel
 import pyexcel.ext.xlsx
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.core.files import File
 from django.db.models import Q
 
-from uw_inventory.models import AutocompleteData, InventoryItem
+from uw_inventory.models import (
+    AutocompleteData,
+    InventoryItem,
+    ItemImage,
+    ItemFile
+)
 
 
 # Having this data structure makes some things later much easier
@@ -47,6 +57,7 @@ IMPORT_FIELD_DATA = {
     },
     'SOP': {
         'type': 'file',
+        'field_name': 'sop_file_id',
     },
     'Picture': {
         'type': 'image',
@@ -206,7 +217,7 @@ def __get_user_id_or_create(user_value, new_users):
     return user_value
 
 
-def parse_file(file_up):
+def parse_extract(file_up):
     '''
     Parses an extract file into an list of InventoryItems.
 
@@ -289,9 +300,11 @@ def parse_file(file_up):
                     elif field_meta['type'] == 'rename':
                         store_value = val or None
                     elif field_meta['type'] == 'file':
-                        new_files.append(re.search('/([^/]*\.[^/]*)$', val))
+                        store_value = val.split('/')[-1]
+                        new_files.append(store_value)
                     elif field_meta['type'] == 'image':
-                        new_images.append(re.search('/([^/]*\.[^/]*)$', val))
+                        picture = val
+                        new_images.append(val.split('/')[-1])
                     kwargs[field_meta['field_name']] = store_value
                 except KeyError:
                     pass
@@ -306,6 +319,7 @@ def parse_file(file_up):
                         'supplier',
                         'owner',
                         'technician',
+                        'sop_file'
                     ]
                 )
             except ValidationError as e:
@@ -316,6 +330,7 @@ def parse_file(file_up):
                                 and try again.'''.format(row['ID'])
                 )
             else:
+                kwargs['image_id'] = picture
                 new_items.append(kwargs)
     response = {
         'status': True,
@@ -327,6 +342,23 @@ def parse_file(file_up):
         'new_images': new_images,
     }
     return response
+
+
+def parse_zip(file_up):
+    new_files = {}
+
+    try:
+        with ZipFile(file_up, mode='r') as archive:
+            for filename in archive.namelist():
+                with archive.open(filename, mode='r') as curr_file:
+                    with NamedTemporaryFile(delete=False) as temp_file:
+                        temp_file.write(curr_file.read())
+                        new_files[filename] = temp_file.name
+
+    except BadZipfile:
+        raise IOError('File was not a *.zip archive.')
+
+    return new_files
 
 
 def process_terms_transactions(term_list, transactions):
@@ -455,10 +487,59 @@ def process_user_transactions(user_list, transactions):
     return user_to_index
 
 
+def __move_tempfile(tempfile_path, file_name):
+    os.renames(
+        tempfile_path,
+        '{0}{1}'.format(settings.MEDIA_URL, file_name)
+    )
+
+
+def process_image_transactions(image_list, transactions):
+    image_to_index = {}
+
+    for (file_path, temp_file) in image_list.iteritems():
+        filename = file_path.split('/')[-1]
+        with open(temp_file) as fd:
+            temp = ItemImage()
+            temp.file_field.save(
+                filename,
+                File(fd),
+                save=True
+            )
+            image_to_index[file_path] = temp.id
+
+        transactions.append('Create ItemImage with id={0}'.format(temp.id))
+        __move_tempfile(temp_file, temp.file_field.name)
+
+    return image_to_index
+
+
+def process_file_transactions(file_list, transactions):
+    file_to_index = {}
+
+    for (file_path, temp_file) in file_list.iteritems():
+        filename = file_path.split('/')[-1]
+        with open(temp_file) as fd:
+            temp = ItemFile()
+            temp.file_field.save(
+                filename,
+                File(fd),
+                save=True
+            )
+            file_to_index[file_path] = temp.id
+
+        transactions.append('Create ItemFile with id={0}'.format(temp.id))
+        __move_tempfile(temp_file, temp.file_field.name)
+
+    return file_to_index
+
+
 STRING_TO_MODEL = {
     'AutocompleteData': AutocompleteData,
     'InventoryItem': InventoryItem,
     'User': User,
+    'ItemFile': ItemFile,
+    'ItemImage': ItemImage,
 }
 
 
@@ -506,4 +587,7 @@ def reverse_transactions(transactions_list):
         if tokens['command'] == 'Create':
             Model = STRING_TO_MODEL[tokens['model']]
             item = Model.objects.get(**tokens['args'])
+
+            if tokens['model'] in ['ItemFile', 'ItemImage']:
+                os.remove(item.file_field.file.url)
             item.delete()
