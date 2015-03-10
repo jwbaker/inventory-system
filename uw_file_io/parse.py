@@ -538,6 +538,8 @@ STRING_TO_MODEL = {
     'AutocompleteData': AutocompleteData,
     'InventoryItem': InventoryItem,
     'User': User,
+    'ItemFile': ItemFile,
+    'ItemImage': ItemImage,
 }
 
 
@@ -585,4 +587,7 @@ def reverse_transactions(transactions_list):
         if tokens['command'] == 'Create':
             Model = STRING_TO_MODEL[tokens['model']]
             item = Model.objects.get(**tokens['args'])
+
+            if tokens['model'] in ['ItemFile', 'ItemImage']:
+                os.remove(item.file_field.file.url)
             item.delete()
