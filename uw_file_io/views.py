@@ -15,6 +15,7 @@ from uw_file_io.parse import (
     process_terms_transactions,
     process_user_transactions,
     process_image_transactions,
+    process_file_transactions,
     parse_extract,
     parse_zip,
     reverse_transactions,
@@ -160,14 +161,28 @@ def add_users(request):
 def add_images(request):
     if request.method == 'POST':
         request.session['NewImages'] = parse_zip(request.FILES['file_up'])
-        return redirect('uw_file_io.views.finish_import')
+        return redirect('uw_file_io.views.add_files')
 
     if not request.session.get('NewImages', None):
-        return redirect('uw_file_io.views.finish_import')
+        return redirect('uw_file_io.views.add_files')
 
     return render(request, 'uw_file_io/import/file_upload.html', {
         'form': ImportForm(),
         'form_action': 'uw_file_io.views.add_images'
+    })
+
+
+def add_files(request):
+    if request.method == 'POST':
+        request.session['NewFiles'] = parse_zip(request.FILES['file_up'])
+        return redirect('uw_file_io.views.finish_import')
+
+    if not request.session.get('NewFiles', None):
+        return redirect('uw_file_io.views.finish_import')
+
+    return render(request, 'uw_file_io/import/file_upload.html', {
+        'form': ImportForm(),
+        'form_action': 'uw_file_io.views.add_files'
     })
 
 
@@ -176,11 +191,13 @@ def finish_import(request):
     term_list = request.session.get('NewTerms', [])
     user_list = request.session.get('NewUsers', [])
     images_list = request.session.get('NewImages', {})
+    files_list = request.session.get('NewFiles', {})
     transactions = []
 
     term_to_index = process_terms_transactions(term_list, transactions)
     user_to_index = process_user_transactions(user_list, transactions)
     image_to_index = process_image_transactions(images_list, transactions)
+    file_to_index = process_file_transactions(files_list, transactions)
     new_items = []
 
     for item_args in item_list:
@@ -194,6 +211,9 @@ def finish_import(request):
         if 'image_id' in item_args:
             picture_id = item_args['image_id']
             del item_args['image_id']
+
+        if 'sop_file_id' in item_args:
+            item_args['sop_file_id'] = file_to_index[item_args['sop_file_id']]
 
         item = InventoryItem(**item_args)
         try:
@@ -211,7 +231,10 @@ def finish_import(request):
                 image = ItemImage.objects.get(id=picture_id)
                 image.inventory_item_id = item.id
                 image.save()
-
+            if item.sop_file_id:
+                sop_file = item.sop_file
+                sop_file.inventory_item_id = item.id
+                sop_file.save()
             transactions.append(
                 'Create InventoryItem with id={0}'.format(item.id)
             )

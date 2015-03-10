@@ -1,4 +1,3 @@
-from datetime import datetime
 import os
 import re
 from tempfile import NamedTemporaryFile
@@ -16,7 +15,8 @@ from django.db.models import Q
 from uw_inventory.models import (
     AutocompleteData,
     InventoryItem,
-    ItemImage
+    ItemImage,
+    ItemFile
 )
 
 
@@ -57,6 +57,7 @@ IMPORT_FIELD_DATA = {
     },
     'SOP': {
         'type': 'file',
+        'field_name': 'sop_file_id',
     },
     'Picture': {
         'type': 'image',
@@ -299,7 +300,8 @@ def parse_extract(file_up):
                     elif field_meta['type'] == 'rename':
                         store_value = val or None
                     elif field_meta['type'] == 'file':
-                        new_files.append(val.split('/')[-1])
+                        store_value = val.split('/')[-1]
+                        new_files.append(store_value)
                     elif field_meta['type'] == 'image':
                         picture = val
                         new_images.append(val.split('/')[-1])
@@ -317,6 +319,7 @@ def parse_extract(file_up):
                         'supplier',
                         'owner',
                         'technician',
+                        'sop_file'
                     ]
                 )
             except ValidationError as e:
@@ -484,7 +487,7 @@ def process_user_transactions(user_list, transactions):
     return user_to_index
 
 
-def __move_tempfile_of_type(tempfile_path, file_name):
+def __move_tempfile(tempfile_path, file_name):
     os.renames(
         tempfile_path,
         '{0}{1}'.format(settings.MEDIA_URL, file_name)
@@ -506,9 +509,29 @@ def process_image_transactions(image_list, transactions):
             image_to_index[file_path] = temp.id
 
         transactions.append('Create ItemImage with id={0}'.format(temp.id))
-        __move_tempfile_of_type(temp_file, temp.file_field.name)
+        __move_tempfile(temp_file, temp.file_field.name)
 
     return image_to_index
+
+
+def process_file_transactions(file_list, transactions):
+    file_to_index = {}
+
+    for (file_path, temp_file) in file_list.iteritems():
+        filename = file_path.split('/')[-1]
+        with open(temp_file) as fd:
+            temp = ItemFile()
+            temp.file_field.save(
+                filename,
+                File(fd),
+                save=True
+            )
+            file_to_index[file_path] = temp.id
+
+        transactions.append('Create ItemFile with id={0}'.format(temp.id))
+        __move_tempfile(temp_file, temp.file_field.name)
+
+    return file_to_index
 
 
 STRING_TO_MODEL = {
