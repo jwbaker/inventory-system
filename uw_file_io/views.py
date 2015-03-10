@@ -168,7 +168,14 @@ def add_images(request):
 
     return render(request, 'uw_file_io/import/file_upload.html', {
         'form': ImportForm(),
-        'form_action': 'uw_file_io.views.add_images'
+        'form_action': 'uw_file_io.views.add_images',
+        'page_data': {
+            'header': 'Upload Images',
+            'explanation': '''It looks like one or more of the records you've
+                             uploaded have associated images. Please upload a
+                             *.ZIP file containing all of the image files
+                             required by your records.''',
+        }
     })
 
 
@@ -182,7 +189,14 @@ def add_files(request):
 
     return render(request, 'uw_file_io/import/file_upload.html', {
         'form': ImportForm(),
-        'form_action': 'uw_file_io.views.add_files'
+        'form_action': 'uw_file_io.views.add_files',
+        'page_data': {
+            'header': 'Upload File Attachments',
+            'explanation': '''It looks like one or more of the records you've
+                             uploaded have associated files. Please upload a
+                             *.ZIP file containing all of the files required by
+                             your records.''',
+        }
     })
 
 
