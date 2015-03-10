@@ -92,6 +92,11 @@
       maxLevels: 2,
       tabSize: 2,
       connectWith: '.sortable',
+      sort: function(event, ui){
+        if(ui.item.is('.old-term')){
+          $(this).sortable('cancel');
+        }
+      },
     });
 
     var flatten = function(label){
