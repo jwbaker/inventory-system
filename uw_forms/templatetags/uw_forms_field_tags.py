@@ -1,3 +1,5 @@
+import json
+
 from django import template
 
 register = template.Library()
@@ -127,3 +129,9 @@ def show_files(can_add, can_edit, view_deleted, formset=None):
             'view_deleted': view_deleted,
             'forms': None
         }
+
+
+@register.inclusion_tag('uw_forms/custom_fields.html')
+def custom_fields(field_data_string):
+    field_list = json.loads(field_data_string)
+    return {'fields': field_list}

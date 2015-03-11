@@ -46,6 +46,7 @@
     <input type="number" id="scroll-position" name="scroll-position" class="persist-hidden" />
 
     {% edit_form form perms.uw_inventory.change_inventoryitem shown_excluded_fields %}
+    {% custom_fields inventory_item.custom_field_data %}
 
     {# Putting this template here makes me cry, but it works for now #}
     <div class="singleton-formset form-group list-group-item clearfix">

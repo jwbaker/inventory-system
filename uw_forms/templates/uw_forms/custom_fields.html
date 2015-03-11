@@ -1,0 +1,19 @@
+{% for id, data in fields.items %}
+  <div class="singleton-field form-group list-group-item clearfix">
+  <div class="col-xs-3">
+    <label for="{{ id }}" class="control-label">
+      {{ data.name }}
+    </label>
+  </div>
+  <div class="col-xs-8 field-container">
+      <p class="form-control-static">
+        {{ data.value }}
+      </p>
+  </div>
+  <div class="col-xs-1">
+    <i class="save hidden"></i>
+    <i class="cancel hidden"></i>
+    <i class="edit"></i>
+  </div>
+</div>
+{% endfor %}
