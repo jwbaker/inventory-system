@@ -16,11 +16,11 @@
     <li class="list-group-item">
       {% if inventory_item.to_display %}
         <a href="{% url 'uw_inventory.views.inventory_delete' inventory_item.id %}">
-          <i class="delete navigate"></i> Delete
+          <i class="delete navigate fa-fw"></i> Delete
         </a>
       {% else %}
         <a href="{% url 'uw_inventory.views.inventory_undelete' inventory_item.id %}">
-          <i class="restore navigate"></i> Restore
+          <i class="restore navigate fa-fw"></i> Restore
         </a>
       {% endif %}
     </li>
