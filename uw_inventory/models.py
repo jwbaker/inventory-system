@@ -222,6 +222,7 @@ class InventoryItem(models.Model):
     csa_required = models.BooleanField(default=False)
     csa_special = models.BooleanField(default=False)
     csa_special_date = models.DateField(blank=True, default=None, null=True)
+    custom_field_data = models.TextField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     factory_csa = models.BooleanField(default=False)
     location = models.ForeignKey(

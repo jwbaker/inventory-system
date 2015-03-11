@@ -5,6 +5,7 @@
 {% load uw_inventory_model_tags %}
 
 {% block gutter_nav %}
+  {{ block.super }}
   {% if perms.uw_inventory.add_inventoryitem %}  
     <li class="list-group-item">
       <a href="{% url 'uw_inventory.views.inventory_copy' inventory_item.id %}">

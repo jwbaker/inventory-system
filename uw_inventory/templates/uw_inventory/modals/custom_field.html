@@ -1,0 +1,139 @@
+<div class="modal fade" id="newFieldModal" tabindex="-1" role="dialog" aria-labelledby="newFieldModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="newFieldModalLabel">Add a Field</h4>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+          <form class="col-xs-6 form-horizontal">
+            <div class="form-group">
+              <label for="inputFieldName" class="col-xs-2 control-label">Name</label>
+              <div class="col-xs-8">
+                <input type="text" class="form-control" id="inputFieldName" placeholder="Name" />
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="inputFieldType" class="col-xs-2 control-label">Type</label>
+              <div class="col-xs-8">
+                <select class="form-control" id="inputFieldType">
+                  <option>---</option>
+                  <option>Text</option>
+                  <option>Select</option>
+                  <option>Date</option>
+                  <option>Yes/No</option>
+                  <option>Number</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group fieldOptions textFieldOptions hidden">
+              <label for="inputFieldSecondaryType" class="col-xs-2 control-label">Secondary Type</label>
+              <div class="col-xs-8">
+                <select class="form-control" id="inputFieldSecondaryType">
+                  <option>---</option>
+                  <option>Short</option>
+                  <option>Long</option>
+                  <option>Email</option>
+                  <option>Obscured</option>
+                  <option>Autocomplete</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group fieldOptions textFieldOptions hidden">
+              <label for="inputFieldLength" class="col-xs-2 control-label">Maximum Length</label>
+              <div class="col-xs-8">
+                <input type="number" id="inputFieldLength" class="form-control" value="255" />
+              </div>
+            </div>
+
+            <div class="form-group fieldOptions selectFieldOptions hidden">
+              <label for="inputFieldOptions" class="col-xs-2 control-label">Options</label>
+              <div class="col-xs-8">
+                <textarea class="form-control" style="resize:none" id="inputFieldOptions"></textarea>
+              </div>
+            </div>
+
+            <div class="form-group fieldOptions selectFieldOptions hidden">
+              <label for="inputFieldAllowDups" class="col-xs-2 control-label">Allow Multiple?</label>
+              <div class="col-xs-8">
+                <i class="fa fa-square-o checkbox fa-2x" id="inputFieldAllowDups"></i>
+              </div>
+            </div>
+
+            <div class="form-group fieldOptions selectFieldOptions hidden">
+              <label for="inputFieldSelectControl" class="col-xs-2 control-label">Control</label>
+              <div class="col-xs-8">
+                <select class="form-control" id="inputFieldSelectControl">
+                  <option>Auto</option>
+                  <option class="itemControl">Radio Buttons</option>
+                  <option class="itemControl">Dropdown List</option>
+                  <option class="itemControl hidden">Multi-select List</option>
+                  <option class="itemControl hidden">Checkboxes</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group fieldOptions numberFieldOptions hidden">
+              <label for="inputFieldSecondaryType" class="col-xs-2 control-label">Secondary Type</label>
+              <div class="col-xs-8">
+                <select class="form-control" id="inputFieldSecondaryType">
+                  <option>---</option>
+                  <option>Raw</option>
+                  <option>Currency</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group fieldOptions numberFieldOptions hidden">
+              <label for="inputFieldPrecision" class="col-xs-2 control-label">Precision</label>
+              <div class="col-xs-8">
+                <select class="form-control" id="inputFieldPrecision">
+                  <option>---</option>
+                  <option>1,000</option>
+                  <option>100</option>
+                  <option>10</option>
+                  <option>1</option>
+                  <option>0.1</option>
+                  <option>0.01</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group fieldOptions numberFieldOptions hidden">
+              <label for="inputFieldAllowNegative" class="col-xs-2 control-label">Allow Negative?</label>
+              <div class="col-xs-8">
+                <i class="fa fa-square-o checkbox fa-2x" id="inputFieldAllowNegative"></i>
+              </div>
+            </div>
+
+            <div class="form-group fieldOptions dateFieldOptions hidden">
+              <label for="inputFieldInputStyle" class="col-xs-2 control-label">Input Style</label>
+              <div class="col-xs-8">
+                <select class="form-control" id="inputFieldInputStyle">
+                  <option>---</option>
+                  <option>Manual</option>
+                  <option>Automatic</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group fieldOptions dateFieldOptions hidden">
+              <label for="inputFieldIncludeTime" class="col-xs-2 control-label">Include Time?</label>
+              <div class="col-xs-8">
+                <i class="fa fa-square-o checkbox fa-2x" id="inputFieldIncludeTime"></i>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger pull-left" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-success" id="createFieldBtn">Create</button>
+      </div>
+    </div>
+  </div>
+</div>
