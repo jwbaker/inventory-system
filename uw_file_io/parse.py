@@ -370,6 +370,8 @@ def parse_extract(file_up, import_type):
 
 def parse_zip(file_up):
     new_files = {}
+    if file_up is None:
+        return new_files
 
     try:
         with ZipFile(file_up, mode='r') as archive:
