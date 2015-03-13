@@ -1,10 +1,8 @@
+import csv
 import os
 import re
 from tempfile import NamedTemporaryFile
 from zipfile import BadZipfile, ZipFile
-
-import pyexcel
-import pyexcel.ext.xlsx
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -217,41 +215,14 @@ def __get_user_id_or_create(user_value, new_users):
     return user_value
 
 
-def parse_extract(file_up):
-    '''
-    Parses an extract file into an list of InventoryItems.
-
-    This method does basic validation on non-relational fields.
-
-    Positional arguments:
-        file_up -- The Django file object corresponding to the uploaded
-                    extract. Accepted file formats are .xls, .xlsx, and .csv
-
-    Returns:
-        A dictionary containing lists of the objects that must be created for
-        the upload. These lists will be processed by later functions
-    '''
-    extension = file_up.name.split('.')[1]
-    try:
-        sheet = pyexcel.load_from_memory(
-            extension,
-            file_up.read(),
-            name_columns_by_row=0
-        )
-    except NotImplementedError:
-        raise ValidationError(
-            '''Invalid file type "{0}". Please upload one of: xls, xlsx, csv.
-            '''.format(extension)
-        )
-
-    data = sheet.to_records()
+def __parse_inventory_extract(data):
     new_terms = {}
     new_users = {}
     new_items = []
     new_files = []
     new_images = []
     for row in data:
-        if row['ID']:
+        if row.get('ID', None):
             kwargs = {}
 
             for (col, val) in row.iteritems():
@@ -296,7 +267,7 @@ def parse_extract(file_up):
                         else:
                             store_value = 0
                     elif field_meta['type'] == 'choice':
-                        store_value = InventoryItem.get_status_key(val) or None
+                        store_value = InventoryItem.get_status_key(val) or 'SA'
                     elif field_meta['type'] == 'rename':
                         store_value = val or None
                     elif field_meta['type'] == 'file':
@@ -342,6 +313,59 @@ def parse_extract(file_up):
         'new_images': new_images,
     }
     return response
+
+
+def __parse_user_extract(data):
+    new_users = []
+
+    for row in data:
+        if row['ID']:
+            kwargs = {}
+            try:
+                kwargs = User.objects.get(username=row['Username']).id
+            except User.DoesNotExist:
+                for (col, val) in row.iteritems():
+                    if col in ['First Name', 'Last Name', 'Username']:
+                        kwargs[col.lower().replace(' ', '_')] = val
+                    else:
+                        if val or val.lower == 'yes':
+                            kwargs[col.lower().replace(' ', '_')] = True
+                        else:
+                            kwargs[col.lower().replace(' ', '_')] = False
+            except KeyError:
+                raise ValidationError(
+                    '''Row {0} requires  'Username' field'''.format(row['ID'])
+                )
+            new_users.append(kwargs)
+
+    return new_users
+
+
+def parse_extract(file_up, import_type):
+    '''
+    Parses an extract file into an list of InventoryItems.
+
+    This method does basic validation on non-relational fields.
+
+    Positional arguments:
+        file_up -- The Django file object corresponding to the uploaded
+                    extract. Accepted file formats are .xls, .xlsx, and .csv
+
+    Returns:
+        A dictionary containing lists of the objects that must be created for
+        the upload. These lists will be processed by later functions
+    '''
+    try:
+        data = csv.DictReader(file_up)
+    except Exception:
+        raise ValidationError(
+            'Something went wrong. Please look at your file and try again.'
+        )
+
+    if import_type == 'InventoryItem':
+        return __parse_inventory_extract(data)
+    elif import_type == 'User':
+        return __parse_user_extract(data)
 
 
 def parse_zip(file_up):

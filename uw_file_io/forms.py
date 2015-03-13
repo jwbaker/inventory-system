@@ -6,6 +6,7 @@ class ImportForm(forms.Form):
     model = forms.ChoiceField(
         choices=(
             ('II', 'Inventory Items'),
+            ('US', 'Users'),
         ),
         label='Record kind'
     )

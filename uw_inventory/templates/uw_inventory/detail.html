@@ -5,6 +5,7 @@
 {% load uw_inventory_model_tags %}
 
 {% block gutter_nav %}
+  {{ block.super }}
   {% if perms.uw_inventory.add_inventoryitem %}  
     <li class="list-group-item">
       <a href="{% url 'uw_inventory.views.inventory_copy' inventory_item.id %}">
@@ -16,11 +17,11 @@
     <li class="list-group-item">
       {% if inventory_item.to_display %}
         <a href="{% url 'uw_inventory.views.inventory_delete' inventory_item.id %}">
-          <i class="delete navigate"></i> Delete
+          <i class="delete navigate fa-fw"></i> Delete
         </a>
       {% else %}
         <a href="{% url 'uw_inventory.views.inventory_undelete' inventory_item.id %}">
-          <i class="restore navigate"></i> Restore
+          <i class="restore navigate fa-fw"></i> Restore
         </a>
       {% endif %}
     </li>
@@ -45,6 +46,7 @@
     <input type="number" id="scroll-position" name="scroll-position" class="persist-hidden" />
 
     {% edit_form form perms.uw_inventory.change_inventoryitem shown_excluded_fields %}
+    {% custom_fields inventory_item.custom_field_data %}
 
     {# Putting this template here makes me cry, but it works for now #}
     <div class="singleton-formset form-group list-group-item clearfix">

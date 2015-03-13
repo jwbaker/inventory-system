@@ -85,30 +85,50 @@ def file_import(request):
         # Clear these session tokens on every file upload
         # This will (hopefully) prevent unexpected behaviour if the user
         # does some silliness
+        request.session.pop('ImportType', None)
         request.session.pop('IntermediateItems', None)
         request.session.pop('NewTerms', None)
         request.session.pop('NewUsers', None)
         request.session.pop('NewFiles', None)
         request.session.pop('NewImages', None)
 
-        try:
-            parse_response = parse_extract(request.FILES['file_up'])
-        except (TypeError, ValidationError) as e:
-            messages.error(
-                request,
-                str(e[0])
-            )
-            return redirect('uw_file_io.views.file_import')
-        else:
-            request.session['IntermediateItems'] = parse_response[
-                'new_items'
-            ]
-            request.session['NewTerms'] = parse_response['new_terms']
-            request.session['NewUsers'] = parse_response['new_users']
-            request.session['NewImages'] = parse_response['new_images']
-            request.session['NewFiles'] = parse_response['new_files']
+        if request.POST['model'] == 'II':
+            request.session['ImportType'] = 'InventoryItem'
+            try:
+                parse_response = parse_extract(
+                    request.FILES['file_up'],
+                    'InventoryItem'
+                )
+            except (TypeError, ValidationError) as e:
+                messages.error(
+                    request,
+                    str(e[0])
+                )
+                return redirect('uw_file_io.views.file_import')
+            else:
+                request.session['IntermediateItems'] = parse_response[
+                    'new_items'
+                ]
+                request.session['NewTerms'] = parse_response['new_terms']
+                request.session['NewUsers'] = parse_response['new_users']
+                request.session['NewImages'] = parse_response['new_images']
+                request.session['NewFiles'] = parse_response['new_files']
 
-            return redirect('uw_file_io.views.add_terms')
+                return redirect('uw_file_io.views.add_terms')
+        elif request.POST['model'] == 'US':
+            request.session['ImportType'] = 'User'
+            try:
+                request.session['NewUsers'] = parse_extract(
+                    request.FILES['file_up']
+                )
+            except ValidationError as e:
+                messages.error(
+                    request,
+                    str(e[0])
+                )
+                return redirect('uw_file_io.views.file_import')
+            else:
+                return redirect('uw_file_io.views.finish_import')
 
     message_list = _collect_messages(request)
     return render(request, 'uw_file_io/import/start.html', {
@@ -206,59 +226,79 @@ def finish_import(request):
     user_list = request.session.get('NewUsers', [])
     images_list = request.session.get('NewImages', {})
     files_list = request.session.get('NewFiles', {})
+    new_items = []
     transactions = []
 
-    term_to_index = process_terms_transactions(term_list, transactions)
-    user_to_index = process_user_transactions(user_list, transactions)
-    image_to_index = process_image_transactions(images_list, transactions)
-    file_to_index = process_file_transactions(files_list, transactions)
-    new_items = []
+    if isinstance(images_list, list) and len(images_list) == 0:
+        images_list = {}
+    elif isinstance(images_list, list):
+        raise TypeError('images_list is a list instead of a dict')
+    if isinstance(files_list, list) and len(files_list) == 0:
+        files_list = {}
+    elif isinstance(files_list, list):
+        raise TypeError('files_list is a list instead of a dict')
 
-    for item_args in item_list:
-        for field in ['location_id', 'manufacturer_id', 'supplier_id']:
-            if (isinstance(item_args.get(field, None), unicode)):
-                item_args[field] = term_to_index[item_args[field]]
+    if request.session['ImportType'] == 'InventoryItem':
+        term_to_index = process_terms_transactions(term_list, transactions)
 
-        for field in ['technician_id', 'owner_id']:
-            if (isinstance(item_args.get(field, None), unicode)):
-                item_args[field] = user_to_index[item_args[field]]
-        if 'image_id' in item_args:
-            picture_id = item_args['image_id']
-            del item_args['image_id']
+        user_to_index = process_user_transactions(user_list, transactions)
+        image_to_index = process_image_transactions(images_list, transactions)
+        file_to_index = process_file_transactions(files_list, transactions)
 
-        if 'sop_file_id' in item_args:
-            item_args['sop_file_id'] = file_to_index[item_args['sop_file_id']]
+        for item_args in item_list:
+            for field in ['location_id', 'manufacturer_id', 'supplier_id']:
+                if (isinstance(item_args.get(field, None), unicode)):
+                    item_args[field] = term_to_index[item_args[field]]
 
-        item = InventoryItem(**item_args)
-        try:
-            item.save()
-        except ValidationError:
-            messages.error(
-                request,
-                'There was a problem with your file.'
-            )
-            reverse_transactions(transactions)
-            return redirect('uw_file_io.views.file_import')
-        else:
-            if picture_id:
-                picture_id = image_to_index[picture_id]
-                image = ItemImage.objects.get(id=picture_id)
-                image.inventory_item_id = item.id
-                image.save()
-            if item.sop_file_id:
-                sop_file = item.sop_file
-                sop_file.inventory_item_id = item.id
-                sop_file.save()
-            transactions.append(
-                'Create InventoryItem with id={0}'.format(item.id)
-            )
-            new_items.append(item)
+            for field in ['technician_id', 'owner_id']:
+                if (isinstance(item_args.get(field, None), unicode)):
+                    item_args[field] = user_to_index[item_args[field]]
+            if 'image_id' in item_args:
+                picture_id = item_args['image_id']
+                del item_args['image_id']
+
+            if 'sop_file_id' in item_args:
+                item_args['sop_file_id'] = file_to_index[
+                    item_args['sop_file_id']
+                ]
+
+            item = InventoryItem(**item_args)
+            try:
+                item.save()
+            except ValidationError:
+                messages.error(
+                    request,
+                    'There was a problem with your file.'
+                )
+                reverse_transactions(transactions)
+                return redirect('uw_file_io.views.file_import')
+            else:
+                if picture_id:
+                    picture_id = image_to_index[picture_id]
+                    image = ItemImage.objects.get(id=picture_id)
+                    image.inventory_item_id = item.id
+                    image.save()
+                if item.sop_file_id:
+                    sop_file = item.sop_file
+                    sop_file.inventory_item_id = item.id
+                    sop_file.save()
+                transactions.append(
+                    'Create InventoryItem with id={0}'.format(item.id)
+                )
+                new_items.append(item)
+    elif request.session['ImportType'] == 'User':
+        for user_args in user_list:
+            if isinstance(user_args, dict):
+                new_user = User(**user_args)
+                new_user.save()
+                new_items.append(new_user)
 
     request.session.pop('IntermediateItems', None)
     request.session.pop('NewTerms', None)
     request.session.pop('NewUsers', None)
     request.session.pop('NewFiles', None)
     request.session.pop('NewImages', None)
+    request.session.pop('ImportType', None)
 
     messages.success(
         request,
