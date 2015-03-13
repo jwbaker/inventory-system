@@ -180,7 +180,9 @@ def add_users(request):
 
 def add_images(request):
     if request.method == 'POST':
-        request.session['NewImages'] = parse_zip(request.FILES['file_up'])
+        request.session['NewImages'] = parse_zip(
+            request.FILES.get('file_up', None)
+        )
         return redirect('uw_file_io.views.add_files')
 
     if not request.session.get('NewImages', None):
@@ -201,7 +203,9 @@ def add_images(request):
 
 def add_files(request):
     if request.method == 'POST':
-        request.session['NewFiles'] = parse_zip(request.FILES['file_up'])
+        request.session['NewFiles'] = parse_zip(
+            request.FILES.get('file_up')
+        )
         return redirect('uw_file_io.views.finish_import')
 
     if not request.session.get('NewFiles', None):
