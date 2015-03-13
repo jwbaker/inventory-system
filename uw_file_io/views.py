@@ -257,11 +257,11 @@ def finish_import(request):
             for field in ['technician_id', 'owner_id']:
                 if (isinstance(item_args.get(field, None), unicode)):
                     item_args[field] = user_to_index[item_args[field]]
-            if 'image_id' in item_args:
+            if item_args.get('image_id', None):
                 picture_id = item_args['image_id']
                 del item_args['image_id']
 
-            if 'sop_file_id' in item_args:
+            if item_args.get('sop_file_id', None):
                 item_args['sop_file_id'] = file_to_index[
                     item_args['sop_file_id']
                 ]
