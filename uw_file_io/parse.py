@@ -1,10 +1,8 @@
+import csv
 import os
 import re
 from tempfile import NamedTemporaryFile
 from zipfile import BadZipfile, ZipFile
-
-import pyexcel
-import pyexcel.ext.xlsx
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -224,7 +222,7 @@ def __parse_inventory_extract(data):
     new_files = []
     new_images = []
     for row in data:
-        if row['ID']:
+        if row.get('ID', None):
             kwargs = {}
 
             for (col, val) in row.iteritems():
@@ -269,7 +267,7 @@ def __parse_inventory_extract(data):
                         else:
                             store_value = 0
                     elif field_meta['type'] == 'choice':
-                        store_value = InventoryItem.get_status_key(val) or None
+                        store_value = InventoryItem.get_status_key(val) or 'SA'
                     elif field_meta['type'] == 'rename':
                         store_value = val or None
                     elif field_meta['type'] == 'file':
@@ -357,20 +355,12 @@ def parse_extract(file_up, import_type):
         A dictionary containing lists of the objects that must be created for
         the upload. These lists will be processed by later functions
     '''
-    extension = file_up.name.split('.')[1]
     try:
-        sheet = pyexcel.load_from_memory(
-            extension,
-            file_up.read(),
-            name_columns_by_row=0
-        )
-    except NotImplementedError:
+        data = csv.DictReader(file_up)
+    except Exception:
         raise ValidationError(
-            '''Invalid file type "{0}". Please upload one of: xls, xlsx, csv.
-            '''.format(extension)
+            'Something went wrong. Please look at your file and try again.'
         )
-
-    data = sheet.to_records()
 
     if import_type == 'InventoryItem':
         return __parse_inventory_extract(data)

@@ -229,8 +229,18 @@ def finish_import(request):
     new_items = []
     transactions = []
 
+    if isinstance(images_list, list) and len(images_list) == 0:
+        images_list = {}
+    elif isinstance(images_list, list):
+        raise TypeError('images_list is a list instead of a dict')
+    if isinstance(files_list, list) and len(files_list) == 0:
+        files_list = {}
+    elif isinstance(files_list, list):
+        raise TypeError('files_list is a list instead of a dict')
+
     if request.session['ImportType'] == 'InventoryItem':
         term_to_index = process_terms_transactions(term_list, transactions)
+
         user_to_index = process_user_transactions(user_list, transactions)
         image_to_index = process_image_transactions(images_list, transactions)
         file_to_index = process_file_transactions(files_list, transactions)
