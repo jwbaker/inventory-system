@@ -535,19 +535,19 @@ def process_image_transactions(image_list, transactions):
 
     for (file_path, temp_file) in image_list.iteritems():
         filename = file_path.split('/')[-1]
-    if not filename:
-        continue
-        with open(temp_file) as fd:
-            temp = ItemImage()
-            temp.file_field.save(
-                filename,
-                File(fd),
-                save=True
-            )
-            image_to_index[filename] = temp.id
+        if not filename:
+            continue
+            with open(temp_file) as fd:
+                temp = ItemImage()
+                temp.file_field.save(
+                    filename,
+                    File(fd),
+                    save=True
+                )
+                image_to_index[filename] = temp.id
 
-        transactions.append('Create ItemImage with id={0}'.format(temp.id))
-        __move_tempfile(temp_file, temp.file_field.name)
+            transactions.append('Create ItemImage with id={0}'.format(temp.id))
+            __move_tempfile(temp_file, temp.file_field.name)
 
     return image_to_index
 
