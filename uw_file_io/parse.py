@@ -201,11 +201,11 @@ def __get_user_id_or_create(user_value, new_users):
     '''
     matches = User.objects.all()
     if ' ' in user_value:
-	for term in user_value.split():
-	    matches = matches.filter(
-		Q(first_name__icontains=term) |
-		Q(last_name__icontains=term)
-	    )
+        for term in user_value.split():
+            matches = matches.filter(
+                Q(first_name__icontains=term) |
+                Q(last_name__icontains=term)
+            )
     else:
         matches = matches.filter(
             Q(username=user_value) |
@@ -536,8 +536,8 @@ def process_image_transactions(image_list, transactions):
 
     for (file_path, temp_file) in image_list.iteritems():
         filename = file_path.split('/')[-1]
-	if not filename:
-	    continue
+    if not filename:
+        continue
         with open(temp_file) as fd:
             temp = ItemImage()
             temp.file_field.save(
