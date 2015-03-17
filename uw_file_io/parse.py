@@ -199,11 +199,19 @@ def __get_user_id_or_create(user_value, new_users):
         new_users -- A list of users that have been created this session.
                         This is an "out" parameter, modified by the method
     '''
-    matches = User.objects.filter(
-        Q(username=user_value) |
-        Q(first_name__icontains=user_value) |
-        Q(last_name__icontains=user_value)
-    )
+    matches = User.objects.all()
+    if ' ' in user_value:
+	for term in user_value.split():
+	    matches = matches.filter(
+		Q(first_name__icontains=term) |
+		Q(last_name__icontains=term)
+	    )
+    else:
+        matches = matches.filter(
+            Q(username=user_value) |
+            Q(first_name__icontains=user_value) |
+            Q(last_name__icontains=user_value)
+        )
 
     if len(matches) == 0:
         new_users[user_value] = None
@@ -222,10 +230,12 @@ def __parse_inventory_extract(data):
     new_files = []
     new_images = []
     for row in data:
+        picture = None
         if row.get('ID', None):
             kwargs = {}
 
             for (col, val) in row.iteritems():
+                store_value = None
                 try:
                     field_meta = IMPORT_FIELD_DATA[col]
                     if field_meta['type'] == 'skip':
@@ -274,7 +284,7 @@ def __parse_inventory_extract(data):
                         store_value = val.split('/')[-1]
                         new_files.append(store_value)
                     elif field_meta['type'] == 'image':
-                        picture = val
+                        picture = val.split('/')[-1]
                         new_images.append(val.split('/')[-1])
                     kwargs[field_meta['field_name']] = store_value
                 except KeyError:
@@ -301,7 +311,8 @@ def __parse_inventory_extract(data):
                                 and try again.'''.format(row['ID'])
                 )
             else:
-                kwargs['image_id'] = picture
+                if picture:
+                    kwargs['image_id'] = picture
                 new_items.append(kwargs)
     response = {
         'status': True,
@@ -525,6 +536,8 @@ def process_image_transactions(image_list, transactions):
 
     for (file_path, temp_file) in image_list.iteritems():
         filename = file_path.split('/')[-1]
+	if not filename:
+	    continue
         with open(temp_file) as fd:
             temp = ItemImage()
             temp.file_field.save(
@@ -532,7 +545,7 @@ def process_image_transactions(image_list, transactions):
                 File(fd),
                 save=True
             )
-            image_to_index[file_path] = temp.id
+            image_to_index[filename] = temp.id
 
         transactions.append('Create ItemImage with id={0}'.format(temp.id))
         __move_tempfile(temp_file, temp.file_field.name)
@@ -552,7 +565,7 @@ def process_file_transactions(file_list, transactions):
                 File(fd),
                 save=True
             )
-            file_to_index[file_path] = temp.id
+            file_to_index[filename] = temp.id
 
         transactions.append('Create ItemFile with id={0}'.format(temp.id))
         __move_tempfile(temp_file, temp.file_field.name)

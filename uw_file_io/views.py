@@ -250,16 +250,18 @@ def finish_import(request):
         file_to_index = process_file_transactions(files_list, transactions)
 
         for item_args in item_list:
+            picture_id = None
             for field in ['location_id', 'manufacturer_id', 'supplier_id']:
-                if (isinstance(item_args.get(field, None), unicode)):
+                if (isinstance(item_args.get(field, None), str)):
                     item_args[field] = term_to_index[item_args[field]]
 
             for field in ['technician_id', 'owner_id']:
-                if (isinstance(item_args.get(field, None), unicode)):
+                if (isinstance(item_args.get(field, None), str)):
                     item_args[field] = user_to_index[item_args[field]]
+		item_args.pop(field, None)
             if item_args.get('image_id', None):
                 picture_id = item_args['image_id']
-                del item_args['image_id']
+            item_args.pop('image_id', None)
 
             if item_args.get('sop_file_id', None):
                 item_args['sop_file_id'] = file_to_index[
@@ -278,10 +280,15 @@ def finish_import(request):
                 return redirect('uw_file_io.views.file_import')
             else:
                 if picture_id:
-                    picture_id = image_to_index[picture_id]
-                    image = ItemImage.objects.get(id=picture_id)
-                    image.inventory_item_id = item.id
-                    image.save()
+                    if isinstance(picture_id, str):
+                        try:
+                            picture_id = image_to_index[picture_id]
+                        except KeyError:
+                            pass
+                        else:
+                            image = ItemImage.objects.get(id=picture_id)
+                            image.inventory_item_id = item.id
+                            image.save()
                 if item.sop_file_id:
                     sop_file = item.sop_file
                     sop_file.inventory_item_id = item.id
