@@ -109,7 +109,7 @@
         {# we need to update the value of the real checkbox control #}
         var checkboxes = $('i.checkbox-2');
         for(var i = 0; i < checkboxes.length; i++){
-          var hidden_input = $('input#' + checkboxes[i].id);
+          hidden_input = $(checkboxes[i]).siblings('input[type="checkbox"]');
           var checkbox_value = checkboxes[i].getAttribute('value');
 
           if(checkbox_value === 'Yes'){

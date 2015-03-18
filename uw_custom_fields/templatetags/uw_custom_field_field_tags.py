@@ -60,8 +60,18 @@ def __text_widget_render(field_data):
     return return_string
 
 
-def __date_widget_render(field_data):
-    pass
+def __bool_widget_render(field_data):
+    return_string = '''<i class="form-element item-input checkbox-2 fa-2x {0}"
+    value="{1}"></i>'''.format(
+        'checked' if field_data.get('value', False) else '',
+        'Yes' if field_data.get('value', False) else 'No'
+    )
+    return_string += '''<input type="checkbox" class="persist-hidden"
+    {0} />'''.format(
+        'checked="checked"' if field_data.get('value', False) else ''
+    )
+
+    return return_string
 
 
 @register.simple_tag
@@ -70,6 +80,8 @@ def render_custom_widget(field_data):
         widget_string = __text_widget_render(field_data)
     elif field_data['type'] == 'date':
         widget_string = __text_widget_render(field_data)
+    elif field_data['type'] == 'bool':
+        widget_string = __bool_widget_render(field_data)
     else:
         widget_string = ''
 
