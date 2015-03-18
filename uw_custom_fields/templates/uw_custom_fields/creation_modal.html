@@ -9,36 +9,41 @@
         <div class="container">
           <form class="col-xs-6 form-horizontal">
             <div class="form-group">
-              <label for="inputFieldName" class="col-xs-2 control-label">Name</label>
+              <label for="inputFieldName" class="col-xs-2 control-label">Name<span class="text-danger">*</span></label>
               <div class="col-xs-8">
                 <input type="text" class="form-control" id="inputFieldName" placeholder="Name" />
+                <ul class="errorlist">
+                  <li>This field is required</li>
+                </ul>
               </div>
             </div>
             
             <div class="form-group">
-              <label for="inputFieldType" class="col-xs-2 control-label">Type</label>
+              <label for="inputFieldType" class="col-xs-2 control-label">Type<span class="text-danger">*</span></label>
               <div class="col-xs-8">
                 <select class="form-control" id="inputFieldType">
-                  <option>---</option>
-                  <option>Text</option>
-                  <option>Select</option>
-                  <option>Date</option>
-                  <option>Yes/No</option>
-                  <option>Number</option>
+                  <option value="">Please select a type</option>
+                  <option value="text">Text</option>
+                  <option value="choice">Select</option>
+                  <option value="date">Date</option>
+                  <option value="bool">Yes/No</option>
+                  <option value="number">Number</option>
                 </select>
+                <ul class="errorlist">
+                  <li>This field is required</li>
+                </ul>
               </div>
             </div>
 
             <div class="form-group fieldOptions textFieldOptions hidden">
               <label for="inputFieldSecondaryType" class="col-xs-2 control-label">Secondary Type</label>
               <div class="col-xs-8">
-                <select class="form-control" id="inputFieldSecondaryType">
-                  <option>---</option>
-                  <option>Short</option>
-                  <option>Long</option>
-                  <option>Email</option>
-                  <option>Obscured</option>
-                  <option>Autocomplete</option>
+                <select class="form-control" id="inputFieldSecondaryTextType">
+                  <option value="">None</option>
+                  <option value="textarea">Long</option>
+                  <option value="email">Email</option>
+                  <option value="password">Obscured</option>
+                  <option value="autocomplete">Autocomplete</option>
                 </select>
               </div>
             </div>
@@ -60,7 +65,7 @@
             <div class="form-group fieldOptions selectFieldOptions hidden">
               <label for="inputFieldAllowDups" class="col-xs-2 control-label">Allow Multiple?</label>
               <div class="col-xs-8">
-                <i class="fa fa-square-o checkbox fa-2x" id="inputFieldAllowDups"></i>
+                <i class="checkbox-2 fa-2x" id="inputFieldAllowDups"></i>
               </div>
             </div>
 
@@ -68,11 +73,11 @@
               <label for="inputFieldSelectControl" class="col-xs-2 control-label">Control</label>
               <div class="col-xs-8">
                 <select class="form-control" id="inputFieldSelectControl">
-                  <option>Auto</option>
-                  <option class="itemControl">Radio Buttons</option>
-                  <option class="itemControl">Dropdown List</option>
-                  <option class="itemControl hidden">Multi-select List</option>
-                  <option class="itemControl hidden">Checkboxes</option>
+                  <option value="auto" selected="selected">Auto</option>
+                  <option value="radio" class="itemControl">Radio Buttons</option>
+                  <option value="select" class="itemControl">Dropdown List</option>
+                  <option value="multiselect" class="itemControl hidden">Multi-select List</option>
+                  <option value="checkbox" class="itemControl hidden">Checkboxes</option>
                 </select>
               </div>
             </div>
@@ -80,10 +85,9 @@
             <div class="form-group fieldOptions numberFieldOptions hidden">
               <label for="inputFieldSecondaryType" class="col-xs-2 control-label">Secondary Type</label>
               <div class="col-xs-8">
-                <select class="form-control" id="inputFieldSecondaryType">
-                  <option>---</option>
-                  <option>Raw</option>
-                  <option>Currency</option>
+                <select class="form-control" id="inputFieldSecondaryNumberType">
+                  <option value="">---</option>
+                  <option value="currency">Currency</option>
                 </select>
               </div>
             </div>
@@ -92,13 +96,12 @@
               <label for="inputFieldPrecision" class="col-xs-2 control-label">Precision</label>
               <div class="col-xs-8">
                 <select class="form-control" id="inputFieldPrecision">
-                  <option>---</option>
-                  <option>1,000</option>
-                  <option>100</option>
-                  <option>10</option>
-                  <option>1</option>
-                  <option>0.1</option>
-                  <option>0.01</option>
+                  <option value="1000">1,000</option>
+                  <option value="100">100</option>
+                  <option value="10">10</option>
+                  <option value="1" selected="selected">1</option>
+                  <option value="0.1">0.1</option>
+                  <option value="0.01">0.01</option>
                 </select>
               </div>
             </div>
@@ -106,25 +109,25 @@
             <div class="form-group fieldOptions numberFieldOptions hidden">
               <label for="inputFieldAllowNegative" class="col-xs-2 control-label">Allow Negative?</label>
               <div class="col-xs-8">
-                <i class="fa fa-square-o checkbox fa-2x" id="inputFieldAllowNegative"></i>
+                <i class="checkbox-2 fa-2x" id="inputFieldAllowNegative"></i>
               </div>
             </div>
 
-            <div class="form-group fieldOptions dateFieldOptions hidden">
+<!--                 <div class="form-group fieldOptions dateFieldOptions hidden">
               <label for="inputFieldInputStyle" class="col-xs-2 control-label">Input Style</label>
               <div class="col-xs-8">
                 <select class="form-control" id="inputFieldInputStyle">
                   <option>---</option>
-                  <option>Manual</option>
-                  <option>Automatic</option>
+                  <option value="manual">Manual</option>
+                  <option value="auto">Automatic</option>
                 </select>
               </div>
             </div>
-
+-->
             <div class="form-group fieldOptions dateFieldOptions hidden">
               <label for="inputFieldIncludeTime" class="col-xs-2 control-label">Include Time?</label>
               <div class="col-xs-8">
-                <i class="fa fa-square-o checkbox fa-2x" id="inputFieldIncludeTime"></i>
+                <i class="checkbox-2 fa-2x" id="inputFieldIncludeTime"></i>
               </div>
             </div>
           </form>

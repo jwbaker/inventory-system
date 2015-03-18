@@ -3,6 +3,7 @@
 {% load uw_forms_field_tags %}
 {% load uw_forms_format_tags %}
 {% load uw_inventory_model_tags %}
+{% load uw_custom_field_field_tags %}
 
 {% block gutter_nav %}
   {{ block.super }}
@@ -46,7 +47,7 @@
     <input type="number" id="scroll-position" name="scroll-position" class="persist-hidden" />
 
     {% edit_form form perms.uw_inventory.change_inventoryitem shown_excluded_fields %}
-    {% custom_fields inventory_item.custom_field_data %}
+    {% show_custom_fields inventory_item.custom_field_data %}
 
     {# Putting this template here makes me cry, but it works for now #}
     <div class="singleton-formset form-group list-group-item clearfix">
