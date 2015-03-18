@@ -74,6 +74,36 @@ def __bool_widget_render(field_data):
     return return_string
 
 
+def __number_widget_render(field_data):
+    input_widget = '''<input type='number' class="{0}" step="{1}" {2}
+    />'''.format(
+        '{classes}',
+        field_data['step'],
+        'min="0"' if not field_data['allow-negative'] else ''
+    )
+
+    if field_data['type-secondary'] == 'currency':
+        return_string = '''<div class="input-group item-input">
+        <span class="input-group-addon">$</span>{0}</div>'''
+
+        if field_data['step'] not in ['0.1', '0.01']:
+            return_string = return_string.format(
+                '{0}<span class="input-group-addon">.00</span>'.format(
+                    input_widget.format(classes='form-element form-control')
+                )
+            )
+        else:
+            return_string = return_string.format(
+                input_widget.format(classes='form-element form-control')
+            )
+    else:
+        return_string = input_widget.format(
+                classes='form-element form-control item-input'
+            )
+
+    return return_string
+
+
 @register.simple_tag
 def render_custom_widget(field_data):
     if field_data['type'] == 'text':
@@ -82,6 +112,8 @@ def render_custom_widget(field_data):
         widget_string = __text_widget_render(field_data)
     elif field_data['type'] == 'bool':
         widget_string = __bool_widget_render(field_data)
+    elif field_data['type'] == 'number':
+        widget_string = __number_widget_render(field_data)
     else:
         widget_string = ''
 
