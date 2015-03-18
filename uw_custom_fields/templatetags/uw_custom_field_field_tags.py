@@ -110,6 +110,31 @@ def __number_widget_render(field_data):
     return return_string
 
 
+def __choice_widget_render(field_data):
+    if field_data['widget'] == 'multiselect':
+        return_string = '''<select class="form-element form-control
+        item-input" multiple="multiple">{0}</select>'''
+        option_template = '<option value="{0}">{0}</option>'
+    elif field_data['widget'] == 'select':
+        return_string = '''<select class="form-element form-control item-input">
+        {0}</select>'''
+        option_template = '<option value="{0}">{0}</option>'
+    elif field_data['widget'] in ['checkbox', 'radio']:
+        return_string = '<div class="item-input">{0}</div>'
+        option_template = '<label><input type="{0}" /> {1}</label>'.format(
+            field_data['widget'],
+            '{0}'
+        )
+
+    options = ''
+    for option in field_data['options']:
+        options += option_template.format(option)
+
+    return_string = return_string.format(options)
+
+    return return_string
+
+
 @register.simple_tag
 def render_custom_widget(field_data):
     if field_data['type'] == 'text':
@@ -120,6 +145,8 @@ def render_custom_widget(field_data):
         widget_string = __bool_widget_render(field_data)
     elif field_data['type'] == 'number':
         widget_string = __number_widget_render(field_data)
+    elif field_data['type'] == 'choice':
+        widget_string = __choice_widget_render(field_data)
     else:
         widget_string = ''
 
