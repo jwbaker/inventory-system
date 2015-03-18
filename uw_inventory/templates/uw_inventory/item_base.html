@@ -207,12 +207,7 @@
                 }
               })();
               break;
-            case 'date':
-              if(modal.find('#inputFieldIncludeTime').hasClass('checked')){
-                fieldData['type'] = 'datetime';
-              }
-              break;
-            case 'bool': break;
+            case 'date': case 'bool': break;
             case 'number':
               fieldData['type-secondary'] = modal.find('#inputFieldSecondaryNumberType').val();
               fieldData['step'] = modal.find('#inputFieldPrecision').val();
