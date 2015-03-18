@@ -24,12 +24,15 @@ FIELD_TYPE_TO_ICON = {
 
 def __text_widget_render(field_data):
     if field_data.get('type-secondary', '') == 'textarea':
-        return_string = '<textarea class="{classes}">{value}</textarea>'
+        return_string = '''<textarea class="{classes}" maxlength="{length}">
+        {value}</textarea>'''
     else:
-        return_string = '<input type="{0}" class="{1}" value="{2}" />'.format(
+        return_string = '''<input type="{0}" class="{1}" value="{2}"
+        maxlength="{3}" />'''.format(
             field_data.get('type-secondary', '') or field_data['type'] or'text',
             '{classes}',
-            '{value}'
+            '{value}',
+            '{length}'
         )
 
     if field_data.get('type-secondary', '') in ['email', 'password']:
@@ -39,7 +42,8 @@ def __text_widget_render(field_data):
             FIELD_TYPE_TO_ICON[field_data['type-secondary']],
             return_string.format(
                 classes='form-element form-control',
-                value=field_data.get('value', '')
+                value=field_data.get('value', ''),
+                length=field_data.get('length', '255')
             )
         )
     elif field_data['type'] == 'date':
@@ -49,13 +53,15 @@ def __text_widget_render(field_data):
             FIELD_TYPE_TO_ICON[field_data['type']],
             return_string.format(
                 classes='form-element form-control',
-                value=field_data.get('value', '')
+                value=field_data.get('value', ''),
+                length=field_data.get('length', '255')
             )
         )
     else:
         return_string = return_string.format(
             classes='form-element form-control item-input',
-            value=field_data.get('value', '')
+            value=field_data.get('value', ''),
+            length=field_data.get('length', '255')
         )
     return return_string
 
