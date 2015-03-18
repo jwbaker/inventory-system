@@ -206,11 +206,12 @@ def __get_user_id_or_create(user_value, new_users):
                 Q(first_name__icontains=term) |
                 Q(last_name__icontains=term)
             )
-    matches = matches.filter(
-        Q(username__iexact=user_value) |
-        Q(first_name__icontains=user_value) |
-        Q(last_name__icontains=user_value)
-    )
+    else:
+        matches = matches.filter(
+            Q(username__iexact=user_value) |
+            Q(first_name__icontains=user_value) |
+            Q(last_name__icontains=user_value)
+        )
 
     if len(matches) == 0:
         new_users[user_value] = None
