@@ -1,6 +1,7 @@
 import csv
 import os
 import re
+import shutil
 from tempfile import NamedTemporaryFile
 from zipfile import BadZipfile, ZipFile
 
@@ -206,11 +207,12 @@ def __get_user_id_or_create(user_value, new_users):
                 Q(first_name__icontains=term) |
                 Q(last_name__icontains=term)
             )
-    matches = matches.filter(
-        Q(username__iexact=user_value) |
-        Q(first_name__icontains=user_value) |
-        Q(last_name__icontains=user_value)
-    )
+    else:
+        matches = matches.filter(
+            Q(username__iexact=user_value) |
+            Q(first_name__icontains=user_value) |
+            Q(last_name__icontains=user_value)
+        )
 
     if len(matches) == 0:
         new_users[user_value] = None
@@ -387,12 +389,14 @@ def parse_zip(file_up):
         with ZipFile(file_up, mode='r') as archive:
             for filename in archive.namelist():
                 with archive.open(filename, mode='r') as curr_file:
-                    with NamedTemporaryFile(delete=False) as temp_file:
+                    with NamedTemporaryFile(delete=False, dir='files') as temp_file:
                         temp_file.write(curr_file.read())
                         new_files[filename] = temp_file.name
 
     except BadZipfile:
         raise IOError('File was not a *.zip archive.')
+    else:
+        shutil.rmtree('files/tmp')
 
     return new_files
 
