@@ -533,7 +533,7 @@ def process_user_transactions(user_list, transactions):
 def __move_tempfile(tempfile_path, file_name):
     os.renames(
         tempfile_path,
-        filename
+        file_name
     )
 
 
