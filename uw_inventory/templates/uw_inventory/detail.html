@@ -189,6 +189,12 @@
 
         savedParagraph.text(saveText);
 
+        if(inputControl.parent().is('.custom-field-container')){
+          var custom_field_json = JSON.parse($('textarea#inputCustomFields').val() || '{}');
+          custom_field_json[inputControl.parent().attr('id')]['value'] = saveText;
+          $('textarea#inputCustomFields').val(JSON.stringify(custom_field_json));
+        }
+
         editClickHandler($(this));
       });
 
