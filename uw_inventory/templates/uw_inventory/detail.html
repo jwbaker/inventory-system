@@ -46,6 +46,8 @@
 
     <input type="number" id="scroll-position" name="scroll-position" class="persist-hidden" />
 
+    <textarea name="custom_field_data" id="inputCustomFields" class="persist-hidden">{{ inventory_item.custom_field_data|default:'' }}</textarea>
+
     {% edit_form form perms.uw_inventory.change_inventoryitem shown_excluded_fields %}
     {% show_custom_fields inventory_item.custom_field_data %}
 
