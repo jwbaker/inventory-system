@@ -60,7 +60,7 @@ class ItemFile(models.Model):
             return ''
 
     description = models.TextField(blank=True, null=True)
-    file_field = models.FileField(upload_to='files/%Y/%m/%d/')
+    file_field = models.FileField(upload_to='media/files/%Y/%m/%d/')
     inventory_item = models.ForeignKey(
         # Using quotes evaluates this reference lazily, which lets us have
         # this circular reference
@@ -101,7 +101,7 @@ class ItemImage(models.Model):
             ('view_deleted_itemimage', 'Can view deleted item images'),
         )
     description = models.TextField(blank=True, null=True)
-    file_field = models.ImageField(upload_to='images/%Y/%m/%d/')
+    file_field = models.ImageField(upload_to='media/images/%Y/%m/%d/')
     inventory_item = models.ForeignKey(
         'InventoryItem',
         blank=True,

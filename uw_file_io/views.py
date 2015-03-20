@@ -181,8 +181,9 @@ def add_users(request):
 def add_images(request):
     if request.method == 'POST':
         request.session['NewImages'] = parse_zip(
-            request.FILES.get('file_up', None)
+            request.FILES.get('file_up')
         )
+        print request.session['NewImages']
         return redirect('uw_file_io.views.add_files')
 
     if not request.session.get('NewImages', None):
@@ -258,7 +259,7 @@ def finish_import(request):
             for field in ['technician_id', 'owner_id']:
                 if (isinstance(item_args.get(field, None), str)):
                     item_args[field] = user_to_index[item_args[field]]
-		item_args.pop(field, None)
+
             if item_args.get('image_id', None):
                 picture_id = item_args['image_id']
             item_args.pop('image_id', None)
@@ -284,11 +285,15 @@ def finish_import(request):
                         try:
                             picture_id = image_to_index[picture_id]
                         except KeyError:
-                            pass
+                            print 'Image not processed {0}'.format(picture_id)
                         else:
                             image = ItemImage.objects.get(id=picture_id)
                             image.inventory_item_id = item.id
                             image.save()
+                    else:
+                        image = ItemImage.objects.get(id=picture_id)
+                        image.inventory_item_id = item.id
+                        image.save()
                 if item.sop_file_id:
                     sop_file = item.sop_file
                     sop_file.inventory_item_id = item.id
