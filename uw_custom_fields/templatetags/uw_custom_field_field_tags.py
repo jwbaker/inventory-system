@@ -37,7 +37,7 @@ def __text_widget_render(field_data):
 
     if field_data.get('type-secondary', '') in ['email', 'password']:
         return_string = '''<div class="input-group item-input">
-         <span class="input-group-addon"><i class="fa fa-{0}"></i>
+         <span class="input-group-addon"><i class="fa-{0}"></i>
          </span>{1}</div>'''.format(
             FIELD_TYPE_TO_ICON[field_data['type-secondary']],
             return_string.format(
@@ -48,7 +48,7 @@ def __text_widget_render(field_data):
         )
     elif field_data['type'] == 'date':
         return_string = '''<div class="input-group item-input">
-         <span class="input-group-addon"><i class="fa fa-{0}"></i>
+         <span class="input-group-addon"><i class="fa-{0}"></i>
          </span>{1}</div>'''.format(
             FIELD_TYPE_TO_ICON[field_data['type']],
             return_string.format(
@@ -120,8 +120,9 @@ def __choice_widget_render(field_data):
         {0}</select>'''
         option_template = '<option value="{0}">{0}</option>'
     elif field_data['widget'] in ['checkbox', 'radio']:
-        return_string = '<div class="item-input">{0}</div>'
-        option_template = '<label><input type="{0}" /> {1}</label>'.format(
+        return_string = '<div class="item-input"><form>{0}</form></div>'
+        option_template = '''<div><label><input type="{0}" /> {1}
+        </label></div>'''.format(
             field_data['widget'],
             '{0}'
         )
