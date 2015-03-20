@@ -216,9 +216,11 @@
           }
           var oldData = JSON.parse($('textarea#inputCustomFields').val() || '{}');
           oldData[fieldKey] = fieldData;
-          console.log(oldData)
+
           $('textarea#inputCustomFields').val(JSON.stringify(oldData));
           modal.modal('hide');
+
+          $(window).trigger('pagechanges', true);
         }
       });
   </script>
