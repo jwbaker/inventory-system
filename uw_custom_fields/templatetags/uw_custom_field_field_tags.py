@@ -14,6 +14,7 @@ def show_custom_fields(field_data_string):
         field_list = []
     return {'fields': field_list}
 
+
 FIELD_TYPE_TO_ICON = {
     'email': 'envelope',
     'password': 'key',
@@ -24,60 +25,83 @@ FIELD_TYPE_TO_ICON = {
 
 def __text_widget_render(field_data):
     if field_data.get('type-secondary', '') == 'textarea':
-        return_string = '''<textarea class="{classes}" maxlength="{length}">
-        {value}</textarea>'''
+        return '''
+                <textarea
+                    class="{classes}"
+                    maxlength="{length}">
+                        {value}
+                </textarea>
+                '''.format(
+                    classes='form-element form-control item-input',
+                    value=field_data.get('value', ''),
+                    length=field_data.get('length', '255')
+                )
     else:
-        return_string = '''<input type="{0}" class="{1}" value="{2}"
-        maxlength="{3}" />'''.format(
-            field_data.get('type-secondary', '') or field_data['type'] or'text',
-            '{classes}',
-            '{value}',
-            '{length}'
-        )
+        input_widget = '''
+                        <input
+                            class="{classes}"
+                            maxlength="{length}"
+                            type="{type}"
+                            value="{value}" />
+                        '''
 
     if field_data.get('type-secondary', '') in ['email', 'password']:
-        return_string = '''<div class="input-group item-input">
-         <span class="input-group-addon"><i class="fa-{0}"></i>
-         </span>{1}</div>'''.format(
-            FIELD_TYPE_TO_ICON[field_data['type-secondary']],
-            return_string.format(
-                classes='form-element form-control',
-                value=field_data.get('value', ''),
-                length=field_data.get('length', '255')
-            )
-        )
+        return '''
+                <div class="input-group item-input">
+                    <span class="input-group-addon">
+                        <i class="fa-{0}"></i>
+                    </span>
+                        {1}
+                </div>
+                '''.format(
+                        FIELD_TYPE_TO_ICON[field_data['type-secondary']],
+                        input_widget.format(
+                            classes='form-element form-control',
+                            value=field_data.get('value', ''),
+                            length=field_data.get('length', '255'),
+                            type=field_data['type-secondary']
+                        )
+                )
     elif field_data['type'] == 'date':
-        return_string = '''<div class="input-group item-input">
-         <span class="input-group-addon"><i class="fa-{0}"></i>
-         </span>{1}</div>'''.format(
-            FIELD_TYPE_TO_ICON[field_data['type']],
-            return_string.format(
-                classes='form-element form-control',
-                value=field_data.get('value', ''),
-                length=field_data.get('length', '255')
-            )
-        )
+        return '''
+                <div class="input-group item-input">
+                    <span class="input-group-addon">
+                        <i class="fa-{0}"></i>
+                    </span>
+                        {1}
+                </div>
+                '''.format(
+                        FIELD_TYPE_TO_ICON[field_data['type-secondary']],
+                        input_widget.format(
+                            classes='form-element form-control',
+                            value=field_data.get('value', ''),
+                            length=field_data.get('length', '255'),
+                            type=field_data['type']
+                        )
+                )
     else:
-        return_string = return_string.format(
+        return input_widget.format(
             classes='form-element form-control item-input',
             value=field_data.get('value', ''),
-            length=field_data.get('length', '255')
+            length=field_data.get('length', '255'),
+            type='text'
         )
-    return return_string
 
 
 def __bool_widget_render(field_data):
-    return_string = '''<i class="form-element item-input checkbox-2 fa-2x {0}"
-    value="{1}"></i>'''.format(
-        'checked' if field_data.get('value', False) else '',
-        'Yes' if field_data.get('value', False) else 'No'
-    )
-    return_string += '''<input type="checkbox" class="persist-hidden"
-    {0} />'''.format(
-        'checked="checked"' if field_data.get('value', False) else ''
-    )
-
-    return return_string
+    return '''
+            <i
+                class="form-element item-input checkbox-2 fa-2x {0}"
+                value="{1}">
+            </i>
+            <input
+                type="checkbox"
+                class="persist-hidden"
+                {2} />'''.format(
+                    'checked' if field_data.get('value', False) else '',
+                    'Yes' if field_data.get('value', False) else 'No',
+                    'checked="checked"' if field_data.get('value', False) else ''
+            )
 
 
 def __number_widget_render(field_data):
