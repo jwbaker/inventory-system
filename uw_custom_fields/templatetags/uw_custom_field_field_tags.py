@@ -146,7 +146,7 @@ def __choice_widget_render(field_data):
         return_string = '''<select class="form-element form-control
         item-input" multiple="multiple">{0}</select>'''
         option_template = '<option value="{0}" {1}>{0}</option>'
-        blank_option_template = '<option value=""></option>'
+        blank_option_template = ''
     elif field_data['widget'] == 'select':
         return_string = '''<select class="form-element form-control item-input">
         {0}</select>'''

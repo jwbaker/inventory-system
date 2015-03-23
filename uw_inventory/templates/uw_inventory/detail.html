@@ -147,8 +147,17 @@
 
         if(inputControl.is('select')){
           {# inputControl was formerly the select box itself, but we need the selected option #}
-          inputControl = inputControl.find('option:selected');
-          saveText = inputControl.text();
+          var selectedOptions = inputControl.find('option:selected');
+          if(inputControl.is('select[multiple="multiple"]')){
+            saveText = '';
+            for (var i = 0; i < selectedOptions.length; i++) {
+              saveText += selectedOptions[i].value;
+
+              if(i !== selectedOptions.length - 1) saveText += ', ';
+            }
+          } else{
+            saveText = inputControl.text();
+          }
         } else if(inputControl.is('input[type="date"]')){
           {# Need to do this because sending the string alone into the Date constructor will #}
           {#   interpret the data as UTC, but we want it to be Eastern time #}
@@ -177,8 +186,11 @@
         } else if(inputControl.is('div.checkboxes')){
           var selectedOptions = inputControl.find('[type=checkbox]:checked, [type=radio]:checked');
           if(selectedOptions.length > 1){
+            saveText = '';
             for (var i = 0; i < selectedOptions.length; i++) {
-              saveText += selectedOptions[i].value + ', ';
+              saveText += selectedOptions[i].value;
+
+              if(i !== selectedOptions.length - 1) saveText += ', ';
             }
           } else if(selectedOptions.length == 1){
             saveText = selectedOptions[0].value
