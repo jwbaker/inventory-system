@@ -133,27 +133,54 @@ def __number_widget_render(field_data):
 
     return return_string
 
+TYPED_SELECTTION_STRINGS = {
+    'select': 'selected="selected"',
+    'multiselect': 'selected="selected"',
+    'checkbox': 'checked="checked"',
+    'radio': 'checked="checked"',
+}
+
 
 def __choice_widget_render(field_data):
     if field_data['widget'] == 'multiselect':
         return_string = '''<select class="form-element form-control
         item-input" multiple="multiple">{0}</select>'''
-        option_template = '<option value="{0}">{0}</option>'
+        option_template = '<option value="{0}" {1}>{0}</option>'
+        blank_option_template = '<option value=""></option>'
     elif field_data['widget'] == 'select':
         return_string = '''<select class="form-element form-control item-input">
         {0}</select>'''
-        option_template = '<option value="{0}">{0}</option>'
+        option_template = '<option value="{0}" {1}>{0}</option>'
+        blank_option_template = '<option value=""></option>'
     elif field_data['widget'] in ['checkbox', 'radio']:
-        return_string = '<div class="item-input"><form>{0}</form></div>'
-        option_template = '''<div><label><input type="{0}" /> {1}
-        </label></div>'''.format(
-            field_data['widget'],
-            '{0}'
-        )
+        return_string = '''
+                        <div class="item-input form-element checkboxes">
+                            {0}
+                        </div>'''
+        option_template = '''
+                            <div><label>
+                                <input type="{0}" name="{1}" value="{2}" {3}/>
+                                 {2}
+                            </label></div>
+                        '''.format(
+                                field_data['widget'],
+                                field_data['name'],
+                                '{0}',
+                                '{1}'
+                            )
+        blank_option_template = ''
 
-    options = ''
-    for option in field_data['options']:
-        options += option_template.format(option)
+    options = blank_option_template
+    for cur_option in field_data['options']:
+        try:
+            is_selected = cur_option == field_data['value']
+        except KeyError:
+            is_selected = False
+        selection_string = TYPED_SELECTTION_STRINGS[field_data['widget']]
+        options += option_template.format(
+            cur_option,
+            selection_string if is_selected else ''
+        )
 
     return_string = return_string.format(options)
 
