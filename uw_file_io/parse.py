@@ -1,11 +1,9 @@
 import csv
 import os
 import re
-import shutil
 from tempfile import NamedTemporaryFile
 from zipfile import BadZipfile, ZipFile
 
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.files import File
@@ -389,18 +387,16 @@ def parse_zip(file_up):
         with ZipFile(file_up, mode='r') as archive:
             for filename in archive.namelist():
                 with archive.open(filename, mode='r') as curr_file:
-                    with NamedTemporaryFile(delete=False, dir='media/temp') as temp_file:
+                    with NamedTemporaryFile(
+                            delete=False,
+                            dir='media/temp'
+                    ) as temp_file:
                         temp_file.write(curr_file.read())
                         new_files[filename] = temp_file.name
 
     except BadZipfile:
         raise IOError('File was not a *.zip archive.')
-#    else:
-#        print 'parse_zip Enter Else'
-#        try:
-#            shutil.rmtree('media/temp')
-#        except OSError:
-#            pass
+
     return new_files
 
 
@@ -535,6 +531,7 @@ def __move_tempfile(tempfile_path, file_name):
         tempfile_path,
         file_name
     )
+    os.remove(tempfile_path)
 
 
 def process_image_transactions(image_list, transactions):
@@ -542,7 +539,6 @@ def process_image_transactions(image_list, transactions):
 
     for (file_path, temp_file) in image_list.iteritems():
         filename = file_path.split('/')[-1]
-        print filename
         if filename:
             with open(temp_file) as fd:
                 temp = ItemImage()
@@ -555,7 +551,6 @@ def process_image_transactions(image_list, transactions):
 
             transactions.append('Create ItemImage with id={0}'.format(temp.id))
             __move_tempfile(temp_file, temp.file_field.name)
-    print image_to_index
     return image_to_index
 
 

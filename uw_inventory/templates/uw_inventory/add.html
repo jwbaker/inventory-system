@@ -14,6 +14,9 @@
     {% for key,fs in formsets.items %}
       {{ fs.management_form }}
     {% endfor %}
+
+    <textarea name="custom_field_data" id="inputCustomFields" class="persist-hidden">{{ inventory_item.custom_field_data|default:'' }}</textarea>
+    
     {% add_form form %}
     <div class="form-group list-group-item clearfix">
       <div class="col-xs-3">

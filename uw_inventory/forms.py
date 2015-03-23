@@ -47,7 +47,6 @@ class ItemForm(forms.ModelForm):
     # This list provides metdata to the field renderer.
     # Most of that logic is field order, but legacy fields are also described
     FIELD_LIST = [
-        {'Name': 'custom_field_data'},
         {'Name': 'name'},
         {'Name': 'tech_id', 'Legacy': True},
         {'Name': 'description'},

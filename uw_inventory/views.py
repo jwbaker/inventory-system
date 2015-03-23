@@ -161,6 +161,10 @@ def inventory_detail(request, item_id):
           sop_formset.is_valid()
         ):
             new_item = form.save(commit=False)
+            new_item.custom_form_data = request.POST.get(
+                'custom_form_data',
+                ''
+            )
             sop_files = sop_formset.save(commit=False)
             map(lambda f: f.save(), sop_files)
 
@@ -237,6 +241,10 @@ def inventory_add(request):
 
         if form.is_valid():
             new_item = form.save(commit=False)
+            new_item.custom_form_data = request.POST.get(
+                'custom_form_data',
+                ''
+            )
             comment_formset = CommentCreateFormset(
                 request.POST,
                 prefix='comments',

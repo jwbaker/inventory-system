@@ -57,9 +57,9 @@ target/
 *.sqlite3
 
 # Files directories
-files/
-images/
-media/*
+media/files/*
+media/images/*
+media/temp/*
 
 uml.png
 

@@ -3,6 +3,7 @@
 {% load uw_forms_field_tags %}
 {% load uw_forms_format_tags %}
 {% load uw_inventory_model_tags %}
+{% load uw_custom_field_field_tags %}
 
 {% block gutter_nav %}
   {{ block.super }}
@@ -45,8 +46,10 @@
 
     <input type="number" id="scroll-position" name="scroll-position" class="persist-hidden" />
 
+    <textarea name="custom_field_data" id="inputCustomFields" class="persist-hidden">{{ inventory_item.custom_field_data|default:'' }}</textarea>
+
     {% edit_form form perms.uw_inventory.change_inventoryitem shown_excluded_fields %}
-    {% custom_fields inventory_item.custom_field_data %}
+    {% show_custom_fields inventory_item.custom_field_data %}
 
     {# Putting this template here makes me cry, but it works for now #}
     <div class="singleton-formset form-group list-group-item clearfix">
@@ -144,8 +147,17 @@
 
         if(inputControl.is('select')){
           {# inputControl was formerly the select box itself, but we need the selected option #}
-          inputControl = inputControl.find('option:selected');
-          saveText = inputControl.text();
+          var selectedOptions = inputControl.find('option:selected');
+          if(inputControl.is('select[multiple="multiple"]')){
+            saveText = '';
+            for (var i = 0; i < selectedOptions.length; i++) {
+              saveText += selectedOptions[i].value;
+
+              if(i !== selectedOptions.length - 1) saveText += ', ';
+            }
+          } else{
+            saveText = inputControl.text();
+          }
         } else if(inputControl.is('input[type="date"]')){
           {# Need to do this because sending the string alone into the Date constructor will #}
           {#   interpret the data as UTC, but we want it to be Eastern time #}
@@ -171,6 +183,18 @@
           }
           {# More magic here, because the autocomplete widget sends the name value but we need the id #}
           inputControl[1].setAttribute('value', toSave);
+        } else if(inputControl.is('div.checkboxes')){
+          var selectedOptions = inputControl.find('[type=checkbox]:checked, [type=radio]:checked');
+          if(selectedOptions.length > 1){
+            saveText = '';
+            for (var i = 0; i < selectedOptions.length; i++) {
+              saveText += selectedOptions[i].value;
+
+              if(i !== selectedOptions.length - 1) saveText += ', ';
+            }
+          } else if(selectedOptions.length == 1){
+            saveText = selectedOptions[0].value
+          }
         } else {
           saveText = (inputControl.val() == inputControl.placeholder ? '' : inputControl.val());
         }
@@ -185,6 +209,12 @@
         $(window).trigger('pagechanges', hasChanged); {# Here's that event from earlier #}
 
         savedParagraph.text(saveText);
+
+        if(inputControl.parent().is('.custom-field-container')){
+          var custom_field_json = JSON.parse($('textarea#inputCustomFields').val() || '{}');
+          custom_field_json[inputControl.parent().attr('id')]['value'] = saveText;
+          $('textarea#inputCustomFields').val(JSON.stringify(custom_field_json));
+        }
 
         editClickHandler($(this));
       });

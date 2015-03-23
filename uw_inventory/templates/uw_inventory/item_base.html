@@ -32,148 +32,7 @@
 {% block modal %}
   {% confirm_modal 'Exit' %}
 
-    <div class="modal fade" id="newFieldModal" tabindex="-1" role="dialog" aria-labelledby="newFieldModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="newFieldModalLabel">Add a Field</h4>
-          </div>
-          <div class="modal-body">
-            <div class="container">
-              <form class="col-xs-6 form-horizontal">
-                <div class="form-group">
-                  <label for="inputFieldName" class="col-xs-2 control-label">Name<span class="text-danger">*</span></label>
-                  <div class="col-xs-8">
-                    <input type="text" class="form-control" id="inputFieldName" placeholder="Name" />
-                    <ul class="errorlist">
-                      <li>This field is required</li>
-                    </ul>
-                  </div>
-                </div>
-                
-                <div class="form-group">
-                  <label for="inputFieldType" class="col-xs-2 control-label">Type<span class="text-danger">*</span></label>
-                  <div class="col-xs-8">
-                    <select class="form-control" id="inputFieldType">
-                      <option value="">Please select a type</option>
-                      <option value="text">Text</option>
-                      <option value="choice">Select</option>
-                      <option value="date">Date</option>
-                      <option value="bool">Yes/No</option>
-                      <option value="number">Number</option>
-                    </select>
-                    <ul class="errorlist">
-                      <li>This field is required</li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div class="form-group fieldOptions textFieldOptions hidden">
-                  <label for="inputFieldSecondaryType" class="col-xs-2 control-label">Secondary Type</label>
-                  <div class="col-xs-8">
-                    <select class="form-control" id="inputFieldSecondaryTextType">
-                      <option value="">None</option>
-                      <option value="textarea">Long</option>
-                      <option value="email">Email</option>
-                      <option value="password">Obscured</option>
-                      <option value="autocomplete">Autocomplete</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="form-group fieldOptions textFieldOptions hidden">
-                  <label for="inputFieldLength" class="col-xs-2 control-label">Maximum Length</label>
-                  <div class="col-xs-8">
-                    <input type="number" id="inputFieldLength" class="form-control" value="255" />
-                  </div>
-                </div>
-
-                <div class="form-group fieldOptions selectFieldOptions hidden">
-                  <label for="inputFieldOptions" class="col-xs-2 control-label">Options</label>
-                  <div class="col-xs-8">
-                    <textarea class="form-control" style="resize:none" id="inputFieldOptions"></textarea>
-                  </div>
-                </div>
-
-                <div class="form-group fieldOptions selectFieldOptions hidden">
-                  <label for="inputFieldAllowDups" class="col-xs-2 control-label">Allow Multiple?</label>
-                  <div class="col-xs-8">
-                    <i class="checkbox-2 fa-2x" id="inputFieldAllowDups"></i>
-                  </div>
-                </div>
-
-                <div class="form-group fieldOptions selectFieldOptions hidden">
-                  <label for="inputFieldSelectControl" class="col-xs-2 control-label">Control</label>
-                  <div class="col-xs-8">
-                    <select class="form-control" id="inputFieldSelectControl">
-                      <option value="auto" selected="selected">Auto</option>
-                      <option value="radio" class="itemControl">Radio Buttons</option>
-                      <option value="select" class="itemControl">Dropdown List</option>
-                      <option value="multiselect" class="itemControl hidden">Multi-select List</option>
-                      <option value="checkbox" class="itemControl hidden">Checkboxes</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="form-group fieldOptions numberFieldOptions hidden">
-                  <label for="inputFieldSecondaryType" class="col-xs-2 control-label">Secondary Type</label>
-                  <div class="col-xs-8">
-                    <select class="form-control" id="inputFieldSecondaryNumberType">
-                      <option value="">---</option>
-                      <option value="currency">Currency</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="form-group fieldOptions numberFieldOptions hidden">
-                  <label for="inputFieldPrecision" class="col-xs-2 control-label">Precision</label>
-                  <div class="col-xs-8">
-                    <select class="form-control" id="inputFieldPrecision">
-                      <option value="1000">1,000</option>
-                      <option value="100">100</option>
-                      <option value="10">10</option>
-                      <option value="1" selected="selected">1</option>
-                      <option value="0.1">0.1</option>
-                      <option value="0.01">0.01</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="form-group fieldOptions numberFieldOptions hidden">
-                  <label for="inputFieldAllowNegative" class="col-xs-2 control-label">Allow Negative?</label>
-                  <div class="col-xs-8">
-                    <i class="checkbox-2 fa-2x" id="inputFieldAllowNegative"></i>
-                  </div>
-                </div>
-
-<!--                 <div class="form-group fieldOptions dateFieldOptions hidden">
-                  <label for="inputFieldInputStyle" class="col-xs-2 control-label">Input Style</label>
-                  <div class="col-xs-8">
-                    <select class="form-control" id="inputFieldInputStyle">
-                      <option>---</option>
-                      <option value="manual">Manual</option>
-                      <option value="auto">Automatic</option>
-                    </select>
-                  </div>
-                </div>
- -->
-                <div class="form-group fieldOptions dateFieldOptions hidden">
-                  <label for="inputFieldIncludeTime" class="col-xs-2 control-label">Include Time?</label>
-                  <div class="col-xs-8">
-                    <i class="checkbox-2 fa-2x" id="inputFieldIncludeTime"></i>
-                  </div>
-                </div>
-              </form>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-danger pull-left" data-dismiss="modal">Cancel</button>
-            <button type="button" class="btn btn-success" id="createFieldBtn">Create</button>
-          </div>
-        </div>
-      </div>
-    </div>
+  {% include 'uw_custom_fields/creation_modal.html' %}
 
   {# There must be a better way to do modals... #}
   <div class="modal fade" id="autocompleteAddTermModal">
@@ -348,12 +207,7 @@
                 }
               })();
               break;
-            case 'date':
-              if(modal.find('#inputFieldIncludeTime').hasClass('checked')){
-                fieldData['type'] = 'datetime';
-              }
-              break;
-            case 'bool': break;
+            case 'date': case 'bool': break;
             case 'number':
               fieldData['type-secondary'] = modal.find('#inputFieldSecondaryNumberType').val();
               fieldData['step'] = modal.find('#inputFieldPrecision').val();
@@ -362,9 +216,11 @@
           }
           var oldData = JSON.parse($('textarea#inputCustomFields').val() || '{}');
           oldData[fieldKey] = fieldData;
-          console.log(oldData)
+
           $('textarea#inputCustomFields').val(JSON.stringify(oldData));
           modal.modal('hide');
+
+          $(window).trigger('pagechanges', true);
         }
       });
   </script>
