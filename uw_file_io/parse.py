@@ -223,6 +223,13 @@ def __get_user_id_or_create(user_value, new_users):
 
 
 def __parse_inventory_extract(data):
+    '''
+    Generates a list of tasks from an uploaded extract file.
+        Used to import InventoryItems
+
+    Positional arguments:
+        data -- A Python list generated from an uploaded CSV file
+    '''
     new_terms = {}
     new_users = {}
     new_items = []
@@ -326,6 +333,13 @@ def __parse_inventory_extract(data):
 
 
 def __parse_user_extract(data):
+    '''
+    Generates a list of tasks from an uploaded extract file.
+        Used to import Users
+
+    Positional arguments:
+        data -- A Python list generated from an uploaded CSV file
+    '''
     new_users = []
 
     for row in data:
@@ -379,6 +393,12 @@ def parse_extract(file_up, import_type):
 
 
 def parse_zip(file_up):
+    '''
+    Unpacks a zip archive of files, and copies them into the local filesystem
+
+    Positional arguments:
+        file_up -- Uploaded zip archive
+    '''
     new_files = {}
     if file_up is None:
         return new_files
@@ -527,6 +547,14 @@ def process_user_transactions(user_list, transactions):
 
 
 def __move_tempfile(tempfile_path, file_name):
+    '''
+    Moves a Python-created tempfile to a permanent location in the filesystem
+
+    Positional arguments:
+        tempfile_path -- The path to the tempfile, relative to the project root
+        file_name -- The path where the file should be created, relative to the
+                        project root
+    '''
     os.renames(
         tempfile_path,
         file_name
@@ -535,6 +563,23 @@ def __move_tempfile(tempfile_path, file_name):
 
 
 def process_image_transactions(image_list, transactions):
+    '''
+    Created ItemImages according to a given list
+
+    Positional arguments:
+        image_list -- A dictionary of image objects to create. The objects must
+                        have the following format:
+
+                        {
+                            'file_path': string,
+                            'temp_file': path to a tempfile on the filesystem
+                        }
+
+        transactions -- A list of database changes commited over this import.
+                        This list is updated in the method to include saved
+                        terms, and will later be used as a reference if
+                        the import fails and changes must be reverted
+    '''
     image_to_index = {}
 
     for (file_path, temp_file) in image_list.iteritems():
@@ -555,6 +600,23 @@ def process_image_transactions(image_list, transactions):
 
 
 def process_file_transactions(file_list, transactions):
+    '''
+    Created ItemFiles according to a given list
+
+    Positional arguments:
+        file_list -- A dictionary of file objects to create. The objects must
+                        have the following format:
+
+                        {
+                            'file_path': string,
+                            'temp_file': path to a tempfile on the filesystem
+                        }
+
+        transactions -- A list of database changes commited over this import.
+                        This list is updated in the method to include saved
+                        terms, and will later be used as a reference if
+                        the import fails and changes must be reverted
+    '''
     file_to_index = {}
 
     for (file_path, temp_file) in file_list.iteritems():

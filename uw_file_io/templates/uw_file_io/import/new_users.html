@@ -98,6 +98,7 @@
       tabSize: 2,
       connectWith: '.sortable',
       sort: function(event, ui){
+        {# We don't want to allow modifications to existing terms. That becomes a massive headache #}
         if(ui.item.is('.old-user')){
           $(this).sortable('cancel');
         }

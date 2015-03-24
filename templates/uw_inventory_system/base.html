@@ -150,6 +150,14 @@
         return year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds;
       }
 
+      /*
+       * Returns true if the given string ends with searchString.
+       * If position argument is supplied, the searched string is assumed to
+       * no longer than the value of position.
+       *
+       * The if wrapper is a shim to prevent overwriting an existing property
+       * in browsers that have implemented ES6.
+       */
       if (!String.prototype.endsWith) {
         Object.defineProperty(String.prototype, 'endsWith', {
           value: function(searchString, position) {

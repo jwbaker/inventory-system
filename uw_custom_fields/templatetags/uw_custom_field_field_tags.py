@@ -8,6 +8,13 @@ register = template.Library()
 
 @register.inclusion_tag('uw_custom_fields/field_container.html')
 def show_custom_fields(field_data_string):
+    '''
+    Inflates a JSON representation of custom field data into a python
+    object that can be interpreted by the templating engine
+
+    Positional arguments:
+        field_data_string -- a JSON string representing the custom field data
+    '''
     try:
         field_list = json.loads(field_data_string or '')
     except ValueError:
@@ -24,6 +31,22 @@ FIELD_TYPE_TO_ICON = {
 
 
 def __text_widget_render(field_data):
+    '''
+    Prepares a widget string for <input> tag elements:
+        -textarea
+        -text input (normal, password, or email)
+        -date input
+
+    Positional arguments:
+        field_data -- a dictionary containing required data for the field:
+            {
+                type: what kind of field to generate: text | date
+                type-secondary: a type modifier:
+                    None | textarea | mail | password
+                value: the current value of the field, or None
+                length: the maximum length of the field. text input fields only
+            }
+    '''
     if field_data.get('type-secondary', '') == 'textarea':
         return '''
                 <textarea
@@ -89,6 +112,15 @@ def __text_widget_render(field_data):
 
 
 def __bool_widget_render(field_data):
+    '''
+    Prepares a widget string for a boolean field
+
+    Positional arguments:
+        field_data -- a dictionary containing required data for the field:
+            {
+                value: the current value of the field: True | False | None
+            }
+    '''
     return '''
             <i
                 class="form-element item-input checkbox-2 fa-2x {0}"
@@ -105,6 +137,19 @@ def __bool_widget_render(field_data):
 
 
 def __number_widget_render(field_data):
+    '''
+    Prepares a widget string for a numerical input field
+
+    Positional arguments:
+        field_data -- a dictionary containing required data for the field:
+            {
+                type-secondary: a type modifier: currency | None
+                step: The precision of the numerical field:
+                    0.01 | 0.1 | 1 | 10 | 100
+                allow-negative: True | False
+                value: the current value of the field, or None
+            }
+    '''
     input_widget = '''<input type='number' class="{0}" step="{1}" {2}
     />'''.format(
         '{classes}',
@@ -142,6 +187,20 @@ TYPED_SELECTTION_STRINGS = {
 
 
 def __choice_widget_render(field_data):
+    '''
+    Prepares a widget string for a choice field
+
+    Positional arguments:
+        field_data -- a dictionary containing required data for the field:
+            {
+                name: The name of the field. Used to ensure radio buttons are
+                    single-select only
+                options: A list of option values for the field
+                value: the current value of the field, or None
+                widget: WHich input widget to use in the choice list:
+                    select | multiselect | checkbox | radio
+            }
+    '''
     if field_data['widget'] == 'multiselect':
         return_string = '''<select class="form-element form-control
         item-input" multiple="multiple">{0}</select>'''
@@ -189,6 +248,19 @@ def __choice_widget_render(field_data):
 
 @register.simple_tag
 def render_custom_widget(field_data):
+    '''
+    Renders the widget string based on the type of field requested
+
+    Positional arguments:
+        field_data -- a dictionary containing required data for the field:
+            {
+                type: The type of field to be rendered:
+                    text | date | bool | number | choice
+                For other required properties, see the comments for the render
+                    methods
+            }
+
+    '''
     if field_data['type'] == 'text':
         widget_string = __text_widget_render(field_data)
     elif field_data['type'] == 'date':
