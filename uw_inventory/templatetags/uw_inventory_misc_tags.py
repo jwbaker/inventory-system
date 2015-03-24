@@ -1,4 +1,5 @@
 from django import template
+from django.core.urlresolvers import reverse
 
 from uw_inventory.models import ItemFile
 
@@ -32,3 +33,13 @@ def contexual_file_icon(item_file):
         file_class += 'file'
 
     return {'file_class': file_class}
+
+
+@register.filter
+def admin_url(instance):
+    return reverse(
+        'admin:uw_inventory_{0}_history'.format(
+            type(instance).__name__.lower()
+        ),
+        args=(instance.id,)
+    )
