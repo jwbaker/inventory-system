@@ -38,6 +38,7 @@ INSTALLED_APPS = (
     'uw_forms',
     'uw_file_io',
     'uw_custom_fields',
+    'uw_reports',
     'reversion',
 )
 
