@@ -15,5 +15,6 @@ urlpatterns = patterns(
     # TODO: remove this URL for production
     url(r'^forbidden/$', views.permission_denied),
     url(r'^files/', include('uw_file_io.urls')),
+    url(r'^reports/', include('uw_reports.urls')),
 )
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
