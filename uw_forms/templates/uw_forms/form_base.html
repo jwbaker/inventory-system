@@ -18,11 +18,9 @@
       <div class="col-xs-8 col-xs-offset-2">
     {% endif %}
 
-      <div class="panel panel-default">
-        <div class="panel-heading">{% block page_heading %}{% endblock page_heading %}</div>
-            {% block page_body %}
-            {% endblock page_body %}
-        </div>
+    {% block page_content %}
+    {% endblock page_content %}
+
     </div>
     {% if can_edit or can_add %}
       <div class="col-xs-1">

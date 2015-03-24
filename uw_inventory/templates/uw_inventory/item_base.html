@@ -32,8 +32,13 @@
   </li>
 {% endblock gutter_nav %}
 
-{% block page_body %}
-{% endblock page_body %}
+{% block page_content %}
+  <div class="panel panel-default">
+    <div class="panel-heading">{% block page_heading %}{% endblock page_heading %}</div>
+      {% block page_body %}
+      {% endblock page_body %}
+  </div>
+{% endblock page_content %}
 
 {% block modal %}
   {% confirm_modal 'Exit' %}
