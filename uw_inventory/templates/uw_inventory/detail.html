@@ -128,11 +128,11 @@
         $('.form-element#' + editTarget).focus(); {# Autofocus for usability goodness #}
       }
 
-      $('.singleton-field .edit').click(function(){
+      $('.singleton-field,.singleton-formset .edit').click(function(){
         editClickHandler($(this));
       });
 
-      $('.singleton-field .cancel').click(function(){
+      $('.singleton-field,.singleton-formset .cancel').click(function(){
         editClickHandler($(this));
       });
 
