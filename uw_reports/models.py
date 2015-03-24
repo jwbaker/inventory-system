@@ -1,13 +1,12 @@
 from datetime import datetime
 
+from django.contrib.auth.models import User
 from django.db import models
-
-from uw_inventory.models import InventoryItem
 
 
 class Report(models.Model):
     creator = models.ForeignKey(
-        InventoryItem,
+        User,
         blank=True,
         default=None,
         null=True,
@@ -18,9 +17,9 @@ class Report(models.Model):
     name = models.CharField(max_length=255)
     report_data = models.TextField()
     owner = models.ForeignKey(
-        InventoryItem,
+        User,
         blank=True,
         default=None,
         null=True,
-        related_name='report_owner'
+        related_name='owner'
     )
