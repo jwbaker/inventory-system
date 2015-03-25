@@ -6,17 +6,26 @@
       <div class="btn-group btn-group-sm">
         <button class="btn btn-primary" id="add-expression">Add Expression</button>
       </div>
-      <div class="btn-group btn-group-sm">
-        {# <button class="btn btn-primary" id="add-and">AND</button> #}
-        {# <button class="btn btn-primary" id="add-or">OR</button> #}
+      <div class="btn-group btn-group-sm" id="expression-operator-list">
+        <button class="btn btn-default disabled" id="add-and">AND</button>
+        <button class="btn btn-default disabled" id="add-or">OR</button>
       </div>
       <div class="btn-group btn-group-sm">
         {# <button class="btn btn-primary" id="add-lparen">(</button> #}
         {# <button class="btn btn-primary" id="add-rparen">)</button> #}
       </div>
     </div>
+  </div>
 
+  <div class="row">
     <table class="table table-condensed" id="query-table">
+      <thead class="persist-hidden">
+        <td>Negation</td>
+        <td>Field</td>
+        <td>Lookup</td>
+        <td>Filter Value</td>
+        <td>Menu</td>
+      </thead>
       <tbody>
       </tbody>
     </table>
@@ -34,7 +43,7 @@
   <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 
   <script type="text/html" id="expression-row-template">
-    <tr>
+    <tr class="expression">
       <td><label><input type="checkbox" class="expression-negate" /> Not</label></td>
       <td class="expression-field">
         <select class="form-control">
@@ -65,6 +74,7 @@
         </select>
         <label class="hidden case-sensitive"><input type="checkbox" /> Case-sensitive?</label>
       </td>
+      <td></td>
       <td class="expression-filter"></td>
       <td class="expression-menu">
         <i class="fa-arrow-up"></i>
@@ -74,11 +84,52 @@
     </tr>
   </script>
 
+  <script type="text/html" id="expression-cond-template">
+    <tr class="condition-__cond__">
+      <td colspan="5">__cond__</td>
+      <td class="expression-cond-menu">
+        <i class="fa-arrow-up"></i>
+        <i class="fa-arrow-down"></i>
+      </td>
+    </tr>
+  </script>
+
+
   <script type="text/javascript">
+    $('#add-expression').on('statechange', function(){
+      if($('#query-table tbody tr').length === 1 && $('#expression-operator-list button.active').length === 0){
+        $('#add-expression').addClass('disabled');
+        $('#expression-operator-list button').removeClass('disabled');
+      } else if($('#query-table tbody tr').length === 0){
+        $('#add-expression').removeClass('disabled');
+        $('#expression-operator-list button').removeClass('active').addClass('disabled');
+      } else{
+        $('#add-expression').removeClass('disabled');
+      }
+    });
+
     $('#add-expression').click(function(){
-      $('#query-table tbody').append($('#expression-row-template').html());
+      var toAppend = '';
+      if($('#add-and').is('.active')){
+        toAppend = $('#expression-cond-template').html().replace(/__cond__/g, 'AND');
+      } else if($('#add-or').is('.active')){
+        toAppend = $('#expression-cond-template').html().replace(/__cond__/g, 'OR');
+      }
+      
+      $('#query-table tbody').append(toAppend + $('#expression-row-template').html());
+      $(this).trigger('statechange');
     });
   </script>
+
+  <script type="text/javascript">
+    $('#expression-operator-list button').click(function(){
+      $(this).toggleClass('active');
+      $(this).siblings().removeClass('active');
+
+      $('#add-expression').trigger('statechange');
+    });
+  </script>
+
 
   <script type="text/javascript">
     $('#query-table tbody').on('change', '.expression-field', function(){
@@ -101,6 +152,25 @@
       }
     });
 
+    $('#query-table tbody').on('click', '.expression-menu .cancel', function(){
+        var lsibling = $(this).closest('tr').prev();
+        var rsibling = $(this).closest('tr').next();
+
+        console.log(!!rsibling)
+
+        if(lsibling.length > 0 && lsibling.is('.condition-AND')){
+          lsibling.remove();
+        } else if(rsibling.length > 0 && rsibling.is('.condition-AND')){
+          rsibling.remove();
+        } else if(lsibling.length > 0){
+          lsibling.remove();
+        } else if(rsibling.length > 0){
+          rsibling.remove();
+        }
+
+      $(this).closest('tr').remove();
+      $('#add-expression').trigger('statechange');
+    });
   </script>
 
 
