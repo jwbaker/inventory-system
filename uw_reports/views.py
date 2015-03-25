@@ -2,7 +2,9 @@ from django.contrib import messages
 from django.db.models import Q
 from django.shortcuts import render
 
+from uw_reports.forms import ReportForm
 from uw_reports.models import Report
+from uw_inventory.forms import ItemForm
 
 
 def _collect_messages(request):
@@ -41,4 +43,16 @@ def reports_list(request):
     return render(request, 'uw_reports/reports_list.html', {
         'reports_list': reports_list,
         'page_messages': message_list,
+    })
+
+
+def create_report(request):
+    message_list = _collect_messages(request)
+    form = ReportForm()
+    return render(request, 'uw_reports/reports_add.html', {
+        'page_messages': message_list,
+        'form': form,
+        'can_edit': True,
+        'can_add': True,
+        'field_list': ItemForm.FIELD_LIST,
     })

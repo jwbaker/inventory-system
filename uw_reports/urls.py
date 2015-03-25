@@ -4,5 +4,6 @@ from uw_reports import views
 
 urlpatterns = patterns(
     '',
-    url(r'^$', views.reports_list)
+    url(r'^$', views.reports_list),
+    url(r'^add$', views.create_report),
 )
