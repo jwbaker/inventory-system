@@ -11,8 +11,8 @@
         <button class="btn btn-default disabled" id="add-or">OR</button>
       </div>
       <div class="btn-group btn-group-sm">
-        {# <button class="btn btn-primary" id="add-lparen">(</button> #}
-        {# <button class="btn btn-primary" id="add-rparen">)</button> #}
+        {# <button class="btn btn-default" id="add-lparen">(</button> #}
+        {# <button class="btn btn-default" id="add-rparen">)</button> #}
       </div>
     </div>
   </div>
@@ -47,38 +47,38 @@
       <td><label><input type="checkbox" class="expression-negate" /> Not</label></td>
       <td class="expression-field">
         <select class="form-control">
-          <option>------</option>
+          <option value="">------</option>
           {% for field in field_list %}
             <option data-type="{{ field.type }}">{{ field.Name }}</option>
           {% endfor %}
         </select>
       </td>
       <td class="expression-lookup">
-        <select class="form-control">
+        <select class="form-control" disabled="disabled">
           <option class="blank"></option>          
           <option value="exact" class="hidden text bool case">Is Exactly</option>
           <option value="contains" class="hidden text case">Contains</option>
           <option value="startswith" class="hidden text case">Starts With</option>
           <option value="endswith" class="hidden text case">Ends With</option>
-          <option value="in" class="hidden text number">In List</option>          
-          <option value="range" class="hidden text number">In Range</option>
+          <option value="in" class="hidden text number list">In List</option>          
+          <option value="range" class="hidden text number range">In Range</option>
           <option value="gt" class="hidden text number">Greater Than</option>
           <option value="gte" class="hidden text number">Greater Than or Equal To</option>
           <option value="lt" class="hidden text number">Less Than</option>
           <option value="lte" class="hidden text number">Less Than or Equal To</option>
           <option value="year" class="hidden date">In Year</option>
-          <option value="month" class="hidden date">In Month</option>
+          <option value="month" class="hidden date choice" data-choices="months">In Month</option>
           <option value="day" class="hidden date">On Day of Month</option>
-          <option value="week_day" class="hidden date">On Day of Week</option>
-          <option value="isnull" class="hidden text date number bool">Has No Value</option>
+          <option value="week_day" class="hidden date choice" data-choices="weekdays">On Day of Week</option>
+          <option value="isnull" class="hidden text date number bool">Has a Value</option>
         </select>
         <label class="hidden case-sensitive"><input type="checkbox" /> Case-sensitive?</label>
       </td>
-      <td></td>
+      <td class="expression-input"><input type="text" class="form-control" disabled="disabled" /></td>
       <td class="expression-filter"></td>
       <td class="expression-menu">
-        <i class="fa-arrow-up"></i>
-        <i class="fa-arrow-down"></i>
+        {#<i class="fa-arrow-up"></i>#}
+        {#<i class="fa-arrow-down"></i>#}
         <i class="cancel"></i>
       </td>
     </tr>
@@ -93,6 +93,35 @@
       </td>
     </tr>
   </script>
+
+  <script type="text/html" id="expression-paren-template">
+    <tr class="__dir__-paren">
+      <td><label><input type="checkbox" class="expression-negate" /> Not</label></td>
+      <td colspan="4">__paren__</td>
+      <td class="expression-cond-menu">
+        {#<i class="fa-arrow-up"></i>#}
+        {#<i class="fa-arrow-down"></i>#}
+        <i class="cancel"></i>
+      </td>
+    </tr>
+  </script>
+
+  <script type="text/html" id="input-range-template">
+    <input class="form-control" type="__type__" /> To <input class="form-control" type="__type__" />
+  </script>
+
+  <script type="text/html" id="input-input-template">
+    <input class="form-control" type="__type__" />
+  </script>
+
+  <script type="text/html" id="input-bool-template">
+    <select class="form-control">
+      <option></option>
+      <option value="true">Yes</option>
+      <option value="false">No</option>
+    </select>
+  </script>
+
 
 
   <script type="text/javascript">
@@ -119,6 +148,18 @@
       $('#query-table tbody').append(toAppend + $('#expression-row-template').html());
       $(this).trigger('statechange');
     });
+
+    var openExpressions = 0;
+    $('#add-lparen').click(function(){
+      $('#query-table tbody').append($('#expression-paren-template').html().replace(/__dir__/g, 'left').replace(/__paren__/g, '('));
+      openExpressions++;
+    });
+
+    $('#add-rparen').click(function(){
+      $('#query-table tbody').append($('#expression-paren-template').html().replace(/__dir__/g, 'right').replace(/__paren__/g, ')'));
+      openExpressions--;
+    });
+
   </script>
 
   <script type="text/javascript">
@@ -140,16 +181,63 @@
       $(this).closest('tr').find('td.expression-lookup .case-sensitive').addClass('hidden');
 
       $(this).closest('tr').find('td.expression-lookup select option.' + selectedFieldType).removeClass('hidden');
+      
+      if($(this).find('select').val()){
+        $(this).closest('tr').find('td.expression-lookup select').removeAttr('disabled');
+      } else{
+        $(this).closest('tr').find('td.expression-input').html(
+          $('#input-input-template').html().replace(/__type__/g, 'text')
+        );
+        $(this).closest('tr').find('td.expression-input input').attr('disabled', 'disabled');
+        $(this).closest('tr').find('td.expression-lookup select').attr('disabled', 'disabled');
+      }
     });
 
     $('#query-table tbody').on('change', '.expression-lookup', function(){
       var selectedOption = $(this).find('option:selected');
+      var selectedFieldType = $(this).closest('tr').find('.expression-field select').find('option:selected').attr('data-type');
 
-      if(selectedOption.is('.case')){
+      if(selectedOption.is('.case') && selectedFieldType !== 'bool'){
         $(this).closest('tr').find('.case-sensitive').removeClass('hidden');
       } else{
         $(this).closest('tr').find('.case-sensitive').addClass('hidden');
       }
+
+      var inputWidget;
+      if(selectedOption.is('.range')){
+        inputWidget = $('#input-range-template').html().replace(/__type__/g, selectedFieldType);
+      } else if(selectedOption.is('.bool')){
+        inputWidget = $('#input-bool-template').html();
+      } else if(selectedOption.attr('value') === 'day'){
+        inputWidget = $('#input-input-template').html().replace(/__type__/g, 'number');
+      } else if(selectedOption.is('.choice')){
+        var options = '<option></option>';
+        var optionsArr;
+        switch(selectedOption.attr('data-choices')){
+          case 'months':
+            optionsArr = ['January', 'February', 'March', 'April', 'May', 'June',
+                          'July', 'August', 'September', 'October', 'November', 'December'];
+            break;
+          case 'weekdays':
+            optionsArr = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            break;
+        }
+        $.each(
+          optionsArr,
+          function(idx, val){
+            options += '<option value="' + idx + '">' + val + '</option>';
+          }
+        );
+        inputWidget = '<select class="form-control">' + options + '</select>';
+      } else {
+        if(selectedOption.is('.list')){
+          inputWidget = $('#input-input-template').html().replace(/__type__/g, 'text');
+        } else {
+          inputWidget = $('#input-input-template').html().replace(/__type__/g, selectedFieldType);
+        }
+      }
+
+      $(this).closest('tr').find('.expression-input').html(inputWidget);
     });
 
     $('#query-table tbody').on('click', '.expression-menu .cancel', function(){
