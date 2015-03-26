@@ -180,8 +180,12 @@
       $(this).closest('tr').find('td.expression-lookup select option:not(.blank)').addClass('hidden');
       $(this).closest('tr').find('td.expression-lookup .case-sensitive').addClass('hidden');
 
-      $(this).closest('tr').find('td.expression-lookup select option.' + selectedFieldType).removeClass('hidden');
-      
+      if(selectedFieldType === 'choice'){
+        $(this).closest('tr').find('td.expression-lookup select option[value="exact"],option[value="isnull"],option[value="in"]').removeClass('hidden');
+      } else {
+        $(this).closest('tr').find('td.expression-lookup select option.' + selectedFieldType).removeClass('hidden');
+      }
+
       if($(this).find('select').val()){
         $(this).closest('tr').find('td.expression-lookup select').removeAttr('disabled');
       } else{
@@ -197,7 +201,7 @@
       var selectedOption = $(this).find('option:selected');
       var selectedFieldType = $(this).closest('tr').find('.expression-field select').find('option:selected').attr('data-type');
 
-      if(selectedOption.is('.case') && selectedFieldType !== 'bool'){
+      if(selectedOption.is('.case') && !(selectedFieldType === 'bool' || selectedFieldType === 'choice')){
         $(this).closest('tr').find('.case-sensitive').removeClass('hidden');
       } else{
         $(this).closest('tr').find('.case-sensitive').addClass('hidden');
@@ -206,6 +210,18 @@
       var inputWidget;
       if(selectedOption.is('.range')){
         inputWidget = $('#input-range-template').html().replace(/__type__/g, selectedFieldType);
+      } else if(selectedFieldType === 'choice'){
+        var options = selectedOption.is('[value="in"]') ? '' : '<option></option>';
+
+        $.each({{ choice_fields.status|safe }}, function(key, val){
+          options += '<option value="' + key + '">' + val + '</option>';
+        });
+
+        if(selectedOption.is('[value="in"]')){
+          inputWidget = '<select class="form-control" multiple="multiple">' + options + '</select>';
+        } else {
+          inputWidget = '<select class="form-control">' + options + '</select>';
+        }
       } else if(selectedOption.is('.bool')){
         inputWidget = $('#input-bool-template').html();
       } else if(selectedOption.attr('value') === 'day'){

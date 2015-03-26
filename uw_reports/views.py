@@ -5,6 +5,7 @@ from django.shortcuts import render
 from uw_reports.forms import ReportForm
 from uw_reports.models import Report
 from uw_inventory.forms import ItemForm
+from uw_inventory.models import InventoryItem
 
 
 def _collect_messages(request):
@@ -55,4 +56,7 @@ def create_report(request):
         'can_edit': True,
         'can_add': True,
         'field_list': ItemForm.FIELD_LIST,
+        'choice_fields': {
+            'status': InventoryItem.STATUS_CHOICES,
+        }
     })
