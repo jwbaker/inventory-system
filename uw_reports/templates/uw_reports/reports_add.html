@@ -40,6 +40,61 @@
 {% endblock page_content %}
 
 {% block js_includes %}
+  <script type="text/javascript">
+    var flattenQuery = function(){
+      var rowset = $('#query-table tbody tr');
+      var returnString = '';
+
+      $.each(rowset, function(idx, row){
+        returnString += ' ';
+
+        if($(row).is('.expression')){
+          var negate = $(row).find('td .expression-negate').is(':checked');
+          var field = $(row).find('td.expression-field select').val();
+          var filter = $(row).find('td.expression-lookup select').val();
+          if($(row).find('.case-sensitive input').is(':checked')){
+            filter = 'i' + filter;
+          }
+          var filter_value = $(row).find('td.expression-input > *').val() || 'None';
+
+          if(filter === 'in'){
+            filter_value = filter_value.split(',');
+            for (var i = 0; i < filter_value.length; i++) {
+              filter_value[i] = '"' + filter_value[i].trim() + '"';
+            }
+
+            filter_value = '[' + filter_value.join() + ']';
+          } else if(filter === 'range'){
+            filter_value = '"' + filter_value + '","' + $($(row).find('td.expression-input > input')[1]).val() + '"';
+            filter_value = '(' + filter_value + ')';
+          }
+
+          var filterString = '';
+
+          if(negate){
+            filterString += 'NOT ';
+          }
+
+          filterString += field + '__' + filter + '=' + filter_value;
+
+          returnString += filterString;
+        } else if($(row).is('.condition')){
+          returnString += $(row).find('td.condition-cond').text();
+        }
+
+        returnString += ' ';
+      });
+      return returnString.trim();
+    }
+
+    $('#pageSave').click(function(e){
+      e.stopPropagation();
+      e.preventDefault();
+      $('form textarea').val(flattenQuery());
+    });
+  </script>
+
+  {{ block.super }}
   <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 
   <script type="text/html" id="expression-row-template">
@@ -75,7 +130,6 @@
         <label class="hidden case-sensitive"><input type="checkbox" /> Case-sensitive?</label>
       </td>
       <td class="expression-input"><input type="text" class="form-control" disabled="disabled" /></td>
-      <td class="expression-filter"></td>
       <td class="expression-menu">
         {#<i class="fa-arrow-up"></i>#}
         {#<i class="fa-arrow-down"></i>#}
@@ -85,11 +139,11 @@
   </script>
 
   <script type="text/html" id="expression-cond-template">
-    <tr class="condition-__cond__">
-      <td colspan="5">__cond__</td>
+    <tr class="condition condition-__cond__">
+      <td class="condition-cond" colspan="4">__cond__</td>
       <td class="expression-cond-menu">
-        <i class="fa-arrow-up"></i>
-        <i class="fa-arrow-down"></i>
+        {#<i class="fa-arrow-up"></i>#}
+        {#<i class="fa-arrow-down"></i>#}
       </td>
     </tr>
   </script>
@@ -254,6 +308,9 @@
       }
 
       $(this).closest('tr').find('.expression-input').html(inputWidget);
+    });
+
+    $('#query-table tbody').on('change', '.expression-input > *', function(){
       $(window).trigger('pagechanges', true);
     });
 
@@ -275,25 +332,6 @@
 
       $(this).closest('tr').remove();
       $('#add-expression').trigger('statechange');
-    });
-  </script>
-
-
-  <script type="text/javascript">
-    var flattenQuery = function(){
-      var rowset = $('#query-table tbody tr');
-      var returnString = '';
-
-      $.each(rowset, function(idx, row){
-        console.log(row);
-      });
-
-      return returnString;
-    }
-
-    $('#pageSave').click(function(){
-      var queryString = JSON.stringify(flattenQuery());
-      // $('#report-form').submit();
     });
   </script>
 {% endblock js_includes %}

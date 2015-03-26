@@ -53,6 +53,7 @@ def create_report(request):
     return render(request, 'uw_reports/reports_add.html', {
         'page_messages': message_list,
         'form': form,
+        'form_id': 'query-form',
         'can_edit': True,
         'can_add': True,
         'field_list': ItemForm.FIELD_LIST,
