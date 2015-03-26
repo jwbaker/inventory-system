@@ -56,21 +56,21 @@
       <td class="expression-lookup">
         <select class="form-control" disabled="disabled">
           <option class="blank"></option>          
-          <option value="exact" class="hidden text bool case">Is Exactly</option>
-          <option value="contains" class="hidden text case">Contains</option>
-          <option value="startswith" class="hidden text case">Starts With</option>
-          <option value="endswith" class="hidden text case">Ends With</option>
-          <option value="in" class="hidden text number list">In List</option>          
-          <option value="range" class="hidden text number range">In Range</option>
-          <option value="gt" class="hidden text number">Greater Than</option>
-          <option value="gte" class="hidden text number">Greater Than or Equal To</option>
-          <option value="lt" class="hidden text number">Less Than</option>
-          <option value="lte" class="hidden text number">Less Than or Equal To</option>
-          <option value="year" class="hidden date">In Year</option>
-          <option value="month" class="hidden date choice" data-choices="months">In Month</option>
-          <option value="day" class="hidden date">On Day of Month</option>
-          <option value="week_day" class="hidden date choice" data-choices="weekdays">On Day of Week</option>
-          <option value="isnull" class="hidden text date number bool">Has a Value</option>
+          <option value="exact" data-type="text" class="hidden text bool date case">Is Exactly</option>
+          <option value="contains" data-type="text" class="hidden text case">Contains</option>
+          <option value="startswith" data-type="text" class="hidden text case">Starts With</option>
+          <option value="endswith" data-type="text" class="hidden text case">Ends With</option>
+          <option value="in" data-type="list" class="hidden text number">In List</option>          
+          <option value="range" data-type="range" class="hidden text number">In Range</option>
+          <option value="gt" data-type="text" class="hidden text number">Greater Than</option>
+          <option value="gte" data-type="text" class="hidden text number">Greater Than or Equal To</option>
+          <option value="lt" data-type="text" class="hidden text number">Less Than</option>
+          <option value="lte" data-type="text" class="hidden text number">Less Than or Equal To</option>
+          <option value="year" data-type="number" class="hidden date">In Year</option>
+          <option value="month" data-type="choice" class="hidden date" data-choices="months">In Month</option>
+          <option value="day" data-type="number" class="hidden date">On Day of Month</option>
+          <option value="week_day" data-type="choice" class="hidden date choice" data-choices="weekdays">On Day of Week</option>
+          <option value="isnull" data-type="bool" class="hidden text date number bool">Has a Value</option>
         </select>
         <label class="hidden case-sensitive"><input type="checkbox" /> Case-sensitive?</label>
       </td>
@@ -201,15 +201,17 @@
       var selectedOption = $(this).find('option:selected');
       var selectedFieldType = $(this).closest('tr').find('.expression-field select').find('option:selected').attr('data-type');
 
-      if(selectedOption.is('.case') && !(selectedFieldType === 'bool' || selectedFieldType === 'choice')){
+      if(selectedOption.is('.case') && selectedFieldType === 'text'){
         $(this).closest('tr').find('.case-sensitive').removeClass('hidden');
       } else{
         $(this).closest('tr').find('.case-sensitive').addClass('hidden');
       }
 
       var inputWidget;
-      if(selectedOption.is('.range')){
+      if(selectedOption.attr('data-type') === 'range'){
         inputWidget = $('#input-range-template').html().replace(/__type__/g, selectedFieldType);
+      } else if(selectedOption.attr('data-type') === 'bool' || selectedFieldType === 'bool'){
+        inputWidget = $('#input-bool-template').html();
       } else if(selectedFieldType === 'choice'){
         var options = selectedOption.is('[value="in"]') ? '' : '<option></option>';
 
@@ -222,11 +224,9 @@
         } else {
           inputWidget = '<select class="form-control">' + options + '</select>';
         }
-      } else if(selectedOption.is('.bool')){
-        inputWidget = $('#input-bool-template').html();
       } else if(selectedOption.attr('value') === 'day'){
         inputWidget = $('#input-input-template').html().replace(/__type__/g, 'number');
-      } else if(selectedOption.is('.choice')){
+      } else if(selectedOption.attr('data-type') === 'choice'){
         var options = '<option></option>';
         var optionsArr;
         switch(selectedOption.attr('data-choices')){
@@ -245,15 +245,16 @@
           }
         );
         inputWidget = '<select class="form-control">' + options + '</select>';
+      } else if(selectedOption.attr('data-type') === 'list'){
+        inputWidget = $('#input-input-template').html().replace(/__type__/g, 'text');
+      } else if(selectedOption.attr('value') === 'number'){
+        inputWidget = $('#input-input-template').html().replace(/__type__/g, 'number');
       } else {
-        if(selectedOption.is('.list')){
-          inputWidget = $('#input-input-template').html().replace(/__type__/g, 'text');
-        } else {
-          inputWidget = $('#input-input-template').html().replace(/__type__/g, selectedFieldType);
-        }
+        inputWidget = $('#input-input-template').html().replace(/__type__/g, selectedFieldType);
       }
 
       $(this).closest('tr').find('.expression-input').html(inputWidget);
+      $(window).trigger('pagechanges', true);
     });
 
     $('#query-table tbody').on('click', '.expression-menu .cancel', function(){
@@ -279,8 +280,20 @@
 
 
   <script type="text/javascript">
+    var flattenQuery = function(){
+      var rowset = $('#query-table tbody tr');
+      var returnString = '';
+
+      $.each(rowset, function(idx, row){
+        console.log(row);
+      });
+
+      return returnString;
+    }
+
     $('#pageSave').click(function(){
-      $('#report-form').submit();
+      var queryString = JSON.stringify(flattenQuery());
+      // $('#report-form').submit();
     });
   </script>
 {% endblock js_includes %}
