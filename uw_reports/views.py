@@ -1,9 +1,12 @@
 from django.contrib import messages
+from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_protect
 
 from uw_reports.forms import ReportForm
 from uw_reports.models import Report
+from uw_reports.parse import infix_to_postfix
 from uw_inventory.forms import ItemForm
 from uw_inventory.models import InventoryItem
 
@@ -47,17 +50,28 @@ def reports_list(request):
     })
 
 
+@csrf_protect
 def create_report(request):
+    if request.method == 'POST':
+        form = ReportForm(request.POST)
+        if form.is_valid():
+            report = form.save(commit=False)
+            report.report_data = infix_to_postfix(
+                form.cleaned_data['report_data']
+            )
+            report.save()
+        else:
+            raise ValidationError(form.errors)
     message_list = _collect_messages(request)
     form = ReportForm()
     return render(request, 'uw_reports/reports_add.html', {
         'page_messages': message_list,
         'form': form,
-        'form_id': 'query-form',
+        'form_id': 'report-form',
         'can_edit': True,
         'can_add': True,
         'field_list': ItemForm.FIELD_LIST,
         'choice_fields': {
-            'status': InventoryItem.STATUS_CHOICES,
+            'status': [{k: v} for (k, v) in InventoryItem.STATUS_CHOICES]
         }
     })
