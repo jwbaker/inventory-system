@@ -1,7 +1,7 @@
 OPERATOR_PRECEDENCE = {
-    'AND': 1,
-    'OR': 0,
-    'NOT': 2,
+    '&': 1,
+    '|': 0,
+    '~': 2,
 }
 
 

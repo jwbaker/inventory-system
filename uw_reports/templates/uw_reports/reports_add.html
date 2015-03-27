@@ -87,14 +87,17 @@
           var filterString = '';
 
           if(negate){
-            filterString += 'NOT ';
+            filterString += '~ ';
           }
 
           filterString += field + '__' + filter + '=' + filter_value;
 
           returnString += filterString;
         } else if($(row).is('.condition')){
-          returnString += $(row).find('td.condition-cond').text();
+          switch($(row).find('td.condition-cond').text()){
+            case 'AND': returnString += '&'; break;
+            case 'OR': returnString += '|'; break;
+          }
         }
 
         returnString += ' ';
