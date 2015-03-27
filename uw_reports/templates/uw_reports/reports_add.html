@@ -1,6 +1,25 @@
 {% extends 'uw_forms/form_base.html' %}
 
 {% block page_content %}
+  <div class="row panel panel-default" id="display-fields">
+    <div class="panel-heading" data-toggle="collapse" href="#field-list">
+      Choose Fields to Display
+      <i class="pull-right menu-down"></i>
+    </div>
+    <div class="panel-body collapse" id="field-list">
+      <div class="col-xs-12">
+        <button class="btn btn-default btn-sm" id="select-all-fields">Select All</button>
+        <button class="btn btn-default btn-sm" id="select-no-fields">Select None</button>
+      </div>
+      {% for field in field_list %}
+        <div class="col-xs-4">
+          <input type="checkbox" id="display_{{ field.Name }}" value="{{ field.Name }}"></input>
+          <label for="display_{{ field.Name }}">{{ field.Name }}</label>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
   <div class="row">
     <div class="btn-toolbar">
       <div class="btn-group btn-group-sm">
@@ -74,7 +93,7 @@
             filter_value = '[' + filter_value.join() + ']';
           } else if(filter === 'range'){
             var secondInput = $($(row).find('td.expression-input > input')[1]).val();
-            if(secondInput === 'true' or secondInput === 'false'){
+            if(secondInput === 'true' || secondInput === 'false'){
               secondInput = secondInput.charAt(0).toUpperCase() + secondInput.slice(1);
             } else{
               secondInput = '"' + secondInput + '"';
@@ -108,7 +127,16 @@
     $('#pageSave').click(function(e){
       e.stopPropagation();
       e.preventDefault();
-      $('form textarea').val(flattenQuery());
+
+      var checkedFields = '';
+
+      $.each($('#display-fields').find('input[type="checkbox"]:checked'), function(idx, val){
+        checkedFields += val.value + ',';
+      });
+      $('form textarea').val(JSON.stringify({
+        'display_fields': checkedFields,
+        'query': flattenQuery(),
+      }));
       $('input#id_creator').val({{ request.user.id }});
       $('input#id_name').val('I am a Report');
     });
@@ -116,6 +144,27 @@
 
   {{ block.super }}
   <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
+  <script type="text/javascript">
+    $('#field-list').on('show.bs.collapse', function(){
+      $('#display-fields').find('i').removeClass('menu-down').addClass('menu-up');
+    });
+
+    $('#field-list').on('hide.bs.collapse', function(){
+      $('#display-fields').find('i').addClass('menu-down').removeClass('menu-up');
+    });
+
+  </script>
+
+  <script type="text/javascript">
+    $('#select-all-fields').click(function(){
+      $(this).closest('div.panel-body').find('input[type="checkbox"]').prop('checked', true);
+    });
+    $('#select-no-fields').click(function(){
+      $(this).closest('div.panel-body').find('input[type="checkbox"]').prop('checked', false);
+    });
+
+  </script>
 
   <script type="text/html" id="expression-row-template">
     <tr class="expression">

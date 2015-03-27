@@ -1,7 +1,9 @@
+import json
+
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.db.models import Q
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_protect
 
 from uw_reports.forms import ReportForm
@@ -55,11 +57,15 @@ def create_report(request):
     if request.method == 'POST':
         form = ReportForm(request.POST)
         if form.is_valid():
+            report_data = json.loads(form.cleaned_data['report_data'])
             report = form.save(commit=False)
-            report.report_data = infix_to_postfix(
-                form.cleaned_data['report_data']
+            report_data['query'] = infix_to_postfix(
+                report_data['query']
             )
+            report.report_data = report_data
             report.save()
+
+            return redirect('uw_reports.views.create_report')
         else:
             raise ValidationError(form.errors)
     message_list = _collect_messages(request)
