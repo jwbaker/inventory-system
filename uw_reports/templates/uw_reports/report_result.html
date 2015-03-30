@@ -1,0 +1,22 @@
+{% load uw_reports_misc_tags %}
+
+<table class="table" id="query-result">
+  <thead>
+    {% for field in display_fields %}
+      <td>{{ field }}</td>
+    {% endfor %}
+  </thead> 
+  <tbody>
+    {% for item in results %}
+      <tr>
+        {% for field in display_fields %}
+          {% ifequal field 'status'  %} 
+            <td>{{ item.get_status_display }}</td>
+          {% else %}
+            <td>{{ item|get:field }}</td>
+          {% endifequal %}
+        {% endfor %}
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

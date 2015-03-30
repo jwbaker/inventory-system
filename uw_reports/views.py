@@ -3,12 +3,12 @@ import json
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.db.models import Q
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, render_to_response
 from django.views.decorators.csrf import csrf_protect
 
 from uw_reports.forms import ReportForm
 from uw_reports.models import Report
-from uw_reports.parse import infix_to_postfix
+from uw_reports.parse import infix_to_postfix, postfix_to_query_filter
 from uw_inventory.forms import ItemForm
 from uw_inventory.models import InventoryItem
 
@@ -81,3 +81,21 @@ def create_report(request):
             'status': [{k: v} for (k, v) in InventoryItem.STATUS_CHOICES]
         }
     })
+
+
+def run_report(request):
+    if request.is_ajax():
+        postfix_query = infix_to_postfix(request.POST['query'])
+        query_filter = postfix_to_query_filter(postfix_query)
+
+        results = InventoryItem.objects.filter(query_filter)
+        display_fields = request.POST.get('display_fields', '')
+
+        return render_to_response(
+            'uw_reports/report_result.html',
+            {
+                'results': results,
+                'display_fields': display_fields.split(',')
+            },
+            content_type='text/html'
+        )

@@ -1,5 +1,14 @@
 {% extends 'uw_forms/form_base.html' %}
 
+{% block gutter_nav %}
+  <li class="list-group-item">
+    <button class="btn btn-info btn-sm" id="run-query">
+      <i class="fa-play"></i>
+      Run
+    </button>
+  </li>
+{% endblock gutter_nav %}
+
 {% block page_content %}
   <div class="row panel panel-default" id="display-fields">
     <div class="panel-heading" data-toggle="collapse" href="#field-list">
@@ -50,6 +59,8 @@
     </table>
   </div>
 
+  <div class="row" id="query-result"></div>
+
   <form action="{% url 'uw_reports.views.create_report' %}"
       method="post"
       class="hidden"
@@ -72,7 +83,7 @@
           var negate = $(row).find('td .expression-negate').is(':checked');
           var field = $(row).find('td.expression-field select').val();
           var filter = $(row).find('td.expression-lookup select').val();
-          if($(row).find('.case-sensitive input').is(':checked')){
+          if($(row).find('td.expression-lookup option:selected').is('.case') && !$(row).find('.case-sensitive input').is(':checked')){
             filter = 'i' + filter;
           }
           var filter_value = $(row).find('td.expression-input > *').val() || 'None';
@@ -101,6 +112,10 @@
 
             filter_value = '"' + filter_value + '","' + secondInput + '"';
             filter_value = '(' + filter_value + ')';
+          } else if(filter === 'isnull'){
+            {# For clarity of language, the filter propmt asks "Does it have a value?" which is #}
+            {# the opposite of the isnull filter. So we need to invert the result #}
+            filter_value = (filter_value === 'true') ? 'False' : 'True';
           }
 
           var filterString = '';
@@ -124,21 +139,44 @@
       return returnString.trim();
     }
 
-    $('#pageSave').click(function(e){
-      e.stopPropagation();
-      e.preventDefault();
-
+    var packageQuery = function(){
       var checkedFields = '';
 
       $.each($('#display-fields').find('input[type="checkbox"]:checked'), function(idx, val){
         checkedFields += val.value + ',';
       });
-      $('form textarea').val(JSON.stringify({
+
+      return {
         'display_fields': checkedFields,
         'query': flattenQuery(),
-      }));
+      };
+    }
+
+    $('#pageSave').click(function(e){
+      e.stopPropagation();
+      e.preventDefault();
+
+      $('form textarea').val(JSON.stringify(packageQuery()));
       $('input#id_creator').val({{ request.user.id }});
       $('input#id_name').val('I am a Report');
+    });
+
+    $('#run-query').click(function(){
+      var payload = packageQuery();
+      payload['csrfmiddlewaretoken'] = $('input[name="csrfmiddlewaretoken"]').val();
+      $.ajax({
+        url: '{% url "uw_reports.views.run_report" %}',
+        method: 'POST',
+        data: payload,
+        dataType: 'html',
+      }).done(function(data){
+        console.log('success');
+        $('#query-result').html(data);
+      }).fail(function(xhr, status, err){
+        console.log(xhr);
+        console.log(status);
+        console.log(err);
+      });
     });
   </script>
 
@@ -194,7 +232,7 @@
           <option value="month" data-type="choice" class="hidden date" data-choices="months">In Month</option>
           <option value="day" data-type="number" class="hidden date">On Day of Month</option>
           <option value="week_day" data-type="choice" class="hidden date choice" data-choices="weekdays">On Day of Week</option>
-          <option value="isnull" data-type="bool" class="hidden text date number bool">Has a Value</option>
+          {#<option value="isnull" data-type="bool" class="hidden text date number bool">Has a Value</option>#}
         </select>
         <label class="hidden case-sensitive"><input type="checkbox" /> Case-sensitive?</label>
       </td>
