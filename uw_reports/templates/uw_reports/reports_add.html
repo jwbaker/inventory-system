@@ -22,10 +22,20 @@
       </div>
       {% for field in field_list %}
         <div class="col-xs-4">
-          <input type="checkbox" id="display_{{ field.Name }}" value="{{ field.Name }}"></input>
+          <input type="checkbox" id="display_{{ field.Name }}" value="{{ field.Name }}" />
           <label for="display_{{ field.Name }}">{{ field.Name }}</label>
         </div>
       {% endfor %}
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="form-group" id="report-name">
+      <label for="report_name" class="control-label">Report Name <span class="text-danger">*</span></label>
+      <input type="text" class="form-control" name="report_name" placeholder="Please enter a name" />
+      <ul class="error-list hidden">
+        <li>This field is required</li>
+      </ul>
     </div>
   </div>
 
@@ -156,9 +166,17 @@
       e.stopPropagation();
       e.preventDefault();
 
+      $('#report-name').removeClass('has-error');
+      $('#report-name').find('.error-list').addClass('hidden');
+
+      if(!$('#report-name').find('input').val()){
+        $('#report-name').addClass('has-error');
+        $('#report-name').find('.error-list').removeClass('hidden');
+        return false;
+      }
+
       $('form textarea').val(JSON.stringify(packageQuery()));
-      $('input#id_creator').val({{ request.user.id }});
-      $('input#id_name').val('I am a Report');
+      $('input#id_name').val($('#report-name').find('input').val());
     });
 
     $('#run-query').click(function(){
