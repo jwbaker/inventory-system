@@ -9,7 +9,7 @@
 
       {% for report in reports %}
         <li>
-          <a>
+          <a href="{% url 'uw_reports.views.view_report' report.id %}">
             <i class="fa-fw {% if report.owner %}fa-lock{% else %}fa-unlock{% endif %}"
                data-toggle="tooltip"
                data-placement="left"

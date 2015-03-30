@@ -62,7 +62,7 @@ def create_report(request):
             report_data['query'] = infix_to_postfix(
                 report_data['query']
             )
-            report.report_data = report_data
+            report.report_data = json.dumps(report_data)
             report.creator_id = request.user.id
             report.save()
 
@@ -100,3 +100,17 @@ def run_report(request):
             },
             content_type='text/html'
         )
+
+
+def view_report(request, report_id):
+    report = Report.objects.get(id=report_id)
+
+    report_data_json = json.loads(report.report_data)
+    query_filter = postfix_to_query_filter(report_data_json['query'])
+
+    results = InventoryItem.objects.filter(query_filter)
+
+    return render(request, 'uw_reports/view_report.html', {
+        'results': results,
+        'display_fields': report_data_json['display_fields']
+    })

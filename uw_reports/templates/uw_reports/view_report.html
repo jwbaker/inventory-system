@@ -1,0 +1,15 @@
+{% extends 'uw_inventory_system/base.html' %}
+
+{% block content %}
+  {% include 'uw_reports/report_result.html' %}
+{% endblock content %}
+
+{% block js_includes %}
+  <!-- DataTables -->
+  <script src="http://cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js"></script>
+  <script src="http://cdn.datatables.net/plug-ins/3cfcc339e89/integration/bootstrap/3/dataTables.bootstrap.js"></script>
+
+  <script type="text/javascript">
+    $('#query-result').DataTable();
+  </script>
+{% endblock js_includes %}
