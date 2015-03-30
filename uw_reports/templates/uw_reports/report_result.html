@@ -1,5 +1,6 @@
 {% load uw_reports_misc_tags %}
 
+<p>{{ results|length }} result{{ results|pluralize }}</p>
 <table class="table" id="query-result">
   <thead>
     {% for field in display_fields %}

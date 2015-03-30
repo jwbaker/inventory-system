@@ -1,5 +1,6 @@
 {% load staticfiles %}
 {% load uw_users_tags %}
+{% load uw_reports_navigation_tags %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -65,6 +66,7 @@
           <ul class="nav navbar-nav navbar-right">
             {% if user %}
               {% user_context_menu user %}
+              {% reports_context_menu user %}
             {% endif %}
             {% if perms.uw_inventory.add_inventoryitem %}
               <li>

@@ -1,14 +1,5 @@
 {% extends 'uw_forms/form_base.html' %}
 
-{% block gutter_nav %}
-  <li class="list-group-item">
-    <button class="btn btn-info btn-sm" id="run-query">
-      <i class="fa-play"></i>
-      Run
-    </button>
-  </li>
-{% endblock gutter_nav %}
-
 {% block page_content %}
   <div class="row panel panel-default" id="display-fields">
     <div class="panel-heading" data-toggle="collapse" href="#field-list">
@@ -22,7 +13,7 @@
       </div>
       {% for field in field_list %}
         <div class="col-xs-4">
-          <input type="checkbox" id="display_{{ field.Name }}" value="{{ field.Name }}" />
+          <input type="checkbox" id="display_{{ field.Name }}" value="{{ field.Name }}" checked="checked" />
           <label for="display_{{ field.Name }}">{{ field.Name }}</label>
         </div>
       {% endfor %}
@@ -59,6 +50,12 @@
       <div class="btn-group btn-group-sm">
         {# <button class="btn btn-default" id="add-lparen">(</button> #}
         {# <button class="btn btn-default" id="add-rparen">)</button> #}
+      </div>
+      <div class="btn-group btn-group-sm pull-right">
+        <button class="btn btn-info btn-sm" id="run-query">
+          <i class="fa-play"></i>
+          Test query
+        </button>
       </div>
     </div>
   </div>
