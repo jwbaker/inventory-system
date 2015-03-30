@@ -1,0 +1,24 @@
+<li class="dropdown">
+  {% if user.is_authenticated %}
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">
+      Reports <i class="drop-down"></i>
+    </a>
+    <ul class="dropdown-menu" role="menu">
+      <li><a href="{% url 'uw_reports.views.create_report' %}">New report</a></li>
+      <li class="divider"></li>
+
+      {% for report in reports %}
+        <li>
+          <a>
+            <i class="fa-fw {% if report.owner %}fa-lock{% else %}fa-unlock{% endif %}"
+               data-toggle="tooltip"
+               data-placement="left"
+               title="{% if report.owner %}Private{% else %}Public{% endif %} report">
+            </i>
+            {{ report.name }}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+</li>

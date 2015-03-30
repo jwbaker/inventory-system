@@ -13,6 +13,7 @@ class Report(models.Model):
         related_name='creator'
     )
     creation_date = models.DateField(default=datetime.now)
+    view_count = models.PositiveIntegerField(default=0)
 
     name = models.CharField(max_length=255)
     report_data = models.TextField()

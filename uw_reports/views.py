@@ -64,7 +64,6 @@ def create_report(request):
             )
             report.report_data = report_data
             report.creator_id = request.user.id
-            report.owner_id = request.user.id
             report.save()
 
             return redirect('uw_reports.views.create_report')
