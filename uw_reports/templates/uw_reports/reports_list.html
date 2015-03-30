@@ -28,7 +28,7 @@
           <tr>
             <td>{{ report.creation_date }}</td>
             <td>
-              <a href="{% url 'uw_reports.report_detail' report.id %}" class="report-detail"></a>
+              <a href="{% url 'uw_reports.views.view_report' report.id %}" class="report-detail"></a>
               {{ report.name }}
             </td>
             <td>{{ report.creator }}</td>
@@ -45,7 +45,7 @@
   <script src="http://cdn.datatables.net/plug-ins/3cfcc339e89/integration/bootstrap/3/dataTables.bootstrap.js"></script>
 
   <script type="text/javascript">
-    var dataTable = $('table#inventoryTable').DataTable();
+    var dataTable = $('table#reports-table').DataTable();
   </script>
   <script type="text/javascript">
     {# If we click anywhere in a row, we want to trigger the link contained in that row #}
