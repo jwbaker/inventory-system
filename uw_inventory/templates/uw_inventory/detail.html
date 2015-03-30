@@ -4,9 +4,16 @@
 {% load uw_forms_format_tags %}
 {% load uw_inventory_model_tags %}
 {% load uw_custom_field_field_tags %}
+{% load uw_inventory_misc_tags %}
 
 {% block gutter_nav %}
   {{ block.super }}
+  <li class="list-group-item">
+    <a href="{{ inventory_item|admin_url }}">
+      <i class="fa-history"></i> History
+    </a>
+  </li>
+
   {% if perms.uw_inventory.add_inventoryitem %}  
     <li class="list-group-item">
       <a href="{% url 'uw_inventory.views.inventory_copy' inventory_item.id %}">

@@ -1,7 +1,6 @@
 {% extends 'uw_forms/form_base.html' %}
 {% load uw_inventory_modal_tags %}
 {% load uw_inventory_model_tags %}
-{% load uw_inventory_misc_tags %}
 {% load uw_forms_form_tags %}
 
 {% block css_includes %}
@@ -24,11 +23,6 @@
 {% block gutter_nav %}
   <li class="list-group-item">
     <button class="btn btn-primary" data-toggle="modal" data-target="#newFieldModal"><i class="fa fa-list"></i> Add field</button>
-  </li>
-  <li class="list-group-item">
-    <a href="{{ inventory_item|admin_url }}">
-      <i class="fa-history"></i> History
-    </a>
   </li>
 {% endblock gutter_nav %}
 
