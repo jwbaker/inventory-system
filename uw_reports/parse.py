@@ -1,4 +1,4 @@
-import shlex
+import re
 
 from django.db.models import Q
 
@@ -19,7 +19,10 @@ OPERATORS = {
 
 
 def infix_to_postfix(query_string):
-    tokens = shlex.split(query_string)
+    tokens = re.findall(
+        r'(?:[^\s"]|"(?:\\.|[^"])*")+',
+        str(query_string).encode('string-escape')
+    )
     postfix_string = ''
     stack = []
 
@@ -47,7 +50,10 @@ def infix_to_postfix(query_string):
 
 
 def postfix_to_query_filter(query_string):
-    tokens = shlex.split(query_string)
+    tokens = re.findall(
+        r'(?:[^\s"]|"(?:\\.|[^"])*")+',
+        str(query_string).encode('string-escape')
+    )
     stack = []
 
     for t in tokens:
@@ -75,11 +81,11 @@ def postfix_to_query_filter(query_string):
                 stack.append(push_obj)
         else:
             q_filter = t.split('=')[0]
-            filter_val = t.split('=')[1]
+            filter_val = re.sub('["]', '', t.split('=')[1])
 
-            if filter_val == 'True':
+            if filter_val == 'true':
                 filter_val = True
-            elif filter_val == 'False':
+            elif filter_val == 'false':
                 filter_val = False
 
             push_obj = {q_filter: filter_val}
