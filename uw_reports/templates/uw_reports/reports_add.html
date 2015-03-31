@@ -76,7 +76,7 @@
 
   <div class="row" id="query-result"></div>
 
-  <form action="{% url 'uw_reports.views.create_report' %}"
+  <form action="{{ form_target }}"
       method="post"
       class="hidden"
       id="report-form">
@@ -534,7 +534,6 @@
         $('#query-table tbody').append($('#expression-row-template').html());
         var new_row = $('#query-table tbody tr:last');
         var filter_components = filter.split('__');
-        console.log(filter_components)
 
         if(filter_components[1] !== 'kind'){
           if(negate){
@@ -608,6 +607,10 @@
           } else {
             stack.push(query[i]);
           }
+        }
+
+        while(stack.length > 0){
+          inflate_filter(stack.pop());
         }
       }
     });

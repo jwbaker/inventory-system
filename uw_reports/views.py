@@ -2,6 +2,7 @@ import json
 
 from django.contrib import messages
 from django.core.exceptions import ValidationError
+from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.shortcuts import render, redirect, render_to_response
 from django.views.decorators.csrf import csrf_protect
@@ -70,7 +71,6 @@ def create_report(request, report_id=None):
             report.report_data = json.dumps(report_data)
             report.creator_id = request.user.id
             report.save()
-
             return redirect('uw_reports.views.create_report')
         else:
             raise ValidationError(form.errors)
@@ -80,6 +80,10 @@ def create_report(request, report_id=None):
         'page_messages': message_list,
         'form': form,
         'form_id': 'report-form',
+        'form_target': reverse(
+            'uw_reports.views.create_report',
+            args=[report_id]
+        ) if report_id else reverse('uw_reports.views.create_report'),
         'can_edit': True,
         'can_add': True,
         'field_list': ItemForm.FIELD_LIST,
