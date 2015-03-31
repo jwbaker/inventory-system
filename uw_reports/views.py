@@ -53,9 +53,14 @@ def reports_list(request):
 
 
 @csrf_protect
-def create_report(request):
+def create_report(request, report_id=None):
+    if report_id:
+        saved_report = Report.objects.get(id=report_id)
+    else:
+        saved_report = None
+
     if request.method == 'POST':
-        form = ReportForm(request.POST)
+        form = ReportForm(request.POST, instance=saved_report)
         if form.is_valid():
             report_data = json.loads(form.cleaned_data['report_data'])
             report = form.save(commit=False)
@@ -70,7 +75,7 @@ def create_report(request):
         else:
             raise ValidationError(form.errors)
     message_list = _collect_messages(request)
-    form = ReportForm()
+    form = ReportForm(instance=saved_report)
     return render(request, 'uw_reports/reports_add.html', {
         'page_messages': message_list,
         'form': form,
@@ -105,6 +110,8 @@ def run_report(request):
 
 def view_report(request, report_id):
     report = Report.objects.get(id=report_id)
+    report.view_count += 1
+    report.save()
 
     report_data_json = json.loads(report.report_data)
     query_filter = postfix_to_query_filter(report_data_json['query'])
@@ -112,6 +119,7 @@ def view_report(request, report_id):
     results = InventoryItem.objects.filter(query_filter)
 
     return render(request, 'uw_reports/view_report.html', {
+        'report': report,
         'results': results,
         'display_fields': report_data_json['display_fields'].split(',')
     })

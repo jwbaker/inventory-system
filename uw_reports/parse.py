@@ -115,7 +115,7 @@ def postfix_to_query_filter(query_string):
         if t in OPERATORS:
             if t == '~':  # NOT is out only unary operator
                 operand = stack.pop()
-                stack.push(~operand)
+                stack.append(~operand)
             else:
                 loperand = stack.pop()
                 roperand = stack.pop()

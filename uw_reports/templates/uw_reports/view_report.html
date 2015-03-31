@@ -1,6 +1,18 @@
 {% extends 'uw_inventory_system/base.html' %}
 
 {% block content %}
+  <div class="row">
+    <h2>
+      {{ report.name }}
+      <i class="small fa-{% if report.owner %}lock{% else %}unlock{% endif %}"
+         title="Visibility: {% if report.owner %}Just me{% else %}Everyone{% endif %}">
+      </i>
+    <div class="pull-right">
+      <button class="btn btn-default btn-sm" id="edit-report"><i class="edit"></i> Edit</button>
+    </div>
+    </h2>
+
+  </div>
   {% include 'uw_reports/report_result.html' %}
 {% endblock content %}
 
@@ -12,4 +24,11 @@
   <script type="text/javascript">
     $('#query-result').DataTable();
   </script>
+
+  <script type="text/javascript">
+    $('#edit-report').click(function(){
+      window.location = '{% url "uw_reports.views.create_report" report.id %}'
+    });
+  </script>
+
 {% endblock js_includes %}

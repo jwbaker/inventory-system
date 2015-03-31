@@ -81,7 +81,7 @@
       class="hidden"
       id="report-form">
     {% csrf_token %}
-    {{ form.as_p }}
+    {{ form }}
   </form>
 {% endblock page_content %}
 
@@ -264,7 +264,7 @@
         <select class="form-control">
           <option value="">------</option>
           {% for field in field_list %}
-            <option data-type="{{ field.type }}">{{ field.Name }}</option>
+            <option data-type="{{ field.type }}" value="{{ field.Name }}">{{ field.Name }}</option>
           {% endfor %}
         </select>
       </td>
@@ -521,6 +521,95 @@
 
       $(this).closest('tr').remove();
       $('#add-expression').trigger('statechange');
+    });
+  </script>
+
+  <script type="text/javascript">
+    var inflate_filter = function(filter, negate){
+      if(filter === 'AND' || filter === 'OR'){
+        $('#query-table tbody').append(
+          $('#expression-cond-template').html().replace(/__cond__/g, filter)
+        );
+      } else{
+        $('#query-table tbody').append($('#expression-row-template').html());
+        var new_row = $('#query-table tbody tr:last');
+        var filter_components = filter.split('__');
+        console.log(filter_components)
+
+        if(filter_components[1] !== 'kind'){
+          if(negate){
+            new_row.find('.expression-negate').prop('checked');
+          }
+
+          new_row.find('td.expression-field select').val(filter_components[0]).trigger('change');
+
+          if(filter_components[0] === 'location' ||
+              filter_components[0] === 'supplier' ||
+              filter_components[0] === 'manufacturer'){
+            filter_components.splice(1, 1);
+          }
+          if(filter_components[0] === 'owner' || filter_components[0] === 'technician'){
+            new_row.find('td.expression-lookup select#user-field-selection').val(filter_components[1]);
+            filter_components.splice(1, 1);
+          }
+
+          filter_components[1] = filter_components[1].split('=');
+
+          if(filter_components[1][0].startsWith('i')){
+            filter_components[1][0] = filter_components[1][0].substring(1);
+            new_row.find('.case-sensitive input').prop('checked', true);
+          }
+
+          filter_components[1][1] = filter_components[1][1].replace(/^\"|\"$/g, "")
+
+
+          new_row.find('td.expression-lookup select#lookup-list').val(filter_components[1][0]).trigger('change');
+          new_row.find('td.expression-input > *').val(filter_components[1][1]).trigger('change');
+        }
+      }
+      
+      $('#add-expression').trigger('statechange');
+    }
+
+    $(document).ready(function(){
+      if($('#id_report_data').val()){
+        var name = $('#id_name').val();
+        var visibility = $('#id_owner').val() ? 'private' : 'global';
+        var data = JSON.parse($('#id_report_data').val());
+
+        $('#report-name input').val(name);
+        $('#report-visibility select').val(visibility);
+
+        var display_fields = data['display_fields'].split(',');
+        $('#select-no-fields').click();
+        for(var field in display_fields){
+          $('input#display_' + display_fields[field]).prop('checked', true);
+        }
+
+        var stack = [];
+        var query = data['query'].split(/ +(?=(?:(?:[^"]*"){2})*[^"]*$)/g)
+
+        for(var i = 0; i < query.length; i++){
+          if(query[i] === '&' || query[i] === '|'){
+            var r_operand = stack.pop();
+            var l_operand = stack.pop();
+
+            if(r_operand.indexOf('__kind__') < 0 && l_operand.indexOf('__kind__') < 0){
+              inflate_filter(l_operand);
+              inflate_filter(query[i] === '&' ? 'AND' : 'OR');
+              inflate_filter(r_operand);
+            } else if(r_operand.indexOf('__kind__') < 0){
+              inflate_filter(r_operand);
+            } else{
+              inflate_filter(l_operand);
+            }
+          } else if(query[i] === '~'){
+            inflate_filter(stack.pop(), true);
+          } else {
+            stack.push(query[i]);
+          }
+        }
+      }
     });
   </script>
 {% endblock js_includes %}

@@ -8,4 +8,5 @@ urlpatterns = patterns(
     url(r'^add$', views.create_report),
     url(r'^run$', views.run_report),
     url(r'^(?P<report_id>\d+)$', views.view_report),
+    url(r'^(?P<report_id>\d+)/edit$', views.create_report),
 )
