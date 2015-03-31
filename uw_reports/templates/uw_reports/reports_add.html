@@ -87,6 +87,9 @@
 
 {% block js_includes %}
   <script type="text/javascript">
+    /*
+     * Reads the query table HTML and translates it into a queryable string
+     */
     var flattenQuery = function(){
       var rowset = $('#query-table tbody tr');
       var returnString = '';
@@ -98,23 +101,30 @@
           var negate = $(row).find('td .expression-negate').is(':checked');
           var field = $(row).find('td.expression-field select').val();
           var filter = $(row).find('td.expression-lookup select').val();
-          if($(row).find('td.expression-lookup option:selected').is('.case') && !$(row).find('.case-sensitive input').is(':checked')){
-            filter = 'i' + filter;
+
+          if($(row).find('td.expression-lookup option:selected').is('.case') &&
+              !$(row).find('.case-sensitive input').is(':checked')){
+            filter = 'i' + filter; {# Adds a case-insensitive flag to the lookup filter #}
           }
+
           var filter_value = $(row).find('td.expression-input > *').val() || 'None';
           if(filter !== 'in'){
+            {# If the value here is meant to be a single string, we enclose it in quotes #}
+            {# So that we preserve spaces later in the translation #}
             filter_value = '"' + filter_value + '"';
           }
 
           if(filter === 'in'){
+            {# If the filter condition tests membership in a list, then the value is going to be #}
+            {# a Python list. We need to handle that differently #}
             if(typeof filter_value === 'string'){
               filter_value = filter_value.split(',');
             }
             for (var i = 0; i < filter_value.length; i++) {
-              filter_value[i] = '"' + filter_value[i].trim() + '"';
+              filter_value[i] = '"' + filter_value[i].trim() + '"'; {# Enquote each option separately #}
             }
 
-            filter_value = '[' + filter_value.join() + ']';
+            filter_value = '[' + filter_value.join() + ']'; {# The package them up with a list notation #}
           } else if(filter === 'range'){
             var secondInput = $($(row).find('td.expression-input > input')[1]).val();
             if(secondInput === 'true' || secondInput === 'false'){
@@ -124,7 +134,7 @@
             }
 
             filter_value = '"' + filter_value + '","' + secondInput + '"';
-            filter_value = '(' + filter_value + ')';
+            filter_value = '(' + filter_value + ')'; {# Similar idea for range filter, except we need a tuple #}
           } else if(filter === 'isnull'){
             {# For clarity of language, the filter propmt asks "Does it have a value?" which is #}
             {# the opposite of the isnull filter. So we need to invert the result #}
@@ -137,8 +147,9 @@
             filterString += '~ ';
           }
 
+          {# Annoying quirk of Autocomplete fields is that we need a second level of filtering #}
           if(field === 'location' || field === 'manufacturer' || field === 'supplier'){
-            filter = 'name__' + filter
+            filter = 'name__' + filter;
           }
 
           filterString += field + '__' + filter + '=' + filter_value;
@@ -161,6 +172,9 @@
       return returnString.trim();
     }
 
+    /*
+     * Bundles all HTML data needed for a query into a JSON object
+     */
     var packageQuery = function(){
       var checkedFields = '';
 
@@ -193,7 +207,7 @@
       if($('#report-visibility select').val() === 'private'){
         $('select#id_owner').val({{ request.user.id }});
       } else{
-        $('select#id_owner').val('');
+        $('select#id_owner').val(''); {# If nobody owns it, it's public domain #}
       }
     });
 
@@ -253,7 +267,11 @@
       </td>
       <td class="expression-lookup">
         <select class="form-control" disabled="disabled">
-          <option class="blank"></option>          
+          <option class="blank"></option>
+          {# The classes on each option tell us when it's acceptable to use them. #}
+          {# We'll filter against these classes to restrict user choice to ones that make sense #}
+          {# The data-type attribute tells us what kind of data each filter expects as input #}
+          {# The value will be fed directly into a query as a fitler lookup #}
           <option value="exact" data-type="text" class="hidden text bool date case">Is Exactly</option>
           <option value="contains" data-type="text" class="hidden text case">Contains</option>
           <option value="startswith" data-type="text" class="hidden text case">Starts With</option>
@@ -323,6 +341,10 @@
 
   <script type="text/javascript">
     $('#add-expression').on('statechange', function(){
+      {# We only want to show the 'Add expression' button if we're allowed to add an expression #}
+      {# and, after the first time, we can only add an expression if we know which logical operator #}
+      {# to apply next #}
+      {# This function will also disable the operator selection buttons when they're not needed #}
       if($('#query-table tbody tr').length === 1 && $('#expression-operator-list button.active').length === 0){
         $('#add-expression').addClass('disabled');
         $('#expression-operator-list button').removeClass('disabled');
@@ -346,6 +368,8 @@
       $(this).trigger('statechange');
     });
 
+    {# Although we're not currently using sub-expressions, tracking the number of open parens #}
+    {# is a simple validation trick; if this variable isn't 0 when we submit, there's an error #}
     var openExpressions = 0;
     $('#add-lparen').click(function(){
       $('#query-table tbody').append($('#expression-paren-template').html().replace(/__dir__/g, 'left').replace(/__paren__/g, '('));
@@ -459,11 +483,17 @@
     });
 
     $('#query-table tbody').on('click', '.expression-menu .cancel', function(){
+        {# This is an annoying requirement for deleting things. We can't simply delete #}
+        {# query expressions, we need to delete an operator as well (most of the time) #}
         var lsibling = $(this).closest('tr').prev();
         var rsibling = $(this).closest('tr').next();
 
-        console.log(!!rsibling)
-
+        {# We choose to remove an AND condition over an OR condition #}
+        {# This is because AND has higher precedence in Python than OR, so it causes the least disruption #}
+        {# For example, consider the expression A AND B OR C #}
+        {# If we remove B, then depending on which operator we remove we're left with A AND C or A OR C #}
+        {# Because of operator precedence, the original expression is equivalent to (A AND B) OR C #}
+        {# So it seems most true to the original query to prefer to remove the AND condition #}
         if(lsibling.length > 0 && lsibling.is('.condition-AND')){
           lsibling.remove();
         } else if(rsibling.length > 0 && rsibling.is('.condition-AND')){

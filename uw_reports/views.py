@@ -84,6 +84,7 @@ def create_report(request):
     })
 
 
+@csrf_protect
 def run_report(request):
     if request.is_ajax():
         postfix_query = infix_to_postfix(request.POST['query'])
