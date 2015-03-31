@@ -113,5 +113,5 @@ def view_report(request, report_id):
 
     return render(request, 'uw_reports/view_report.html', {
         'results': results,
-        'display_fields': report_data_json['display_fields']
+        'display_fields': report_data_json['display_fields'].split(',')
     })

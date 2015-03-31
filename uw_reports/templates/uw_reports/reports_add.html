@@ -100,9 +100,9 @@
         if($(row).is('.expression')){
           var negate = $(row).find('td .expression-negate').is(':checked');
           var field = $(row).find('td.expression-field select').val();
-          var filter = $(row).find('td.expression-lookup select').val();
+          var filter = $(row).find('td.expression-lookup #lookup-list').val();
 
-          if($(row).find('td.expression-lookup option:selected').is('.case') &&
+          if($(row).find('td.expression-lookup #lookup-list option:selected').is('.case') &&
               !$(row).find('.case-sensitive input').is(':checked')){
             filter = 'i' + filter; {# Adds a case-insensitive flag to the lookup filter #}
           }
@@ -150,6 +150,9 @@
           {# Annoying quirk of Autocomplete fields is that we need a second level of filtering #}
           if(field === 'location' || field === 'manufacturer' || field === 'supplier'){
             filter = 'name__' + filter;
+          } else if(field === 'owner' || field === 'technician'){
+            var user_field_filter = $(row).find('td.expression-lookup #user-field-selection').val();
+            filter = user_field_filter + '__' + filter;
           }
 
           filterString += field + '__' + filter + '=' + filter_value;
@@ -266,7 +269,13 @@
         </select>
       </td>
       <td class="expression-lookup">
-        <select class="form-control" disabled="disabled">
+        <select class="form-control hidden" id="user-field-selection">
+          <option class="blank"></option>
+          <option value="username">Username</option>
+          <option value="first_name">First Name</option>
+          <option value="last_name">Last Name</option>
+        </select>
+        <select class="form-control" id="lookup-list" disabled="disabled">
           <option class="blank"></option>
           {# The classes on each option tell us when it's acceptable to use them. #}
           {# We'll filter against these classes to restrict user choice to ones that make sense #}
@@ -398,23 +407,29 @@
       var selectedFieldType = $(this).find('option:selected').attr('data-type');
 
       $(this).closest('tr').find('td.expression-lookup select').val('');
-      $(this).closest('tr').find('td.expression-lookup select option:not(.blank)').addClass('hidden');
+      $(this).closest('tr').find('td.expression-lookup #lookup-list option:not(.blank)').addClass('hidden');
       $(this).closest('tr').find('td.expression-lookup .case-sensitive').addClass('hidden');
 
       if(selectedFieldType === 'choice'){
-        $(this).closest('tr').find('td.expression-lookup select option[value="exact"],option[value="isnull"],option[value="in"]').removeClass('hidden');
+        $(this).closest('tr').find('td.expression-lookup #lookup-list option[value="exact"],option[value="isnull"],option[value="in"]').removeClass('hidden');
       } else {
-        $(this).closest('tr').find('td.expression-lookup select option.' + selectedFieldType).removeClass('hidden');
+        $(this).closest('tr').find('td.expression-lookup #lookup-list option.' + selectedFieldType).removeClass('hidden');
       }
 
       if($(this).find('select').val()){
-        $(this).closest('tr').find('td.expression-lookup select').removeAttr('disabled');
+        $(this).closest('tr').find('td.expression-lookup #lookup-list').removeAttr('disabled');
       } else{
         $(this).closest('tr').find('td.expression-input').html(
           $('#input-input-template').html().replace(/__type__/g, 'text')
         );
         $(this).closest('tr').find('td.expression-input input').attr('disabled', 'disabled');
-        $(this).closest('tr').find('td.expression-lookup select').attr('disabled', 'disabled');
+        $(this).closest('tr').find('td.expression-lookup #lookup-list').attr('disabled', 'disabled');
+      }
+
+      if($(this).find('option:selected').text() === 'owner' || $(this).find('option:selected').text() === 'technician'){
+        $(this).closest('tr').find('td.expression-lookup #user-field-selection').removeClass('hidden');
+      } else {
+        $(this).closest('tr').find('td.expression-lookup #user-field-selection').addClass('hidden');
       }
     });
 
