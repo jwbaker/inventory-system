@@ -40,6 +40,9 @@ i,
 .copy::after {
   content: "\f0c5"; /* fa-files-o */
 }
+.danger::after {
+  content: "\f071"; /* fa-exclamation-triangle */
+}
 .drop-down::after {
   content: "\f0d7"; /* fa-caret-down */
 }
@@ -83,11 +86,20 @@ i,
 .filter::after {
   content: "\f0b0"; /* fa-filter */
 }
+.list::after {
+  content: "\f03a"; /* fa-list */
+}
 .menu-down::after {
   content: "\f078"; /* fa-chevron-down */
 }
 .menu-up::after {
   content: "\f077"; /* fa-chevron-up */
+}
+.picture::after {
+  content: "\f03e"; /* fa-picture-o */
+}
+.run::after {
+  content: "\f04b"; /* fa-play */
 }
 .restore::after {
   content: "\f0e2"; /* fa-undo */
@@ -106,4 +118,39 @@ i,
 }
 .sort::after {
   content: "\f0dc"; /* fa-sort */
+}
+.spinner::after {
+  content: "\f110"; /* fa-spin */
+  -webkit-animation: fa-spin 2s infinite linear;
+  animation: fa-spin 2s infinite linear;
+}
+.lock::after {
+  content: "\f023"; /* fa-lock */
+}
+.unlock::after {
+  content: "\f09c"; /* fa-unlock */
+}
+.upload::after {
+  content: "\f093"; /* fa-upload */
+}
+
+@-webkit-keyframes fa-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
+}
+@keyframes fa-spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+    transform: rotate(359deg);
+  }
 }

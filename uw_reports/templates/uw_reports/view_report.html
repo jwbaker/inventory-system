@@ -4,7 +4,7 @@
   <div class="row">
     <h2>
       {{ report.name }}
-      <i class="small fa-{% if report.owner %}lock{% else %}unlock{% endif %}"
+      <i class="small {% if report.owner %}lock{% else %}unlock{% endif %}"
          title="Visibility: {% if report.owner %}Just me{% else %}Everyone{% endif %}">
       </i>
     <div class="pull-right">
