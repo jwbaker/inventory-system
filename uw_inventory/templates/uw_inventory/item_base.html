@@ -22,12 +22,17 @@
 
 {% block gutter_nav %}
   <li class="list-group-item">
-    <button class="btn btn-primary" data-toggle="modal" data-target="#newFieldModal"><i class="fa fa-list"></i> Add field</button>
+    <button class="btn btn-primary" data-toggle="modal" data-target="#newFieldModal"><i class="list"></i> Add field</button>
   </li>
 {% endblock gutter_nav %}
 
-{% block page_body %}
-{% endblock page_body %}
+{% block page_content %}
+  <div class="panel panel-default">
+    <div class="panel-heading">{% block page_heading %}{% endblock page_heading %}</div>
+      {% block page_body %}
+      {% endblock page_body %}
+  </div>
+{% endblock page_content %}
 
 {% block modal %}
   {% confirm_modal 'Exit' %}
@@ -688,7 +693,7 @@
       <div class="col-md-6">
         <div class="thumbnail clearfix">
           <div class="image" style="height:150px;text-align:center">
-            <i class="fa-picture-o fa-fw fa-5x"></i>
+            <i class="picture fa-fw fa-5x"></i>
           </div>
           <div class="pull-right">
             <i class="menu-down details"></i>
@@ -756,7 +761,7 @@
         var hasChanges = (newDescription.val() !== oldDescription.val()) || fileChanged;
 
         if(fileChanged){
-          oldForm.closest('.image-item').find('.image').empty().append('<div class="image-placeholder" style="min-height:91px;text-align:center"><i class="fa-picture-o fa-fw fa-5x"></i></div>');
+          oldForm.closest('.image-item').find('.image').empty().append('<div class="image-placeholder" style="min-height:91px;text-align:center"><i class="picture fa-fw fa-5x"></i></div>');
         }
 
         oldForm.siblings('.image-detail').find('p').text(newDescription.val());

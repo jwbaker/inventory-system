@@ -19,9 +19,9 @@ def _form_handler(form,
     '''
     fields = []
     for field in form.FIELD_LIST:
-        field_obj = form[field.get('Name')]
+        field_obj = form[field.get('name')]
         field_name_words = ['input'] + [s.capitalize()
-                                        for s in field.get('Name').split('_')]
+                                        for s in field.get('name').split('_')]
 
         fields.append({
             'field': field_obj,
@@ -32,7 +32,7 @@ def _form_handler(form,
             )
         })
 
-        if field.get('Legacy'):
+        if field.get('legacy'):
             # Negative list slicing is SO COOL
             fields[-1]['legacy'] = True
 

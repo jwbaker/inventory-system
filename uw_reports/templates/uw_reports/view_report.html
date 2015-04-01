@@ -1,0 +1,37 @@
+{% extends 'uw_inventory_system/base.html' %}
+{% load uw_reports_misc_tags %}
+
+{% block content %}
+  <div class="row">
+    <h2>
+      {{ report.name }}
+      <span class="small">
+        {% visibility_icon report %}
+      </span>
+    {% if perms.uw_reports.change_report or report.owner == user %}
+      <div class="pull-right">
+        <button class="btn btn-default btn-sm" id="edit-report"><i class="edit"></i> Edit</button>
+      </div>
+    {% endif %}
+    </h2>
+
+  </div>
+  {% include 'uw_reports/report_result.html' %}
+{% endblock content %}
+
+{% block js_includes %}
+  <!-- DataTables -->
+  <script src="http://cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js"></script>
+  <script src="http://cdn.datatables.net/plug-ins/3cfcc339e89/integration/bootstrap/3/dataTables.bootstrap.js"></script>
+
+  <script type="text/javascript">
+    $('#query-result').DataTable();
+  </script>
+
+  <script type="text/javascript">
+    $('#edit-report').click(function(){
+      window.location = '{% url "uw_reports.views.create_report" report.id %}'
+    });
+  </script>
+
+{% endblock js_includes %}

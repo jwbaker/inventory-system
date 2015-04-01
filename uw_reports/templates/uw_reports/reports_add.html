@@ -1,0 +1,618 @@
+{% extends 'uw_forms/form_base.html' %}
+
+{% block page_content %}
+  <div class="row panel panel-default" id="display-fields">
+    <div class="panel-heading" data-toggle="collapse" href="#field-list">
+      Choose Fields to Display
+      <i class="pull-right menu-down"></i>
+    </div>
+    <div class="panel-body collapse" id="field-list">
+      <div class="col-xs-12">
+        <button class="btn btn-default btn-sm" id="select-all-fields">Select All</button>
+        <button class="btn btn-default btn-sm" id="select-no-fields">Select None</button>
+      </div>
+      {% for field in field_list %}
+        <div class="col-xs-4">
+          <input type="checkbox" id="display_{{ field.name }}" value="{{ field.label }}" checked="checked" />
+          <label for="display_{{ field.name }}">{{ field.label }}</label>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="form-group" id="report-name">
+      <label for="report_name" class="control-label">Report Name <span class="text-danger">*</span></label>
+      <input type="text" class="form-control" name="report_name" placeholder="Please enter a name" />
+      <ul class="error-list hidden">
+        <li>This field is required</li>
+      </ul>
+    </div>
+
+    <div class="form-group" id="report-visibility">
+      <label for="report_visibility" class="control-label">Visibility</label>
+      <select name="report_visibility" class="form-control">
+        <option value="private">Just me</option>
+        <option value="global">Everyone</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="btn-toolbar">
+      <div class="btn-group btn-group-sm">
+        <button class="btn btn-primary" id="add-expression">Add Expression</button>
+      </div>
+      <div class="btn-group btn-group-sm" id="expression-operator-list">
+        <button class="btn btn-default disabled" id="add-and">AND</button>
+        <button class="btn btn-default disabled" id="add-or">OR</button>
+      </div>
+      <div class="btn-group btn-group-sm">
+        {# <button class="btn btn-default" id="add-lparen">(</button> #}
+        {# <button class="btn btn-default" id="add-rparen">)</button> #}
+      </div>
+      <div class="btn-group btn-group-sm pull-right">
+        <button class="btn btn-info btn-sm" id="run-query">
+          <i class="run"></i>
+          Test query
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <table class="table table-condensed" id="query-table">
+      <thead class="persist-hidden">
+        <td>Negation</td>
+        <td>Field</td>
+        <td>Lookup</td>
+        <td>Filter Value</td>
+        <td>Menu</td>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="row" id="query-result"></div>
+
+  <form action="{{ form_target }}"
+      method="post"
+      class="hidden"
+      id="report-form">
+    {% csrf_token %}
+    {{ form }}
+  </form>
+{% endblock page_content %}
+
+{% block js_includes %}
+  <script type="text/javascript">
+    /*
+     * Reads the query table HTML and translates it into a queryable string
+     */
+    var flattenQuery = function(){
+      var rowset = $('#query-table tbody tr');
+      var returnString = '';
+
+      $.each(rowset, function(idx, row){
+        returnString += ' ';
+
+        if($(row).is('.expression')){
+          var negate = $(row).find('td .expression-negate').is(':checked');
+          var field = $(row).find('td.expression-field select').val();
+          var filter = $(row).find('td.expression-lookup #lookup-list').val();
+
+          if($(row).find('td.expression-lookup #lookup-list option:selected').is('.case') &&
+              !$(row).find('.case-sensitive input').is(':checked')){
+            filter = 'i' + filter; {# Adds a case-insensitive flag to the lookup filter #}
+          }
+
+          var filter_value = $(row).find('td.expression-input > *').val() || 'None';
+          if(filter !== 'in'){
+            {# If the value here is meant to be a single string, we enclose it in quotes #}
+            {# So that we preserve spaces later in the translation #}
+            filter_value = '"' + filter_value + '"';
+          }
+
+          if(filter === 'in'){
+            {# If the filter condition tests membership in a list, then the value is going to be #}
+            {# a Python list. We need to handle that differently #}
+            if(typeof filter_value === 'string'){
+              filter_value = filter_value.split(',');
+            }
+            for (var i = 0; i < filter_value.length; i++) {
+              filter_value[i] = '"' + filter_value[i].trim() + '"'; {# Enquote each option separately #}
+            }
+
+            filter_value = '[' + filter_value.join() + ']'; {# The package them up with a list notation #}
+          } else if(filter === 'range'){
+            var secondInput = $($(row).find('td.expression-input > input')[1]).val();
+            if(secondInput === 'true' || secondInput === 'false'){
+              secondInput = secondInput.charAt(0).toUpperCase() + secondInput.slice(1);
+            } else{
+              secondInput = '"' + secondInput + '"';
+            }
+
+            filter_value = '"' + filter_value + '","' + secondInput + '"';
+            filter_value = '(' + filter_value + ')'; {# Similar idea for range filter, except we need a tuple #}
+          } else if(filter === 'isnull'){
+            {# For clarity of language, the filter propmt asks "Does it have a value?" which is #}
+            {# the opposite of the isnull filter. So we need to invert the result #}
+            filter_value = (filter_value === 'true') ? 'False' : 'True';
+          }
+
+          var filterString = '';
+
+          if(negate){
+            filterString += '~ ';
+          }
+
+          {# Annoying quirk of Autocomplete fields is that we need a second level of filtering #}
+          if(field === 'location' || field === 'manufacturer' || field === 'supplier'){
+            filter = 'name__' + filter;
+          } else if(field === 'owner' || field === 'technician'){
+            var user_field_filter = $(row).find('td.expression-lookup #user-field-selection').val();
+            filter = user_field_filter + '__' + filter;
+          }
+
+          filterString += field + '__' + filter + '=' + filter_value;
+
+          returnString += filterString;
+
+          if(field === 'location' || field === 'manufacturer' || field === 'supplier'){
+            returnString += ' & ' + field + '__kind__exact="' + field + '"';
+          }
+
+        } else if($(row).is('.condition')){
+          switch($(row).find('td.condition-cond').text()){
+            case 'AND': returnString += '&'; break;
+            case 'OR': returnString += '|'; break;
+          }
+        }
+
+        returnString += ' ';
+      });
+      return returnString.trim();
+    }
+
+    /*
+     * Bundles all HTML data needed for a query into a JSON object
+     */
+    var packageQuery = function(){
+      var checkedFields = '';
+
+      $.each($('#display-fields').find('input[type="checkbox"]:checked'), function(idx, val){
+        checkedFields += val.value + ',';
+      });
+
+      return {
+        'display_fields': checkedFields,
+        'query': flattenQuery(),
+      };
+    }
+
+    $('#pageSave').click(function(e){
+      e.stopPropagation();
+      e.preventDefault();
+
+      $('#report-name').removeClass('has-error');
+      $('#report-name').find('.error-list').addClass('hidden');
+
+      if(!$('#report-name').find('input').val()){
+        $('#report-name').addClass('has-error');
+        $('#report-name').find('.error-list').removeClass('hidden');
+        return false;
+      }
+
+      $('form textarea').val(JSON.stringify(packageQuery()));
+      $('input#id_name').val($('#report-name').find('input').val());
+
+      if($('#report-visibility select').val() === 'private'){
+        $('select#id_owner').val({{ request.user.id }});
+      } else{
+        $('select#id_owner').val(''); {# If nobody owns it, it's public domain #}
+      }
+    });
+
+    $('#run-query').click(function(){
+      var payload = packageQuery();
+      payload['csrfmiddlewaretoken'] = $('input[name="csrfmiddlewaretoken"]').val();
+      $.ajax({
+        url: '{% url "uw_reports.views.run_report" %}',
+        method: 'POST',
+        data: payload,
+        dataType: 'html',
+      }).done(function(data){
+        console.log('success');
+        $('#query-result').html(data);
+      }).fail(function(xhr, status, err){
+        console.log(xhr);
+        console.log(status);
+        console.log(err);
+      });
+    });
+  </script>
+
+  {{ block.super }}
+  <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
+  <script type="text/javascript">
+    $('#field-list').on('show.bs.collapse', function(){
+      $('#display-fields').find('i').removeClass('menu-down').addClass('menu-up');
+    });
+
+    $('#field-list').on('hide.bs.collapse', function(){
+      $('#display-fields').find('i').addClass('menu-down').removeClass('menu-up');
+    });
+
+  </script>
+
+  <script type="text/javascript">
+    $('#select-all-fields').click(function(){
+      $(this).closest('div.panel-body').find('input[type="checkbox"]').prop('checked', true);
+    });
+    $('#select-no-fields').click(function(){
+      $(this).closest('div.panel-body').find('input[type="checkbox"]').prop('checked', false);
+    });
+
+  </script>
+
+  <script type="text/html" id="expression-row-template">
+    <tr class="expression">
+      <td><label><input type="checkbox" class="expression-negate" /> Not</label></td>
+      <td class="expression-field">
+        <select class="form-control">
+          <option value="">------</option>
+          {% for field in field_list %}
+            <option data-type="{{ field.type }}" value="{{ field.name }}">{{ field.label }}</option>
+          {% endfor %}
+        </select>
+      </td>
+      <td class="expression-lookup">
+        <select class="form-control hidden" id="user-field-selection">
+          <option class="blank"></option>
+          <option value="username">Username</option>
+          <option value="first_name">First Name</option>
+          <option value="last_name">Last Name</option>
+        </select>
+        <select class="form-control" id="lookup-list" disabled="disabled">
+          <option class="blank"></option>
+          {# The classes on each option tell us when it's acceptable to use them. #}
+          {# We'll filter against these classes to restrict user choice to ones that make sense #}
+          {# The data-type attribute tells us what kind of data each filter expects as input #}
+          {# The value will be fed directly into a query as a fitler lookup #}
+          <option value="exact" data-type="text" class="hidden text bool date case">Is Exactly</option>
+          <option value="contains" data-type="text" class="hidden text case">Contains</option>
+          <option value="startswith" data-type="text" class="hidden text case">Starts With</option>
+          <option value="endswith" data-type="text" class="hidden text case">Ends With</option>
+          <option value="in" data-type="list" class="hidden text number">In List</option>          
+          <option value="range" data-type="range" class="hidden text number">In Range</option>
+          <option value="gt" data-type="text" class="hidden text number">Greater Than</option>
+          <option value="gte" data-type="text" class="hidden text number">Greater Than or Equal To</option>
+          <option value="lt" data-type="text" class="hidden text number">Less Than</option>
+          <option value="lte" data-type="text" class="hidden text number">Less Than or Equal To</option>
+          <option value="year" data-type="number" class="hidden date">In Year</option>
+          <option value="month" data-type="choice" class="hidden date" data-choices="months">In Month</option>
+          <option value="day" data-type="number" class="hidden date">On Day of Month</option>
+          <option value="week_day" data-type="choice" class="hidden date choice" data-choices="weekdays">On Day of Week</option>
+          {#<option value="isnull" data-type="bool" class="hidden text date number bool">Has a Value</option>#}
+        </select>
+        <label class="hidden case-sensitive"><input type="checkbox" /> Case-sensitive?</label>
+      </td>
+      <td class="expression-input"><input type="text" class="form-control" disabled="disabled" /></td>
+      <td class="expression-menu">
+        {#<i class="fa-arrow-up"></i>#}
+        {#<i class="fa-arrow-down"></i>#}
+        <i class="cancel"></i>
+      </td>
+    </tr>
+  </script>
+
+  <script type="text/html" id="expression-cond-template">
+    <tr class="condition condition-__cond__">
+      <td class="condition-cond" colspan="4">__cond__</td>
+      <td class="expression-cond-menu">
+        {#<i class="fa-arrow-up"></i>#}
+        {#<i class="fa-arrow-down"></i>#}
+      </td>
+    </tr>
+  </script>
+
+  <script type="text/html" id="expression-paren-template">
+    <tr class="__dir__-paren">
+      <td><label><input type="checkbox" class="expression-negate" /> Not</label></td>
+      <td colspan="4">__paren__</td>
+      <td class="expression-cond-menu">
+        {#<i class="fa-arrow-up"></i>#}
+        {#<i class="fa-arrow-down"></i>#}
+        <i class="cancel"></i>
+      </td>
+    </tr>
+  </script>
+
+  <script type="text/html" id="input-range-template">
+    <input class="form-control" type="__type__" /> To <input class="form-control" type="__type__" />
+  </script>
+
+  <script type="text/html" id="input-input-template">
+    <input class="form-control" type="__type__" />
+  </script>
+
+  <script type="text/html" id="input-bool-template">
+    <select class="form-control">
+      <option></option>
+      <option value="true">Yes</option>
+      <option value="false">No</option>
+    </select>
+  </script>
+
+
+
+  <script type="text/javascript">
+    $('#add-expression').on('statechange', function(){
+      {# We only want to show the 'Add expression' button if we're allowed to add an expression #}
+      {# and, after the first time, we can only add an expression if we know which logical operator #}
+      {# to apply next #}
+      {# This function will also disable the operator selection buttons when they're not needed #}
+      if($('#query-table tbody tr').length === 1 && $('#expression-operator-list button.active').length === 0){
+        $('#add-expression').addClass('disabled');
+        $('#expression-operator-list button').removeClass('disabled');
+      } else if($('#query-table tbody tr').length === 0){
+        $('#add-expression').removeClass('disabled');
+        $('#expression-operator-list button').removeClass('active').addClass('disabled');
+      } else{
+        $('#add-expression').removeClass('disabled');
+      }
+    });
+
+    $('#add-expression').click(function(){
+      var toAppend = '';
+      if($('#add-and').is('.active')){
+        toAppend = $('#expression-cond-template').html().replace(/__cond__/g, 'AND');
+      } else if($('#add-or').is('.active')){
+        toAppend = $('#expression-cond-template').html().replace(/__cond__/g, 'OR');
+      }
+      
+      $('#query-table tbody').append(toAppend + $('#expression-row-template').html());
+      $(this).trigger('statechange');
+    });
+
+    {# Although we're not currently using sub-expressions, tracking the number of open parens #}
+    {# is a simple validation trick; if this variable isn't 0 when we submit, there's an error #}
+    var openExpressions = 0;
+    $('#add-lparen').click(function(){
+      $('#query-table tbody').append($('#expression-paren-template').html().replace(/__dir__/g, 'left').replace(/__paren__/g, '('));
+      openExpressions++;
+    });
+
+    $('#add-rparen').click(function(){
+      $('#query-table tbody').append($('#expression-paren-template').html().replace(/__dir__/g, 'right').replace(/__paren__/g, ')'));
+      openExpressions--;
+    });
+
+  </script>
+
+  <script type="text/javascript">
+    $('#expression-operator-list button').click(function(){
+      $(this).toggleClass('active');
+      $(this).siblings().removeClass('active');
+
+      $('#add-expression').trigger('statechange');
+    });
+  </script>
+
+
+  <script type="text/javascript">
+    $('#query-table tbody').on('change', '.expression-field', function(){
+      var selectedFieldType = $(this).find('option:selected').attr('data-type');
+
+      $(this).closest('tr').find('td.expression-lookup select').val('');
+      $(this).closest('tr').find('td.expression-lookup #lookup-list option:not(.blank)').addClass('hidden');
+      $(this).closest('tr').find('td.expression-lookup .case-sensitive').addClass('hidden');
+
+      if(selectedFieldType === 'choice'){
+        $(this).closest('tr').find('td.expression-lookup #lookup-list option[value="exact"],option[value="isnull"],option[value="in"]').removeClass('hidden');
+      } else {
+        $(this).closest('tr').find('td.expression-lookup #lookup-list option.' + selectedFieldType).removeClass('hidden');
+      }
+
+      if($(this).find('select').val()){
+        $(this).closest('tr').find('td.expression-lookup #lookup-list').removeAttr('disabled');
+      } else{
+        $(this).closest('tr').find('td.expression-input').html(
+          $('#input-input-template').html().replace(/__type__/g, 'text')
+        );
+        $(this).closest('tr').find('td.expression-input input').attr('disabled', 'disabled');
+        $(this).closest('tr').find('td.expression-lookup #lookup-list').attr('disabled', 'disabled');
+      }
+
+      if($(this).find('option:selected').text() === 'owner' || $(this).find('option:selected').text() === 'technician'){
+        $(this).closest('tr').find('td.expression-lookup #user-field-selection').removeClass('hidden');
+      } else {
+        $(this).closest('tr').find('td.expression-lookup #user-field-selection').addClass('hidden');
+      }
+    });
+
+    $('#query-table tbody').on('change', '.expression-lookup', function(){
+      var selectedOption = $(this).find('option:selected');
+      var selectedFieldType = $(this).closest('tr').find('.expression-field select').find('option:selected').attr('data-type');
+
+      if(selectedOption.is('.case') && selectedFieldType === 'text'){
+        $(this).closest('tr').find('.case-sensitive').removeClass('hidden');
+      } else{
+        $(this).closest('tr').find('.case-sensitive').addClass('hidden');
+      }
+
+      var inputWidget;
+      if(selectedOption.attr('data-type') === 'range'){
+        inputWidget = $('#input-range-template').html().replace(/__type__/g, selectedFieldType);
+      } else if(selectedOption.attr('data-type') === 'bool' || selectedFieldType === 'bool'){
+        inputWidget = $('#input-bool-template').html();
+      } else if(selectedFieldType === 'choice'){
+        var options = selectedOption.is('[value="in"]') ? '' : '<option></option>';
+
+        $.each({{ choice_fields.status|safe }}, function(key, choice){
+          var choice_key = Object.keys(choice)[0]
+          options += '<option value="' + choice_key + '">' + choice[choice_key] + '</option>';
+        });
+
+        if(selectedOption.is('[value="in"]')){
+          inputWidget = '<select class="form-control" multiple="multiple">' + options + '</select>';
+        } else {
+          inputWidget = '<select class="form-control">' + options + '</select>';
+        }
+      } else if(selectedOption.attr('value') === 'day'){
+        inputWidget = $('#input-input-template').html().replace(/__type__/g, 'number');
+      } else if(selectedOption.attr('data-type') === 'choice'){
+        var options = '<option></option>';
+        var optionsArr;
+        switch(selectedOption.attr('data-choices')){
+          case 'months':
+            optionsArr = ['January', 'February', 'March', 'April', 'May', 'June',
+                          'July', 'August', 'September', 'October', 'November', 'December'];
+            break;
+          case 'weekdays':
+            optionsArr = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            break;
+        }
+        $.each(
+          optionsArr,
+          function(idx, val){
+            options += '<option value="' + idx + '">' + val + '</option>';
+          }
+        );
+        inputWidget = '<select class="form-control">' + options + '</select>';
+      } else if(selectedOption.attr('data-type') === 'list'){
+        inputWidget = $('#input-input-template').html().replace(/__type__/g, 'text');
+      } else if(selectedOption.attr('value') === 'number'){
+        inputWidget = $('#input-input-template').html().replace(/__type__/g, 'number');
+      } else {
+        inputWidget = $('#input-input-template').html().replace(/__type__/g, selectedFieldType);
+      }
+
+      $(this).closest('tr').find('.expression-input').html(inputWidget);
+    });
+
+    $('#query-table tbody').on('change', '.expression-input > *', function(){
+      $(window).trigger('pagechanges', true);
+    });
+
+    $('#query-table tbody').on('click', '.expression-menu .cancel', function(){
+        {# This is an annoying requirement for deleting things. We can't simply delete #}
+        {# query expressions, we need to delete an operator as well (most of the time) #}
+        var lsibling = $(this).closest('tr').prev();
+        var rsibling = $(this).closest('tr').next();
+
+        {# We choose to remove an AND condition over an OR condition #}
+        {# This is because AND has higher precedence in Python than OR, so it causes the least disruption #}
+        {# For example, consider the expression A AND B OR C #}
+        {# If we remove B, then depending on which operator we remove we're left with A AND C or A OR C #}
+        {# Because of operator precedence, the original expression is equivalent to (A AND B) OR C #}
+        {# So it seems most true to the original query to prefer to remove the AND condition #}
+        if(lsibling.length > 0 && lsibling.is('.condition-AND')){
+          lsibling.remove();
+        } else if(rsibling.length > 0 && rsibling.is('.condition-AND')){
+          rsibling.remove();
+        } else if(lsibling.length > 0){
+          lsibling.remove();
+        } else if(rsibling.length > 0){
+          rsibling.remove();
+        }
+
+      $(this).closest('tr').remove();
+      $('#add-expression').trigger('statechange');
+    });
+  </script>
+
+  <script type="text/javascript">
+    var inflate_filter = function(filter, negate){
+      if(filter === 'AND' || filter === 'OR'){
+        $('#query-table tbody').append(
+          $('#expression-cond-template').html().replace(/__cond__/g, filter)
+        );
+      } else{
+        $('#query-table tbody').append($('#expression-row-template').html());
+        var new_row = $('#query-table tbody tr:last');
+        var filter_components = filter.split('__');
+
+        if(filter_components[1] !== 'kind'){
+          if(negate){
+            new_row.find('.expression-negate').prop('checked');
+          }
+
+          new_row.find('td.expression-field select').val(filter_components[0]).trigger('change');
+
+          if(filter_components[0] === 'location' ||
+              filter_components[0] === 'supplier' ||
+              filter_components[0] === 'manufacturer'){
+            filter_components.splice(1, 1);
+          }
+          if(filter_components[0] === 'owner' || filter_components[0] === 'technician'){
+            new_row.find('td.expression-lookup select#user-field-selection').val(filter_components[1]);
+            filter_components.splice(1, 1);
+          }
+
+          filter_components[1] = filter_components[1].split('=');
+
+          if(filter_components[1][0].startsWith('i')){
+            filter_components[1][0] = filter_components[1][0].substring(1);
+            new_row.find('.case-sensitive input').prop('checked', true);
+          }
+
+          filter_components[1][1] = filter_components[1][1].replace(/^\"|\"$/g, "")
+
+
+          new_row.find('td.expression-lookup select#lookup-list').val(filter_components[1][0]).trigger('change');
+          new_row.find('td.expression-input > *').val(filter_components[1][1]).trigger('change');
+        }
+      }
+      
+      $('#add-expression').trigger('statechange');
+    }
+
+    $(document).ready(function(){
+      if($('#id_report_data').val()){
+        var name = $('#id_name').val();
+        var visibility = $('#id_owner').val() ? 'private' : 'global';
+        var data = JSON.parse($('#id_report_data').val());
+
+        $('#report-name input').val(name);
+        $('#report-visibility select').val(visibility);
+
+        var display_fields = data['display_fields'].split(',');
+        $('#select-no-fields').click();
+        for(var field in display_fields){
+          $('input#display_' + display_fields[field]).prop('checked', true);
+        }
+
+        var stack = [];
+        var query = data['query'].split(/ +(?=(?:(?:[^"]*"){2})*[^"]*$)/g)
+
+        for(var i = 0; i < query.length; i++){
+          if(query[i] === '&' || query[i] === '|'){
+            var r_operand = stack.pop();
+            var l_operand = stack.pop();
+
+            if(r_operand.indexOf('__kind__') < 0 && l_operand.indexOf('__kind__') < 0){
+              inflate_filter(l_operand);
+              inflate_filter(query[i] === '&' ? 'AND' : 'OR');
+              inflate_filter(r_operand);
+            } else if(r_operand.indexOf('__kind__') < 0){
+              inflate_filter(r_operand);
+            } else{
+              inflate_filter(l_operand);
+            }
+          } else if(query[i] === '~'){
+            inflate_filter(stack.pop(), true);
+          } else {
+            stack.push(query[i]);
+          }
+        }
+
+        while(stack.length > 0){
+          inflate_filter(stack.pop());
+        }
+      }
+    });
+  </script>
+{% endblock js_includes %}

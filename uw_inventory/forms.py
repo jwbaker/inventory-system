@@ -42,39 +42,90 @@ class ImageForm(forms.ModelForm):
             }),
         }
 
+ITEM_FORM_FIELD_LIST = [
+        {'name': 'name', 'type': 'text', 'label': 'Name'},
+        {
+            'name': 'tech_id',
+            'type': 'text',
+            'legacy': True,
+            'label': 'Technician ID'
+        },
+        {'name': 'description', 'type': 'text', 'label': 'Description'},
+        {'name': 'status', 'type': 'choice', 'label': 'Status'},
+        {'name': 'location', 'type': 'text', 'label': 'Location'},
+        {'name': 'technician', 'type': 'text', 'label': 'Technician'},
+        {'name': 'owner', 'type': 'text', 'label': 'Owner'},
+        {'name': 'manufacturer', 'type': 'text', 'label': 'Manufacturer'},
+        {'name': 'model_number', 'type': 'text', 'label': 'Model number'},
+        {'name': 'serial_number', 'type': 'text', 'label': 'Serial number'},
+        {
+            'name': 'manufacture_date',
+            'type': 'date',
+            'label': 'Manufacture date'
+        },
+        {'name': 'supplier', 'type': 'text', 'label': 'Supplier'},
+        {
+            'name': 'purchase_price',
+            'type': 'number',
+            'label': 'Purchase price'
+        },
+        {'name': 'purchase_date', 'type': 'date', 'label': 'Purchase date'},
+        {
+            'name': 'replacement_cost',
+            'type': 'number',
+            'label': 'Replacement cost'
+        },
+        {
+            'name': 'replacement_cost_date',
+            'type': 'date',
+            'label': 'Estimation date'
+        },
+        {'name': 'csa_required', 'type': 'bool', 'label': 'CSA Required?'},
+        {
+            'name': 'factory_csa',
+            'type': 'bool',
+            'label': 'Factory CSA certification?'
+        },
+        {
+            'name': 'csa_special',
+            'type': 'bool',
+            'label': 'Special CSA inspection required?'
+        },
+        {
+            'name': 'csa_special_date',
+            'type': 'date',
+            'label': 'Special CSA inspection date'
+            },
+        {
+            'name': 'modified_since_csa',
+            'type': 'bool',
+            'label': 'Modified since CSA inspection?'
+        },
+        {
+            'name': 'undergraduate',
+            'type': 'bool',
+            'label': 'Used for undergraduate teaching?',
+        },
+        {
+            'name': 'csa_cost',
+            'type': 'number',
+            'label': 'CSA Certification cost'
+        },
+        {'name': 'lifting_device', 'type': 'bool', 'label': 'Lifting device?'},
+        {
+            'name': 'lifting_device_inspection_date',
+            'type': 'date',
+            'label': 'Lifting device inspection date'
+        },
+        {'name': 'notes', 'type': 'text', 'label': 'Notes'},
+        {'name': 'sop_required', 'type': 'bool', 'label': 'SOP required?'},
+    ]
+
 
 class ItemForm(forms.ModelForm):
     # This list provides metdata to the field renderer.
     # Most of that logic is field order, but legacy fields are also described
-    FIELD_LIST = [
-        {'Name': 'name'},
-        {'Name': 'tech_id', 'Legacy': True},
-        {'Name': 'description'},
-        {'Name': 'status'},
-        {'Name': 'location'},
-        {'Name': 'technician'},
-        {'Name': 'owner'},
-        {'Name': 'manufacturer'},
-        {'Name': 'model_number'},
-        {'Name': 'serial_number'},
-        {'Name': 'manufacture_date'},
-        {'Name': 'supplier'},
-        {'Name': 'purchase_price'},
-        {'Name': 'purchase_date'},
-        {'Name': 'replacement_cost'},
-        {'Name': 'replacement_cost_date'},
-        {'Name': 'csa_required'},
-        {'Name': 'factory_csa'},
-        {'Name': 'csa_special'},
-        {'Name': 'csa_special_date'},
-        {'Name': 'modified_since_csa'},
-        {'Name': 'undergraduate'},
-        {'Name': 'csa_cost'},
-        {'Name': 'lifting_device'},
-        {'Name': 'lifting_device_inspection_date'},
-        {'Name': 'notes'},
-        {'Name': 'sop_required'},
-    ]
+    FIELD_LIST = ITEM_FORM_FIELD_LIST
 
     class Meta:
         model = InventoryItem
@@ -86,22 +137,9 @@ class ItemForm(forms.ModelForm):
             'uuid',
         ]
 
-        # The labels are only necessary if sentence-casing the field name
-        # doesn't work, i.e. abbreviations and punctuation
-        labels = {
-            'csa_cost': 'CSA certification cost',
-            'csa_required': 'CSA required?',
-            'csa_special': 'Special CSA inspection required?',
-            'csa_special_date': 'Special CSA inspection date',
-            'factory_csa': 'Factory CSA certification?',
-            'lifting_device': 'Lifting device?',
-            'lifting_device_inspection_date': 'Lifting device inspection date',
-            'modified_since_csa': 'Modified since CSA inspection?',
-            'replacement_cost_date': 'Estimation date',
-            'sop_required': 'SOP required?',
-            'tech_id': 'Technician ID',
-            'undergraduate': 'Used for undergrad teaching?',
-        }
+        labels = [
+            {data['name']: data['label']} for data in ITEM_FORM_FIELD_LIST
+        ]
 
         # EVERY field must have a widget defined, and it must be one of our
         # specially-defined widgets, because we rely on every element having
@@ -156,8 +194,8 @@ class ItemForm(forms.ModelForm):
                 'id': 'inputModifiedSinceCsa',
             }),
             'name': widgets.TextInput({
-                'id': 'inputName',
-                'placeholder': 'Name',
+                'id': 'inputname',
+                'placeholder': 'name',
             }),
             'notes': widgets.TextareaInput({
                 'id': 'inputNotes',

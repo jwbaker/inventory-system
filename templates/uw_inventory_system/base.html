@@ -1,5 +1,6 @@
 {% load staticfiles %}
 {% load uw_users_tags %}
+{% load uw_reports_navigation_tags %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -65,6 +66,7 @@
           <ul class="nav navbar-nav navbar-right">
             {% if user %}
               {% user_context_menu user %}
+              {% reports_context_menu user %}
             {% endif %}
             {% if perms.uw_inventory.add_inventoryitem %}
               <li>
@@ -74,7 +76,7 @@
               </li>
               <li>
                 <a href="{% url 'uw_file_io.views.file_import' %}">
-                  <i class="fa-upload"></i>
+                  <i class="upload"></i>
                 </a>
               </li>
             {% endif %}
@@ -150,6 +152,14 @@
         return year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds;
       }
 
+      /*
+       * Returns true if the given string ends with searchString.
+       * If position argument is supplied, the searched string is assumed to
+       * no longer than the value of position.
+       *
+       * The if wrapper is a shim to prevent overwriting an existing property
+       * in browsers that have implemented ES6.
+       */
       if (!String.prototype.endsWith) {
         Object.defineProperty(String.prototype, 'endsWith', {
           value: function(searchString, position) {

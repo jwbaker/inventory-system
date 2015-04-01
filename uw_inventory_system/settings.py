@@ -38,6 +38,8 @@ INSTALLED_APPS = (
     'uw_forms',
     'uw_file_io',
     'uw_custom_fields',
+    'uw_reports',
+    'reversion',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -50,6 +52,7 @@ MIDDLEWARE_CLASSES = (
     'django_cas.middleware.CASMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'uw_inventory.middleware.Forbidden403',
+    'reversion.middleware.RevisionMiddleware',
 )
 
 AUTHENTICATION_BACKENDS = (
