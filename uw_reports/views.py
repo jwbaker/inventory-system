@@ -1,6 +1,7 @@
 import json
 
 from django.contrib import messages
+from django.contrib.auth.decorators import user_passes_test
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db.models import Q
@@ -53,7 +54,15 @@ def reports_list(request):
     })
 
 
+def __create_report_test(user):
+    return (
+        user.has_perm('uw_reports.add_report') or
+        user.has_perm('uw_reports.change_report')
+    )
+
+
 @csrf_protect
+@user_passes_test(__create_report_test)
 def create_report(request, report_id=None):
     if report_id:
         saved_report = Report.objects.get(id=report_id)
