@@ -7,17 +7,23 @@
     </a>
     <ul class="dropdown-menu" role="menu">
       <li><a href="{% url 'uw_reports.views.reports_list' %}">All reports</a></li>
-      <li><a href="{% url 'uw_reports.views.create_report' %}">New report</a></li>
-      <li class="divider"></li>
 
-      {% for report in reports %}
-        <li>
-          <a href="{% url 'uw_reports.views.view_report' report.id %}">
-            {% visibility_icon report %}
-            {{ report.name }}
-          </a>
-        </li>
-      {% endfor %}
+      {% if can_add %}
+        <li><a href="{% url 'uw_reports.views.create_report' %}">New report</a></li>
+      {% endif %}
+
+      {% if reports %}
+        <li class="divider"></li>
+
+        {% for report in reports %}
+          <li>
+            <a href="{% url 'uw_reports.views.view_report' report.id %}">
+              {% visibility_icon report %}
+              {{ report.name }}
+            </a>
+          </li>
+        {% endfor %}
+      {% endif %}
     </ul>
   {% endif %}
 </li>

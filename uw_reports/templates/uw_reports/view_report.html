@@ -8,9 +8,11 @@
       <span class="small">
         {% visibility_icon report %}
       </span>
-    <div class="pull-right">
-      <button class="btn btn-default btn-sm" id="edit-report"><i class="edit"></i> Edit</button>
-    </div>
+    {% if perms.uw_reports.change_report or report.owner == user %}
+      <div class="pull-right">
+        <button class="btn btn-default btn-sm" id="edit-report"><i class="edit"></i> Edit</button>
+      </div>
+    {% endif %}
     </h2>
 
   </div>
