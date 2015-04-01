@@ -13,8 +13,8 @@
       </div>
       {% for field in field_list %}
         <div class="col-xs-4">
-          <input type="checkbox" id="display_{{ field.Name }}" value="{{ field.Name }}" checked="checked" />
-          <label for="display_{{ field.Name }}">{{ field.Name }}</label>
+          <input type="checkbox" id="display_{{ field.name }}" value="{{ field.label }}" checked="checked" />
+          <label for="display_{{ field.name }}">{{ field.label }}</label>
         </div>
       {% endfor %}
     </div>
@@ -264,7 +264,7 @@
         <select class="form-control">
           <option value="">------</option>
           {% for field in field_list %}
-            <option data-type="{{ field.type }}" value="{{ field.Name }}">{{ field.Name }}</option>
+            <option data-type="{{ field.type }}" value="{{ field.name }}">{{ field.label }}</option>
           {% endfor %}
         </select>
       </td>
