@@ -5,6 +5,11 @@ from django.db import models
 
 
 class Report(models.Model):
+    class Meta:
+        permissions = (
+            ('view_all_reports', 'Can view all reports'),
+        )
+
     creator = models.ForeignKey(
         User,
         blank=True,
