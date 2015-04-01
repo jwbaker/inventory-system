@@ -1,12 +1,13 @@
 {% extends 'uw_inventory_system/base.html' %}
+{% load uw_reports_misc_tags %}
 
 {% block content %}
   <div class="row">
     <h2>
       {{ report.name }}
-      <i class="small {% if report.owner %}lock{% else %}unlock{% endif %}"
-         title="Visibility: {% if report.owner %}Just me{% else %}Everyone{% endif %}">
-      </i>
+      <span class="small">
+        {% visibility_icon report %}
+      </span>
     <div class="pull-right">
       <button class="btn btn-default btn-sm" id="edit-report"><i class="edit"></i> Edit</button>
     </div>

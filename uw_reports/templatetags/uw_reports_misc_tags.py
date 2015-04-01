@@ -1,4 +1,5 @@
 from django import template
+from django.utils.safestring import mark_safe
 
 register = template.Library()
 
@@ -16,3 +17,20 @@ def get(dictionary, key):
         key -- The name of the field to lookup
     '''
     return getattr(dictionary, key, '')
+
+
+@register.simple_tag()
+def visibility_icon(report):
+    visibility_class = 'lock'
+    visibility_message = 'Only me'
+    if not report.owner:
+        visibility_class = 'un{0}'.format(visibility_class)
+        visibility_message = 'Everyone'
+
+    return mark_safe(
+        '''<i class="{0}" title="{1}" data-toggle="tooltip"
+            data-placement="left"></i>'''.format(
+            visibility_class,
+            visibility_message
+        )
+    )

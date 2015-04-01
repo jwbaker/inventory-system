@@ -1,4 +1,5 @@
 {% extends 'uw_inventory_system/base.html' %}
+{% load uw_reports_misc_tags %}
 
 {% block css_includes %}
   <!-- DataTables -->
@@ -18,6 +19,7 @@
     <table id="reports-table" class="table table-condensed table-hover">
       <thead>
         <tr>
+          <td>Visibility</td>
           <td>Creation Date</td>
           <td>Name</td>
           <td>Creator</td>
@@ -26,6 +28,7 @@
       <tbody>
         {% for report in reports_list %}
           <tr>
+            <td>{% visibility_icon report %}</td>
             <td>{{ report.creation_date }}</td>
             <td>
               <a href="{% url 'uw_reports.views.view_report' report.id %}" class="report-detail"></a>
