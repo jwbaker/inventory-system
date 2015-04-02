@@ -1,4 +1,5 @@
 {% extends 'uw_inventory/item_base.html' %}
+{% load staticfiles %}
 {% load uw_forms_form_tags %}
 {% load uw_forms_field_tags %}
 {% load uw_forms_format_tags %}
@@ -6,8 +7,18 @@
 {% load uw_custom_field_field_tags %}
 {% load uw_inventory_misc_tags %}
 
+{% block css_includes %}
+  <link rel="stylesheet" type="text/css" media="print" href="{% static 'uw_inventory/detail_print.css' %}">
+{% endblock css_includes %}
+
 {% block gutter_nav %}
   {{ block.super }}
+  <li class="list-group-item">
+    <a href="" onclick="window.print()">
+      <i class="fa-print"></i> Print
+    </a>
+  </li>
+
   <li class="list-group-item">
     <a href="{{ inventory_item|admin_url }}">
       <i class="fa-history"></i> History
