@@ -47,6 +47,15 @@
   {% endif %}
 {% endblock gutter_nav %}
 
+{% block print_header %}
+  <div class="row" id="print-header" style="display:none">
+    <h1 class="pull-left">{{ inventory_item.uuid }}</h1>
+    <div id="qr-code" class="pull-right">
+      <img src="/{{ inventory_item.qr_code.url }}" style="width:25%">
+    </div>
+  </div>
+{% endblock print_header %}
+
 {% block page_heading %}
   <span class="panel-title">{{ inventory_item.uuid }}</span>
   <span class="small pull-right">Last modified: {{ inventory_item.last_modified }}</span>

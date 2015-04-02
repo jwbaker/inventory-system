@@ -1,7 +1,12 @@
+from StringIO import StringIO
 import json
+
+import qrcode
 
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.core.files import File
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError
 from django.db.models import Q
@@ -102,6 +107,26 @@ def inventory_list(request):
 @permission_required('uw_inventory.view_item')
 def inventory_detail(request, item_id):
     inventory_item = InventoryItem.objects.get(pk=item_id)
+
+    if not inventory_item.qr_code:
+        qr_code = qrcode.make(
+            reverse('uw_inventory.views.inventory_detail', args=[item_id])
+        )
+
+        temp_io = StringIO()
+        qr_code.save(temp_io)
+
+        temp_file = InMemoryUploadedFile(
+            temp_io,
+            None,
+            '{0}_qr.jpg'.format(item_id),
+            'image/jpeg',
+            temp_io.len,
+            None
+        )
+
+        inventory_item.qr_code.save('{0}_qr.jpg'.format(item_id), temp_file)
+
     CommentCreateFormset = inlineformset_factory(
         InventoryItem,
         Comment,

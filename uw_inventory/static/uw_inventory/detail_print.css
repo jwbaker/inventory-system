@@ -1,6 +1,9 @@
 body {
     padding-top: 0 !important;
-  }
+}
+div#print-header {
+	display: initial !important;
+}
 footer,
 i,
 div#image-add-container,
