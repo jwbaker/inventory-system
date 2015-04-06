@@ -1,16 +1,20 @@
+from StringIO import StringIO
 import json
+
+import qrcode
 
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError
 from django.db.models import Q
 from django.forms.models import inlineformset_factory
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_protect
 
-from django_cas.decorators import permission_required
+from django_cas.decorators import permission_required, user_passes_test
 
 from uw_inventory.forms import (
     CommentForm,
@@ -102,6 +106,26 @@ def inventory_list(request):
 @permission_required('uw_inventory.view_item')
 def inventory_detail(request, item_id):
     inventory_item = InventoryItem.objects.get(pk=item_id)
+
+    if not inventory_item.qr_code:
+        qr_code = qrcode.make(
+            reverse('uw_inventory.views.inventory_detail', args=[item_id])
+        )
+
+        temp_io = StringIO()
+        qr_code.save(temp_io)
+
+        temp_file = InMemoryUploadedFile(
+            temp_io,
+            None,
+            '{0}_qr.jpg'.format(item_id),
+            'image/jpeg',
+            temp_io.len,
+            None
+        )
+
+        inventory_item.qr_code.save('{0}_qr.jpg'.format(item_id), temp_file)
+
     CommentCreateFormset = inlineformset_factory(
         InventoryItem,
         Comment,
@@ -414,3 +438,47 @@ def autocomplete_new(request):
         else:
             response = json.dumps({})
     return HttpResponse(response, 'application/json')
+
+
+def __associate_terms_authenticate(user):
+    if user:
+        return (
+            user.groups.filter(name='can_admin').count() or
+            user.is_superuser
+        )
+    else:
+        return False
+
+
+@csrf_protect
+@user_passes_test(__associate_terms_authenticate)
+def associate_terms(request):
+    if request.method == 'POST':
+        transactions_list = json.loads(request.POST['term_data'])
+
+        for transaction in transactions_list:
+            key = '{0}_id'.format(transaction['kind'])
+            items_with_old_term = InventoryItem.objects.filter(**{
+                key: transaction['old']
+            })
+            map(lambda i: setattr(i, key, transaction['new']), items_with_old_term)
+            AutocompleteData.objects.get(
+                id=transaction['old'],
+                kind=transaction['kind']
+            ).delete()
+
+        return redirect('uw_inventory.views.associate_terms')
+    else:
+        terms = {}
+
+        for choice in AutocompleteData.KIND_CHOICES:
+            terms[choice[0]] = AutocompleteData.objects.filter(kind=choice[0])
+
+    message_list = _collect_messages(request)
+    return render(request, 'uw_inventory/associate_terms.html', {
+        'page_messages': message_list,
+        'terms': terms,
+        'can_add': True,
+        'can_edit': True,
+        'form_id': 'term-form',
+    })

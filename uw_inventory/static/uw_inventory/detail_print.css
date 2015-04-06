@@ -1,0 +1,19 @@
+body {
+    padding-top: 0 !important;
+}
+div#print-header {
+	display: initial !important;
+}
+footer,
+i,
+div#image-add-container,
+nav.affix {
+	display: none !important;
+}
+div.form-container > div {
+	margin-left: 0 !important;
+	width: 100% !important;
+}
+form div.list-group-item {
+	page-break-inside: avoid;
+}

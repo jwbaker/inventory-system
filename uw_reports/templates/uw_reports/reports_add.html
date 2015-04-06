@@ -6,14 +6,14 @@
       Choose Fields to Display
       <i class="pull-right menu-down"></i>
     </div>
-    <div class="panel-body collapse" id="field-list">
+    <div class="panel-body" id="field-list">
       <div class="col-xs-12">
         <button class="btn btn-default btn-sm" id="select-all-fields">Select All</button>
         <button class="btn btn-default btn-sm" id="select-no-fields">Select None</button>
       </div>
       {% for field in field_list %}
         <div class="col-xs-4">
-          <input type="checkbox" id="display_{{ field.name }}" value="{{ field.label }}" checked="checked" />
+          <input type="checkbox" id="display_{{ field.name }}" value="{{ field.label }}" />
           <label for="display_{{ field.name }}">{{ field.label }}</label>
         </div>
       {% endfor %}
@@ -580,7 +580,6 @@
         $('#report-visibility select').val(visibility);
 
         var display_fields = data['display_fields'].split(',');
-        $('#select-no-fields').click();
         for(var field in display_fields){
           $('input#display_' + display_fields[field]).prop('checked', true);
         }

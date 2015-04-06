@@ -1,6 +1,7 @@
 import json
 
 from django.contrib import messages
+from django.contrib.auth.decorators import user_passes_test
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db.models import Q
@@ -53,7 +54,15 @@ def reports_list(request):
     })
 
 
+def __create_report_test(user):
+    return (
+        user.has_perm('uw_reports.add_report') or
+        user.has_perm('uw_reports.change_report')
+    )
+
+
 @csrf_protect
+@user_passes_test(__create_report_test)
 def create_report(request, report_id=None):
     if report_id:
         saved_report = Report.objects.get(id=report_id)
@@ -84,8 +93,8 @@ def create_report(request, report_id=None):
             'uw_reports.views.create_report',
             args=[report_id]
         ) if report_id else reverse('uw_reports.views.create_report'),
-        'can_edit': True,
-        'can_add': True,
+        'can_edit': request.user.has_perm('uw_reports.change_report'),
+        'can_add': request.user.has_perm('uw_reports.add_report'),
         'field_list': ItemForm.FIELD_LIST,
         'choice_fields': {
             'status': [{k: v} for (k, v) in InventoryItem.STATUS_CHOICES]
@@ -122,7 +131,9 @@ def view_report(request, report_id):
 
     results = InventoryItem.objects.filter(query_filter)
 
+    message_list = _collect_messages(request)
     return render(request, 'uw_reports/view_report.html', {
+        'page_messages': message_list,
         'report': report,
         'results': results,
         'display_fields': report_data_json['display_fields'].split(',')

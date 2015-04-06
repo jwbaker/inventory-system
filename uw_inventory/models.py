@@ -216,6 +216,12 @@ class InventoryItem(models.Model):
         auto_now=True,
         default=datetime.now
     )
+    qr_code = models.ImageField(
+        blank=True,
+        default=None,
+        null=True,
+        upload_to='media/images/%Y/%m/%d/'
+    )
 
     # These fields are supplied by the user
     csa_cost = models.IntegerField(blank=True, default=None, null=True)
