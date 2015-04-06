@@ -440,18 +440,8 @@ def autocomplete_new(request):
     return HttpResponse(response, 'application/json')
 
 
-def __associate_terms_authenticate(user):
-    if user:
-        return (
-            user.groups.filter(name='can_admin').count() or
-            user.is_superuser
-        )
-    else:
-        return False
-
-
 @csrf_protect
-@user_passes_test(__associate_terms_authenticate)
+@permission_required('change_autocompletedata')
 def associate_terms(request):
     if request.method == 'POST':
         transactions_list = json.loads(request.POST['term_data'])
