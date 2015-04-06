@@ -474,7 +474,9 @@ def associate_terms(request):
         for choice in AutocompleteData.KIND_CHOICES:
             terms[choice[0]] = AutocompleteData.objects.filter(kind=choice[0])
 
+    message_list = _collect_messages(request)
     return render(request, 'uw_inventory/associate_terms.html', {
+        'page_messages': message_list,
         'terms': terms,
         'can_add': True,
         'can_edit': True,

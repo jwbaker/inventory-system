@@ -321,6 +321,8 @@ def finish_import(request):
         'Import successful. {0} records created'.format(len(new_items))
     )
 
+    message_list = _collect_messages(request)
     return render(request, 'uw_file_io/import/done.html', {
         'item_list': new_items,
+        'page_messages': message_list,
     })
