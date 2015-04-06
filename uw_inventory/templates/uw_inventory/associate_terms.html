@@ -1,0 +1,103 @@
+{% extends 'uw_forms/form_base.html' %}
+{% load staticfiles %}
+
+{% block page_content %}
+  <div class="tab-content">
+    <div role="tabpanel">
+      <ul class="nav nav-tabs" role="tablist">
+        {% for key in terms.keys %}
+          <li role="presentation" class="tab{% ifequal forloop.counter0 0 %} active{% endifequal %}">
+            <a href="#{{ key }}" role="tab" data-toggle="tab">{{ key|capfirst }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+
+      <!-- Tab panes -->
+      <div class="tab-content">
+        {% for key, value in terms.items %}
+          <div role="tabpanel" class="tab-pane{% ifequal forloop.counter0 0 %} active{% endifequal %}" id="{{ key }}">
+            <div class="row">
+              <div class="col-xs-6 col-xs-offset-3">
+                <ol class="list-group term-list sortable" style="min-height:35px">
+                  {% for term in value %}
+                    <li class="list-group-item new-term">
+                      <div class="handle" data-id="{{ term.id }}">{{ term }}</div>
+                    </li>
+                  {% endfor %}
+                </ol>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <form action="{% url 'uw_inventory.views.associate_terms' %}" id="term-form" method="POST">
+    {% csrf_token %}
+    <textarea name="term_data" id="term_data" cols="30" rows="10"></textarea>
+  </form>
+{% endblock page_content %}
+
+{% block js_includes %}
+  <script type="text/javascript">
+    var flatten = function(label){
+      var retObject = []
+
+      $('#' + label + ' li').each(function(index, element){
+        var elem = $(element);
+        var temp = {
+          'old': elem.children('div.handle').attr('data-id'),
+          'kind': label,
+        }
+
+        var isChild = (elem.parents('ol').length == 2);
+
+        if(isChild){
+          temp['action'] = 'rename';
+          temp['new'] = elem.closest('ol').siblings('div.handle').attr('data-id');
+        } else{
+          temp['action'] = 'skip';
+        }
+
+        if(temp['action'] !== 'skip'){
+          retObject.push(temp);
+        }
+      });
+
+      return retObject;
+    }
+
+    $('#pageSave').click(function(e){
+      e.stopPropagation();
+      e.preventDefault();
+
+      termList = [];
+      {# We're going to iterate through each 'kind' of available AutocompleteData term, #}
+      {# and create separate lists. Keeps things easier later #}
+      $('.sortable').closest('[role="tabpanel"]').each(function(index, element){
+        var label = $(element).attr('id');
+        termList = termList.concat(flatten(label));
+      });
+
+      $('textarea#term_data').val(JSON.stringify(termList));
+    });
+  </script>
+
+  {{ block.super }}
+  <script src="//code.jquery.com/ui/1.11.3/jquery-ui.js"></script>
+  <script src="{% static 'uw_inventory_system/js/jquery.mjs.nestedSortable.js' %}"></script>
+  <script type="text/javascript">
+    var nestedSortable = $('.sortable').nestedSortable({
+      handle: 'div',
+      items: 'li',
+      toleranceElement: '> div',
+      maxLevels: 2,
+      tabSize: 2,
+      connectWith: '.sortable',
+    });
+  </script>
+  <script type="text/javascript">
+    $('#pageSave').removeAttr('disabled');
+  </script>
+{% endblock js_includes %}

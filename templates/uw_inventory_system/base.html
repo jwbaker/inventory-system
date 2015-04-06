@@ -1,6 +1,7 @@
 {% load staticfiles %}
 {% load uw_users_tags %}
 {% load uw_reports_navigation_tags %}
+{% load uw_inventory_misc_tags %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -67,6 +68,9 @@
             {% if user %}
               {% user_context_menu user %}
               {% reports_context_menu user %}
+            {% endif %}
+            {% if user|in_group:'can_admin' %}
+              {% inventory_admin_context_menu %}
             {% endif %}
             {% if perms.uw_inventory.add_inventoryitem %}
               <li>

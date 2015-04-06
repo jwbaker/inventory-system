@@ -5,17 +5,16 @@ import qrcode
 
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.core.files import File
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.urlresolvers import reverse
 from django.db import IntegrityError
 from django.db.models import Q
 from django.forms.models import inlineformset_factory
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_protect
 
-from django_cas.decorators import permission_required
+from django_cas.decorators import permission_required, user_passes_test
 
 from uw_inventory.forms import (
     CommentForm,
@@ -439,3 +438,45 @@ def autocomplete_new(request):
         else:
             response = json.dumps({})
     return HttpResponse(response, 'application/json')
+
+
+def __associate_terms_authenticate(user):
+    if user:
+        return (
+            user.groups.filter(name='can_admin').count() or
+            user.is_superuser
+        )
+    else:
+        return False
+
+
+@csrf_protect
+@user_passes_test(__associate_terms_authenticate)
+def associate_terms(request):
+    if request.method == 'POST':
+        transactions_list = json.loads(request.POST['term_data'])
+
+        for transaction in transactions_list:
+            key = '{0}_id'.format(transaction['kind'])
+            items_with_old_term = InventoryItem.objects.filter(**{
+                key: transaction['old']
+            })
+            map(lambda i: setattr(i, key, transaction['new']), items_with_old_term)
+            AutocompleteData.objects.get(
+                id=transaction['old'],
+                kind=transaction['kind']
+            ).delete()
+
+        return redirect('uw_inventory.views.associate_terms')
+    else:
+        terms = {}
+
+        for choice in AutocompleteData.KIND_CHOICES:
+            terms[choice[0]] = AutocompleteData.objects.filter(kind=choice[0])
+
+    return render(request, 'uw_inventory/associate_terms.html', {
+        'terms': terms,
+        'can_add': True,
+        'can_edit': True,
+        'form_id': 'term-form',
+    })
