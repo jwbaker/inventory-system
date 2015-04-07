@@ -1,6 +1,8 @@
+import csv
 import json
 import os
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
@@ -9,6 +11,8 @@ from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_protect
 
 from django_cas.decorators import permission_required
+
+import djqscsv
 
 from uw_file_io.forms import ImportForm
 from uw_file_io.parse import (
@@ -326,3 +330,23 @@ def finish_import(request):
         'item_list': new_items,
         'page_messages': message_list,
     })
+
+
+@csrf_protect
+def choose_filetype(request):
+    if request.method == 'POST':
+        request.session['filetype'] = request.POST.get('filetype', 'csv')
+        return redirect('uw_file_io.views.finish_export')
+    return render(request, 'uw_file_io/export/choose_type.html', {})
+
+
+def __unicode_encode_if_string(val):
+    if isinstance(val, str) or isinstance(val, unicode):
+        return unicode(val).encode('utf-8')
+    else:
+        return val
+
+
+def finish_export(request):
+    data_set = InventoryItem.objects.all()
+    return djqscsv.render_to_csv_response(data_set, use_verbose_names=False)

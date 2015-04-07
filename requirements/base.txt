@@ -2,3 +2,5 @@ Django==1.7
 django-cas==2.1.1
 Pillow==2.7.0
 django-reversion==1.8.5
+django-queryset-csv==0.3.0
+
