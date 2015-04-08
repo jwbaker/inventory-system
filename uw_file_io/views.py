@@ -393,4 +393,12 @@ def finish_export(request):
                         row.append(cell)
 
                     writer.writerow(row)
+                    if model in ['item_file', 'item_image']:
+                        archive.write(
+                            item.file_field.file.name,
+                            '{0}s/{1}'.format(
+                                model[5:],
+                                os.path.basename(item.file_field.file.name)
+                            )
+                        )
             archive.write(filename, os.path.basename(filename))
