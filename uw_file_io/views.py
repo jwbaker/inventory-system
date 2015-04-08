@@ -1,7 +1,9 @@
 import csv
 import json
 import os
+import zipfile
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
@@ -368,24 +370,27 @@ MODEL_LOOKUP = {
 def finish_export(request):
     export_models = request.session['export_models'].split(',')[:-1]
 
-    for model in export_models:
-        data_set = MODEL_LOOKUP[model].objects.all()
-        with open('extract.csv', 'w+b') as f:
-            writer = csv.writer(f)
+    with zipfile.ZipFile('extract.zip', 'w') as archive:
+        for model in export_models:
+            data_set = MODEL_LOOKUP[model].objects.all()
+            filename = '{0}temp/{1}.csv'.format(settings.MEDIA_URL, model)
+            with open(filename, 'w+b') as f:
+                writer = csv.writer(f)
 
-            headers = MODEL_LOOKUP[model]._meta.get_all_field_names()
-            writer.writerow(headers)
+                headers = MODEL_LOOKUP[model]._meta.get_all_field_names()
+                writer.writerow(headers)
 
-            for item in data_set:
-                row = []
-                for field in headers:
-                    cell = getattr(item, field, '')
+                for item in data_set:
+                    row = []
+                    for field in headers:
+                        cell = getattr(item, field, '')
 
-                    if cell:
-                        if callable(cell):
-                            cell = cell()
-                        if unicode(cell):
-                            cell = unicode(cell).encode('utf-8')
-                    row.append(cell)
+                        if cell:
+                            if callable(cell):
+                                cell = cell()
+                            if unicode(cell):
+                                cell = unicode(cell).encode('utf-8')
+                        row.append(cell)
 
-                writer.writerow(row)
+                    writer.writerow(row)
+            archive.write(filename, os.path.basename(filename))
