@@ -348,7 +348,6 @@ def choose_filetype(request):
             saved_models += '{0},'.format(
                 request.POST['export_item_file']
             )
-        request.session['filetype'] = request.POST.get('filetype', 'csv')
         request.session['export_models'] = saved_models
         return redirect('uw_file_io.views.finish_export')
     return render(request, 'uw_file_io/export/choose_type.html', {})
@@ -367,8 +366,21 @@ MODEL_LOOKUP = {
 }
 
 
+@csrf_protect
 def finish_export(request):
+    if request.method == 'POST':
+        archive_name = request.session.pop('export_filename')
+
+        with open(archive_name, 'r') as archive:
+            response = HttpResponse(archive)
+            response['Content-Disposition'] = 'attachment; filename="{0}"'.format(
+                os.path.basename(archive_name)
+            )
+
+            return response
+
     export_models = request.session['export_models'].split(',')[:-1]
+    request.session.pop('export_models')
 
     archive_name = '{0}temp/extract.zip'.format(settings.MEDIA_URL)
 
@@ -404,10 +416,6 @@ def finish_export(request):
                             )
                         )
             archive.write(filename, os.path.basename(filename))
+    request.session['export_filename'] = archive_name
 
-        response = HttpResponse(archive)
-        response['Content-Disposition'] = 'attachment; filename="{0}"'.format(
-            os.path.basename(archive_name)
-        )
-
-        return response
+    return render(request, 'uw_file_io/export/done.html', {})
