@@ -370,7 +370,9 @@ MODEL_LOOKUP = {
 def finish_export(request):
     export_models = request.session['export_models'].split(',')[:-1]
 
-    with zipfile.ZipFile('extract.zip', 'w') as archive:
+    archive_name = '{0}temp/extract.zip'.format(settings.MEDIA_URL)
+
+    with zipfile.ZipFile(archive_name, 'w') as archive:
         for model in export_models:
             data_set = MODEL_LOOKUP[model].objects.all()
             filename = '{0}temp/{1}.csv'.format(settings.MEDIA_URL, model)
@@ -402,3 +404,10 @@ def finish_export(request):
                             )
                         )
             archive.write(filename, os.path.basename(filename))
+
+        response = HttpResponse(archive)
+        response['Content-Disposition'] = 'attachment; filename="{0}"'.format(
+            os.path.basename(archive_name)
+        )
+
+        return response
