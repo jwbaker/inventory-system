@@ -2,7 +2,6 @@ import csv
 import json
 import os
 
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
@@ -11,8 +10,6 @@ from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_protect
 
 from django_cas.decorators import permission_required
-
-import djqscsv
 
 from uw_file_io.forms import ImportForm
 from uw_file_io.parse import (
@@ -335,7 +332,22 @@ def finish_import(request):
 @csrf_protect
 def choose_filetype(request):
     if request.method == 'POST':
+        saved_models = ''
+
+        if 'export_inventory_item' in request.POST:
+            saved_models += '{0},'.format(
+                request.POST['export_inventory_item']
+            )
+        if 'export_item_image' in request.POST:
+            saved_models += '{0},'.format(
+                request.POST['export_item_image']
+            )
+        if 'export_item_file' in request.POST:
+            saved_models += '{0},'.format(
+                request.POST['export_item_file']
+            )
         request.session['filetype'] = request.POST.get('filetype', 'csv')
+        request.session['export_models'] = saved_models
         return redirect('uw_file_io.views.finish_export')
     return render(request, 'uw_file_io/export/choose_type.html', {})
 
@@ -346,7 +358,34 @@ def __unicode_encode_if_string(val):
     else:
         return val
 
+MODEL_LOOKUP = {
+    'inventory_item': InventoryItem,
+    'item_file': ItemFile,
+    'item_image': ItemImage,
+}
+
 
 def finish_export(request):
-    data_set = InventoryItem.objects.all()
-    return djqscsv.render_to_csv_response(data_set, use_verbose_names=False)
+    export_models = request.session['export_models'].split(',')[:-1]
+
+    for model in export_models:
+        data_set = MODEL_LOOKUP[model].objects.all()
+        with open('extract.csv', 'w+b') as f:
+            writer = csv.writer(f)
+
+            headers = MODEL_LOOKUP[model]._meta.get_all_field_names()
+            writer.writerow(headers)
+
+            for item in data_set:
+                row = []
+                for field in headers:
+                    cell = getattr(item, field, '')
+
+                    if cell:
+                        if callable(cell):
+                            cell = cell()
+                        if unicode(cell):
+                            cell = unicode(cell).encode('utf-8')
+                    row.append(cell)
+
+                writer.writerow(row)

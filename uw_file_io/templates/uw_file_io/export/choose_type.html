@@ -9,7 +9,27 @@
       <form action="{% url 'uw_file_io.views.choose_filetype' %}" method="post">
         {% csrf_token %}
           <div class="form-group">
-            <select name="filetype" id="" class="form-control" disabled="disabled">
+            <div class="col-xs-6">
+              <label for="export_inventory_item">
+                <input type="checkbox" value="inventory_item" checked="checked" name="export_inventory_item" />
+                Inventory Items
+              </label>
+            </div>
+            <div class="col-xs-6">
+              <label for="export_item_file">
+                <input type="checkbox" value="item_file" name="export_item_file" />
+                Attached Files
+              </label>
+            </div>
+            <div class="col-xs-6">
+              <label for="export_item_image">
+                <input type="checkbox" value="item_image" name="export_item_image" />
+                Attached Images
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
+            <select name="filetype" class="form-control" disabled="disabled">
                 <option value="csv">Comma-Separated Value (*.csv)</option>
             </select>
           </div>
