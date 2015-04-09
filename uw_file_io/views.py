@@ -372,7 +372,7 @@ def __package_export_dataset(Model, report_id):
     if report_id:
         report = Report.objects.get(id=report_id)
         items = InventoryItem.objects.filter(
-            **postfix_to_query_filter(json.loads(report.report_data))
+            postfix_to_query_filter(json.loads(report.report_data))
         )
 
         if Model is InventoryItem:
