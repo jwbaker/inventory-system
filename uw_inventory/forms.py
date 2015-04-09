@@ -137,9 +137,9 @@ class ItemForm(forms.ModelForm):
             'uuid',
         ]
 
-        labels = [
-            {data['name']: data['label']} for data in ITEM_FORM_FIELD_LIST
-        ]
+        labels = {
+            data['name']: data['label'] for data in ITEM_FORM_FIELD_LIST
+        }
 
         # EVERY field must have a widget defined, and it must be one of our
         # specially-defined widgets, because we rely on every element having
