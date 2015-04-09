@@ -1,6 +1,8 @@
 from django import template
 from django.utils.safestring import mark_safe
 
+from uw_inventory.forms import ITEM_FORM_FIELD_LIST
+
 register = template.Library()
 
 
@@ -34,3 +36,12 @@ def visibility_icon(report):
             visibility_message
         )
     )
+
+
+@register.filter
+def to_id(field_name):
+    try:
+        return [f['name'] for f in ITEM_FORM_FIELD_LIST
+                if f['label'] == field_name][0]
+    except IndexError:
+        return ''

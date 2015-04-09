@@ -136,5 +136,5 @@ def view_report(request, report_id):
         'page_messages': message_list,
         'report': report,
         'results': results,
-        'display_fields': report_data_json['display_fields'].split(',')
+        'display_fields': report_data_json['display_fields'].split(',')[:-1]
     })
