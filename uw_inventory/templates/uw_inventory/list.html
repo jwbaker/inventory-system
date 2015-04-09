@@ -139,21 +139,28 @@
   <script src="http://cdn.datatables.net/plug-ins/3cfcc339e89/integration/bootstrap/3/dataTables.bootstrap.js"></script>
 
   <script type="text/html" id="list-toolbar-template">
-    <button class="btn btn-default" id="show-filters">
-      <i class="filter"></i> Show filters
-    </button>
-    <button class="btn btn-default hidden" id="hide-filters">
-      <i class="fa-inverse filter"></i> Hide filters
-    </button>
-    <button class="btn btn-danger hidden" id="clear-filters">
-      <i class="cancel"></i>
-      Clear all filters
-    </button>
+    <div class="btn-group btn-group-sm">
+      <button class="btn btn-default" id="show-filters">
+        <i class="filter"></i> Show filters
+      </button>
+      <button class="btn btn-default hidden" id="hide-filters">
+        <i class="fa-inverse filter"></i> Hide filters
+      </button>
+      <button class="btn btn-danger hidden" id="clear-filters">
+        <i class="cancel"></i>
+        Clear all filters
+      </button>
+    </div>
+    <div class="btn-group btn-group-sm">
+      <button class="btn btn-default" id="export">
+        <i class="download"></i> Export
+      </button>
+    </div>
   </script>
 
   <script type="text/javascript">
     var dataTable = $('table#inventoryTable').DataTable({
-        'dom': '<"row"<"col-xs-2"l><"col-xs-7 toolbar btn-group btn-group-sm"><fr>><"row"t><"row"ip>',
+        'dom': '<"row"<"col-xs-2"l><"col-xs-7 toolbar btn-toolbar"><fr>><"row"t><"row"ip>',
         // Applies sorting to the top row of the thead - needed because we have a second row for searching
         'orderCellsTop': true,
         {# This is how we can search on invisible columns - DataTables magic! #}
@@ -229,6 +236,10 @@
       for (var i = 0; i < $('#column-titles th').length; i++) {
         $('#inventoryTable').trigger('filter', [i, '']);
       };
+    });
+
+    $('.toolbar').on('click', '#export', function(){
+      window.location = '{% url "uw_file_io.views.export_options" %}'
     });
   </script>
 {% endblock js_includes %}

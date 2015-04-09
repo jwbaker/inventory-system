@@ -73,6 +73,7 @@ i,
 .file-pdf::after {
   content: "\f1c1"; /* fa-pdf-o */
 }
+.download::after,
 .file-download::after {
   content: "\f019"; /* fa-download */
 }

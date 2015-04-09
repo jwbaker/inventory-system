@@ -11,10 +11,12 @@
     {% for item in results %}
       <tr>
         {% for field in display_fields %}
-          {% ifequal field 'status'  %} 
+          {% ifequal field 'status' %} 
             <td>{{ item.get_status_display }}</td>
           {% else %}
-            <td>{{ item|get:field }}</td>
+            {% with field_id=field|to_id %}
+              <td>{{ item|get:field_id }}</td>
+            {% endwith %}
           {% endifequal %}
         {% endfor %}
       </tr>

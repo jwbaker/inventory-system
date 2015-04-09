@@ -46,16 +46,6 @@ def admin_url(instance):
     )
 
 
-@register.filter
-def in_group(user, group_name):
-    try:
-        group = Group.objects.get(name=group_name)
-    except Group.DoesNotExist:
-        return False
-    else:
-        return group in user.groups.all() or user.is_superuser
-
-
 @register.inclusion_tag('uw_inventory/misc/admin_context_menu.html')
 def inventory_admin_context_menu():
     return

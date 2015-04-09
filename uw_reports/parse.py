@@ -93,7 +93,8 @@ def infix_to_postfix(query_string):
         else:  # We are an operand, so it goes right onto the result
             postfix_string += t + ' '
 
-    while len(stack) > 0: # We're out of tokens, so add the last of the operators
+    # We're out of tokens, so add the last of the operators
+    while len(stack) > 0:
         postfix_string += stack.pop() + ' '
 
     return postfix_string.strip()
@@ -129,16 +130,22 @@ def postfix_to_query_filter(query_string):
             q_filter = t.split('=')[0]
             # We can finally remove the pesky quotes; otherwise the Q ctor
             # will interpret them as part of the query value
-            filter_val = re.sub('["]', '', t.split('=')[1])
+            try:
+                filter_val = re.sub('["]', '', t.split('=')[1])
+            except IndexError:
+                pass
+            else:
+                if filter_val == 'true':
+                    filter_val = True
+                elif filter_val == 'false':
+                    filter_val = False
 
-            if filter_val == 'true':
-                filter_val = True
-            elif filter_val == 'false':
-                filter_val = False
+                push_obj = {q_filter: filter_val}
 
-            push_obj = {q_filter: filter_val}
+                # Hooray for Q object creation using dicts
+                stack.append(Q(**push_obj))
 
-            # Hooray for Q object creation using dicts
-            stack.append(Q(**push_obj))
-
-    return stack[-1]
+    try:
+        return stack[-1]
+    except IndexError:
+        return ''

@@ -1,0 +1,17 @@
+{% extends 'uw_inventory_system/base.html' %}
+
+{% block content %}
+  <p>Please wait...</p>
+
+  <form action="{% url 'uw_file_io.views.finish_export' %}" method="post" class="hidden">
+    {% csrf_token %}
+  </form>
+{% endblock content %}
+
+{% block js_includes %}
+  <script type="text/javascript">
+    $(function(){
+      $('form').submit();
+    });
+  </script>
+{% endblock js_includes %}

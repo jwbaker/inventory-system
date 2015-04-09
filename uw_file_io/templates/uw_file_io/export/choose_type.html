@@ -1,0 +1,60 @@
+{% extends 'uw_inventory_system/base.html' %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-xs-4 col-xs-offset-4">
+      <div>
+        <h2>Choose Export File Type</h2>
+      </div>
+      <form action="{{ form_action }}" method="post">
+        {% csrf_token %}
+          <div class="form-group">
+            <div class="col-xs-6">
+              <label for="export_inventory_item">
+                <input type="checkbox" value="inventory_item" checked="checked" name="export_inventory_item" />
+                Inventory Items
+              </label>
+            </div>
+            <div class="col-xs-6">
+              <label for="export_item_file">
+                <input type="checkbox" value="item_file" name="export_item_file" />
+                Attached Files
+              </label>
+            </div>
+            <div class="col-xs-6">
+              <label for="export_item_image">
+                <input type="checkbox" value="item_image" name="export_item_image" />
+                Attached Images
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
+            <select name="filetype" class="form-control" disabled="disabled">
+                <option value="csv">Comma-Separated Value (*.csv)</option>
+            </select>
+          </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-6 col-xs-offset-3">
+      <button class="btn btn-success pull-right" id="continue">Continue export</button>
+      <button class="btn btn-danger pull-left" id="cancel">Cancel export</button>
+    </div>
+    <i class="spinner fa-2x hidden"></i>
+  </div>
+{% endblock content %}
+
+{% block js_includes %}
+  <script type="text/javascript">
+    $('#cancel').click(function(){
+      window.location = "/";
+    });
+    $('#continue').click(function(){
+      $('.btn').addClass('disabled');
+      $('.spinner').removeClass('hidden');
+      $('form').submit();
+    });
+  </script>
+{% endblock js_includes %}

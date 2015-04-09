@@ -24,13 +24,27 @@
   <script src="http://cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js"></script>
   <script src="http://cdn.datatables.net/plug-ins/3cfcc339e89/integration/bootstrap/3/dataTables.bootstrap.js"></script>
 
+  <script type="text/html" id="toolbar-template">
+    <div class="btn-group btn-group-sm">
+      <button class="btn btn-default" id="export">
+        <i class="download"></i> Export
+      </button>
+    </div>
+  </script>
+
   <script type="text/javascript">
-    $('#query-result').DataTable();
+    $('#query-result').DataTable({
+      'dom': '<"row"<"col-xs-2"l><"col-xs-7 toolbar btn-toolbar"><fr>><"row"t><"row"ip>',
+    });
+    $('.toolbar').append($('#toolbar-template').html());
   </script>
 
   <script type="text/javascript">
     $('#edit-report').click(function(){
       window.location = '{% url "uw_reports.views.create_report" report.id %}'
+    });
+    $('.toolbar').on('click', '#export', function(){
+      window.location = '{% url "uw_file_io.views.export_options" report.id %}'
     });
   </script>
 

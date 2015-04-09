@@ -1,9 +1,13 @@
+import csv
 import json
 import os
+import zipfile
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_protect
@@ -26,6 +30,8 @@ from uw_inventory.models import (
     ItemFile,
     ItemImage
 )
+from uw_reports.models import Report
+from uw_reports.parse import postfix_to_query_filter
 
 
 def _collect_messages(request):
@@ -326,3 +332,109 @@ def finish_import(request):
         'item_list': new_items,
         'page_messages': message_list,
     })
+
+
+@csrf_protect
+def export_options(request, report_id=''):
+    if request.method == 'POST':
+        saved_models = ''
+
+        if 'export_inventory_item' in request.POST:
+            saved_models += '{0},'.format(
+                request.POST['export_inventory_item']
+            )
+        if 'export_item_image' in request.POST:
+            saved_models += '{0},'.format(
+                request.POST['export_item_image']
+            )
+        if 'export_item_file' in request.POST:
+            saved_models += '{0},'.format(
+                request.POST['export_item_file']
+            )
+        request.session['report_id'] = report_id
+        request.session['export_models'] = saved_models
+        return redirect('uw_file_io.views.finish_export')
+    return render(request, 'uw_file_io/export/choose_type.html', {
+        'form_action': reverse(
+            'uw_file_io.views.export_options', args=[report_id]
+        )
+    })
+
+
+MODEL_LOOKUP = {
+    'inventory_item': InventoryItem,
+    'item_file': ItemFile,
+    'item_image': ItemImage,
+}
+
+
+def __package_export_dataset(Model, report_id):
+    if report_id:
+        report = Report.objects.get(id=report_id)
+        items = InventoryItem.objects.filter(
+            postfix_to_query_filter(json.loads(report.report_data)['query'])
+        )
+
+        if Model is InventoryItem:
+            return items
+        else:
+            return Model.objects.filter(
+                inventory_item_id__in=[i.id for i in items]
+            )
+    else:
+        return Model.objects.all()
+
+
+@csrf_protect
+def finish_export(request):
+    if request.method == 'POST':
+        archive_name = request.session.pop('export_filename')
+
+        with open(archive_name, 'r') as archive:
+            response = HttpResponse(archive)
+            response['Content-Disposition'] = 'attachment; filename="{0}"'.format(
+                os.path.basename(archive_name)
+            )
+
+            return response
+
+    export_models = request.session.pop('export_models').split(',')[:-1]
+    report_id = request.session.pop('report_id')
+
+    archive_name = '{0}temp/extract.zip'.format(settings.MEDIA_URL)
+
+    with zipfile.ZipFile(archive_name, 'w') as archive:
+        for model in export_models:
+            data_set = __package_export_dataset(MODEL_LOOKUP[model], report_id)
+            filename = '{0}temp/{1}.csv'.format(settings.MEDIA_URL, model)
+            with open(filename, 'w+b') as f:
+                writer = csv.writer(f)
+
+                headers = MODEL_LOOKUP[model]._meta.get_all_field_names()
+                writer.writerow(headers)
+
+                for item in data_set:
+                    row = []
+                    for field in headers:
+                        cell = getattr(item, field, '')
+
+                        if cell:
+                            if callable(cell):
+                                cell = cell()
+                            if unicode(cell):
+                                cell = unicode(cell).encode('utf-8')
+                        row.append(cell)
+
+                    writer.writerow(row)
+                    if model in ['item_file', 'item_image']:
+                        archive.write(
+                            item.file_field.file.name,
+                            '{0}s/{1}'.format(
+                                model[5:],
+                                os.path.basename(item.file_field.file.name)
+                            )
+                        )
+            archive.write(filename, os.path.basename(filename))
+    request.session['export_filename'] = archive_name
+
+    return render(request, 'uw_file_io/export/done.html', {})
