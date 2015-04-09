@@ -3,4 +3,4 @@ DEBUG = True
 SECRET_KEY = ''
 
 MEDIA_ROOT = ''
-MEDIA_URL = '/'
+MEDIA_URL = 'media/'
