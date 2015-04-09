@@ -6,7 +6,7 @@
       <div>
         <h2>Choose Export File Type</h2>
       </div>
-      <form action="{% url 'uw_file_io.views.choose_filetype' %}" method="post">
+      <form action="{% url 'uw_file_io.views.export_options' %}" method="post">
         {% csrf_token %}
           <div class="form-group">
             <div class="col-xs-6">

@@ -29,6 +29,8 @@ from uw_inventory.models import (
     ItemFile,
     ItemImage
 )
+from uw_reports.models import Report
+from uw_reports.parse import postfix_to_query_filter
 
 
 def _collect_messages(request):
@@ -332,7 +334,7 @@ def finish_import(request):
 
 
 @csrf_protect
-def choose_filetype(request):
+def export_options(request, report_id=''):
     if request.method == 'POST':
         saved_models = ''
 
@@ -348,22 +350,34 @@ def choose_filetype(request):
             saved_models += '{0},'.format(
                 request.POST['export_item_file']
             )
+        request.session['report_id'] = report_id
         request.session['export_models'] = saved_models
         return redirect('uw_file_io.views.finish_export')
     return render(request, 'uw_file_io/export/choose_type.html', {})
 
-
-def __unicode_encode_if_string(val):
-    if isinstance(val, str) or isinstance(val, unicode):
-        return unicode(val).encode('utf-8')
-    else:
-        return val
 
 MODEL_LOOKUP = {
     'inventory_item': InventoryItem,
     'item_file': ItemFile,
     'item_image': ItemImage,
 }
+
+
+def __package_export_dataset(Model, report_id):
+    if report_id:
+        report = Report.objects.get(id=report_id)
+        items = InventoryItem.objects.filter(
+            **postfix_to_query_filter(json.loads(report.report_data))
+        )
+
+        if Model is InventoryItem:
+            return items
+        else:
+            return Model.objects.filter(
+                inventory_item_id__in=[i.id for i in items]
+            )
+    else:
+        return Model.objects.all()
 
 
 @csrf_protect
@@ -379,14 +393,14 @@ def finish_export(request):
 
             return response
 
-    export_models = request.session['export_models'].split(',')[:-1]
-    request.session.pop('export_models')
+    export_models = request.session.pop('export_models').split(',')[:-1]
+    report_id = request.session.pop('report_id')
 
     archive_name = '{0}temp/extract.zip'.format(settings.MEDIA_URL)
 
     with zipfile.ZipFile(archive_name, 'w') as archive:
         for model in export_models:
-            data_set = MODEL_LOOKUP[model].objects.all()
+            data_set = __package_export_dataset(MODEL_LOOKUP[model], report_id)
             filename = '{0}temp/{1}.csv'.format(settings.MEDIA_URL, model)
             with open(filename, 'w+b') as f:
                 writer = csv.writer(f)

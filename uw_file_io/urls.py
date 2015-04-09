@@ -12,6 +12,7 @@ urlpatterns = patterns(
     url(r'^import/add-images/$', views.add_images),
     url(r'^import/add-files/$', views.add_files),
     url(r'^import/done/$', views.finish_import),
-    url(r'^export/choose-type/$', views.choose_filetype),
+    url(r'^export/$', views.export_options),
+    url(r'^export/(?P<report_id>\d+)/$', views.export_options),
     url(r'^export/done/$', views.finish_export),
 )
