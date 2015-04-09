@@ -7,6 +7,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_protect
@@ -353,7 +354,11 @@ def export_options(request, report_id=''):
         request.session['report_id'] = report_id
         request.session['export_models'] = saved_models
         return redirect('uw_file_io.views.finish_export')
-    return render(request, 'uw_file_io/export/choose_type.html', {})
+    return render(request, 'uw_file_io/export/choose_type.html', {
+        'form_action': reverse(
+            'uw_file_io.views.export_options', args=[report_id]
+        )
+    })
 
 
 MODEL_LOOKUP = {
