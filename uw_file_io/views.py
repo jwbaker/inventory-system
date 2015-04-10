@@ -354,10 +354,14 @@ def export_options(request, report_id=''):
         request.session['report_id'] = report_id
         request.session['export_models'] = saved_models
         return redirect('uw_file_io.views.finish_export')
-    return render(request, 'uw_file_io/export/choose_type.html', {
-        'form_action': reverse(
+    if report_id:
+        form_action = reverse(
             'uw_file_io.views.export_options', args=[report_id]
         )
+    else:
+        form_action = reverse('uw_file_io.views.export_options')
+    return render(request, 'uw_file_io/export/choose_type.html', {
+        'form_action': form_action
     })
 
 
