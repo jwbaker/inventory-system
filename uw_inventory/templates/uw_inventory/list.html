@@ -217,6 +217,19 @@
       } else{
         this.filterActivations[columnIndex]++;
       }
+
+      var totalActivations = 0;
+
+      for(var key in this.filterActivations){
+        totalActivations += this.filterActivations[key];
+      }
+      console.log(totalActivations)
+
+      if(totalActivations === 0){
+        $('#hide-filters').removeClass('disabled');
+      } else{
+        $('#hide-filters').addClass('disabled');
+      }
     });
 
     $('.toolbar').on('click', '#show-filters', function(){
