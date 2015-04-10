@@ -161,13 +161,17 @@
   <script type="text/javascript">
     var dataTable = $('table#inventoryTable').DataTable({
         "lengthMenu": [ [10, 25, 50, -1], [10, 25, 50, "All"] ],
-        'dom': '<"row"<"col-xs-2"l><"col-xs-7 toolbar btn-toolbar"><fr>><"row"t><"row"ip>',
+        'dom': '<"row"<"col-xs-2"li><"col-xs-7 toolbar btn-toolbar"><fr>><"row"t><"row"ip>',
         // Applies sorting to the top row of the thead - needed because we have a second row for searching
         'orderCellsTop': true,
+        'order': [1, 'asc'],
         {# This is how we can search on invisible columns - DataTables magic! #}
         'columnDefs': [{
             'targets': 'column-hidden',
             'visible': false,
+          },{
+            'targets': 0,
+            'orderable': false,
           }]
       });
     $('.toolbar').append($('#list-toolbar-template').html());
