@@ -45,7 +45,7 @@ def reports_list(request):
         reports_list = Report.objects.all()
     else:
         reports_list = Report.objects.filter(
-            Q(owner__exact=request.user.username) |
+            Q(owner__exact=request.user.id) |
             Q(owner__isnull=True)
         )
     return render(request, 'uw_reports/reports_list.html', {
