@@ -16,8 +16,7 @@
     <div class="col-xs-offset-4">
       <div>
         <h2>Import Records</h2>
-        <p>Please upload a file containg the records you want to import.</p>
-        <p>The file must be one of the following formats: <abbr title="Comma-Separated Value" class="initialism">*.csv</abbr>.</p>
+        <p>Please upload a <abbr>*.zip</abbr> file containg the data you want to import.</p>
       </div>
       <form action="{% url 'uw_file_io.views.file_import' %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
