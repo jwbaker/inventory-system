@@ -80,7 +80,7 @@ def file_import(request):
             extract_data = process_extract(
                 request.FILES.get('file_up', None)
             )
-        except ValueError:
+        except:
             pass
     message_list = _collect_messages(request)
     return render(request, 'uw_file_io/import/start.html', {
