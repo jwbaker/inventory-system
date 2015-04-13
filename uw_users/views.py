@@ -40,7 +40,8 @@ def user_detail(request, username):
             request.user.username == username or
             request.user.has_perm('change_user')
        ):
-        user = get_object_or_404(User, username=username)
+        username_despacified = username.replace('%20', ' ').replace('%2F', '/')
+        user = get_object_or_404(User, username=username_despacified)
 
         if request.method == 'POST':
             form = UserForm(request.POST, instance=user)

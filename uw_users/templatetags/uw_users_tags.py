@@ -23,3 +23,8 @@ def user_context_menu(user):
         context['perms'].append('user_list')
 
     return context
+
+
+@register.filter
+def spacify(val):
+    return val.replace(' ', '%20').replace('/', '%2F')

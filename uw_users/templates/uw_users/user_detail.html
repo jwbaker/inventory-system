@@ -1,5 +1,6 @@
 {% extends 'uw_forms/form_base.html' %}
 {% load uw_forms_form_tags %}
+{% load uw_users_tags %}
 
 {% block page_content %}
   <div class="panel panel-default">
@@ -7,7 +8,7 @@
       <span class="panel-title">{{ page_user.username }}</span>
       <span class="small pull-right">Last active: {{ page_user.last_login }}</span>
     </div>
-      <form action="{% url 'uw_users.views.user_detail' page_user %}"
+      <form action="{% url 'uw_users.views.user_detail' page_user.username|spacify %}"
         method="post"
         id="userForm">
         {% edit_form form can_edit shown_excluded_fields %}

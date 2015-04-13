@@ -7,5 +7,5 @@ urlpatterns = patterns(
     url(r'^$', views.user_list),
     url(r'^login/$', 'django_cas.views.login'),
     url(r'^logout/$', 'django_cas.views.logout'),
-    url(r'^(?P<username>\w*)$', views.user_detail),
+    url(r'^(?P<username>[A-Za-z0-9_%]*)$', views.user_detail),
 )

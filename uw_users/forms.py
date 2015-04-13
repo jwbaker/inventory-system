@@ -6,8 +6,8 @@ from uw_forms import widgets
 
 class UserForm(forms.ModelForm):
     FIELD_LIST = [
-        {'Name': 'first_name'},
-        {'Name': 'last_name'}
+        {'name': 'first_name'},
+        {'name': 'last_name'}
     ]
 
     class Meta:

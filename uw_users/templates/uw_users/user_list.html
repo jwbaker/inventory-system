@@ -1,4 +1,5 @@
 {% extends 'uw_inventory_system/base.html' %}
+{% load uw_users_tags %}
 
 {% block css_includes %}
   <!-- DataTables -->
@@ -25,7 +26,7 @@
         {% for user in user_list %}
           <tr>
             <td>
-              <a href="{% url 'uw_users.views.user_detail' user.get_username %}"></a>
+              <a href="{% url 'uw_users.views.user_detail' user.get_username|spacify %}"></a>
               {{ user.get_username }}
             </td>
             <td>
