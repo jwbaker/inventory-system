@@ -223,7 +223,7 @@ def inventory_detail(request, item_id):
             {'label': 'Creation date', 'value': inventory_item.creation_date}
         ],
         'scrollY': request.session.get('_scrollY') or 0,
-        'can_edit': request.user.has_perm('change_inventoryitem'),
+        'can_edit': request.user.has_perm('uw_inventory.change_inventoryitem'),
         'form_id': 'itemForm',
         'forms': {
             'comment': CommentForm(),
@@ -328,7 +328,7 @@ def inventory_add(request):
     return render(request, 'uw_inventory/add.html', {
         'form': form,
         'page_messages': message_list,
-        'can_add': request.user.has_perm('add_inventoryitem'),
+        'can_add': request.user.has_perm('uw_inventory.add_inventoryitem'),
         'form_id': 'itemForm',
         'forms': {
             'file': FileForm(),
@@ -376,7 +376,7 @@ def inventory_undelete(request, item_id):
         item.save()
     except:
         messages.error(request,
-                       'SOmething went wrong')
+                       'Something went wrong')
     else:
         messages.success(request,
                          'Restored')
