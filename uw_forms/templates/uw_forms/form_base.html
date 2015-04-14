@@ -1,14 +1,5 @@
 {% extends 'uw_inventory_system/base.html' %}
 
-{% block messages %}
-   {{ block.super }}
-    <div class="alert alert-warning hidden" 
-         id="pageEditWarning" 
-         role="alert">
-      This page has unsaved changes
-    </div>
-{% endblock messages %}
-
 {% block content %}
   <div class="row form-container">
     {% if can_edit or can_add %}
@@ -17,6 +8,13 @@
       {# Since users who can't edit don't see the affix save button, we expand the window for them #}
       <div class="col-xs-8 col-xs-offset-2">
     {% endif %}
+        <div class="col-xs-3 col-xs-offset-2" style="position:fixed;z-index:100000000000000">
+          <div class="alert alert-warning hidden" 
+               id="pageEditWarning" 
+               role="alert">
+            This page has unsaved changes
+          </div>
+        </div>
 
       {% block page_content %}
       {% endblock page_content %}
