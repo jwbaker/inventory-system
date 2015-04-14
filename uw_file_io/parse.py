@@ -3,9 +3,14 @@ import os
 import re
 import zipfile
 
-from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
 
-from uw_inventory.models import InventoryItem, ItemFile, ItemImage
+from uw_inventory.models import (
+    AutocompleteData,
+    InventoryItem,
+    ItemFile,
+    ItemImage
+)
 
 FILE_DIRECTORY_RE = re.compile(r'files/\d*/\d*/\d*/?$')
 IMAGE_DIRECTORY_RE = re.compile(r'images/\d*/\d*/\d*/?$')
@@ -47,7 +52,30 @@ MODEL_EXCLUDED_FIELDS = {
 }
 
 
-def __process_excluded_fields(data, fields, files):
+def __check_existing_term(term, field_name):
+    if field_name == 'sop':
+        return term
+    elif field_name in ['supplier', 'manufacturer', 'location']:
+        try:
+            existing_term = AutocompleteData.objects.get(
+                name=term,
+                kind=field_name
+            )
+            return existing_term.id
+        except AutocompleteData.DoesNotExist:
+            return term
+    elif field_name in ['owner', 'technician']:
+        try:
+            exact = User.objects.get(username__iexact=term)
+            return exact
+        except User.DoesNotExist:
+            candidates = User.objects.filter(username__icontains=term)
+            if len(candidates) == 1:
+                return candidates[0].id
+            return term
+
+
+def __process_fields(data, fields, files):
     terms = {}
     for field in fields:
         if data[field] == 'None':
@@ -61,9 +89,14 @@ def __process_excluded_fields(data, fields, files):
                        ]:
                 if field not in terms:
                     terms[field] = []
-                terms[field].append(data[field])
-                del data[field]
-                data['{0}_id'.format(field)] = terms[field][-1]
+
+                term = __check_existing_term(data[field], field)
+                if isinstance(term, int):
+                    data[field] = term
+                else:
+                    terms[field].append(term)
+                    del data[field]
+                    data['{0}_id'.format(field)] = term
         elif field == 'file_field':
             if data[field] not in files:
                 raise ValueError(
@@ -81,22 +114,24 @@ def __process_excluded_fields(data, fields, files):
 def __import_csv(filename, attached_files):
     Model = FILENAME_TO_MODEL[filename]
     model_data = []
+    new_terms = {}
     with open(os.path.join('media/temp', filename), 'rb') as csvfile:
         reader = csv.DictReader(csvfile)
 
         for row in reader:
-            record_data, terms = __process_excluded_fields(
+            record_data, terms = __process_fields(
                 row,
                 row.keys(),
                 attached_files
             )
             model_data.append(record_data)
+            new_terms.update(terms)
 
     return {
         'status': 'success',
         'model_name': Model.__name__,
         'model_data': model_data,
-        'terms': terms,
+        'terms': new_terms,
     }
 
 
@@ -104,7 +139,7 @@ def process_extract(file_up):
     if not file_up:
         raise ValueError
 
-    ret_object = {'model_data': {}, 'terms': []}
+    ret_object = {'model_data': {}, 'new_terms': []}
     with zipfile.ZipFile(file_up, 'r') as archive:
         csv_files, files = __unpack_archive(archive)
 
@@ -114,6 +149,6 @@ def process_extract(file_up):
         if f_data['status'] == 'fail':
             raise Exception(f_data['errors'])
         ret_object['model_data'][f_data['model_name']] = f_data['model_data']
-        ret_object['terms'].append(f_data['terms'])
+        ret_object['new_terms'].append(f_data['terms'])
 
     return ret_object

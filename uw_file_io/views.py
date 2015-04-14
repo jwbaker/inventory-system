@@ -14,6 +14,7 @@ from django_cas.decorators import permission_required
 from uw_file_io.forms import ImportForm
 from uw_file_io.parse import process_extract
 from uw_inventory.models import (
+    AutocompleteData,
     InventoryItem,
     ItemFile,
     ItemImage
@@ -75,15 +76,35 @@ def file_view(request, file_name):
 @csrf_protect
 @permission_required('uw_inventory.add_inventoryitem')
 def file_import(request):
+    request.session.pop('extract_data', None)
     if request.method == 'POST':
         extract_data = process_extract(
             request.FILES.get('file_up', None)
         )
-        print extract_data
+        request.session['extract_data'] = extract_data
+        return redirect('uw_file_io.views.add_terms')
     message_list = _collect_messages(request)
     return render(request, 'uw_file_io/import/start.html', {
         'form': ImportForm(),
         'page_messages': message_list,
+    })
+
+
+@csrf_protect
+def add_terms(request):
+    extract_data = request.session['extract_data']
+    terms_data = {k: v for k, v in extract_data['new_terms'] if
+                  k in ['location', 'manufacturer', 'supplier']}
+    if not terms_data:
+        pass
+
+    old_terms = {}
+
+    for k in terms_data.keys():
+        old_terms[k] = AutocompleteData.objects.filter(kind=k)
+    return render(request, 'uw_file_io/import/new_terms.html', {
+        'new_terms': terms_data,
+        'old_terms': old_terms,
     })
 
 
