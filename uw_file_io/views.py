@@ -76,12 +76,10 @@ def file_view(request, file_name):
 @permission_required('uw_inventory.add_inventoryitem')
 def file_import(request):
     if request.method == 'POST':
-        try:
-            extract_data = process_extract(
-                request.FILES.get('file_up', None)
-            )
-        except:
-            pass
+        extract_data = process_extract(
+            request.FILES.get('file_up', None)
+        )
+        print extract_data
     message_list = _collect_messages(request)
     return render(request, 'uw_file_io/import/start.html', {
         'form': ImportForm(),
