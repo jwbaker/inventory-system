@@ -425,8 +425,10 @@
         $(this).closest('tr').find('td.expression-input input').attr('disabled', 'disabled');
         $(this).closest('tr').find('td.expression-lookup #lookup-list').attr('disabled', 'disabled');
       }
-
-      if($(this).find('option:selected').text() === 'owner' || $(this).find('option:selected').text() === 'technician'){
+      if(
+          $(this).find('option:selected').text().toLowerCase() === 'owner' ||
+          $(this).find('option:selected').text().toLowerCase() === 'technician'
+      ){
         $(this).closest('tr').find('td.expression-lookup #user-field-selection').removeClass('hidden');
       } else {
         $(this).closest('tr').find('td.expression-lookup #user-field-selection').addClass('hidden');

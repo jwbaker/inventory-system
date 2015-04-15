@@ -35,6 +35,7 @@
   <script type="text/javascript">
     $('#query-result').DataTable({
       'dom': '<"row"<"col-xs-2"l><"col-xs-7 toolbar btn-toolbar"><fr>><"row"t><"row"ip>',
+      "lengthMenu": [ [10, 25, 50, -1], [10, 25, 50, "All"] ],
     });
     $('.toolbar').append($('#toolbar-template').html());
   </script>
@@ -45,6 +46,9 @@
     });
     $('.toolbar').on('click', '#export', function(){
       window.location = '{% url "uw_file_io.views.export_options" report.id %}'
+    });
+    $('table#query-result').on('click', 'tr', function(){
+      window.location = $(this).find('td.record-link').text();
     });
   </script>
 
