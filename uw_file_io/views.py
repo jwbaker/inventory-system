@@ -4,6 +4,7 @@ import os
 import zipfile
 
 from django.contrib import messages
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
@@ -92,11 +93,16 @@ def file_import(request):
 
 @csrf_protect
 def add_terms(request):
+    if request.method == 'POST':
+        request.session['new-terms'] = json.loads(request.POST['termHierarchy'])
+
+        return redirect('uw_file_io.views.add_users')
+
     extract_data = request.session['extract_data']
     terms_data = {k: v for k, v in extract_data['new_terms'] if
                   k in ['location', 'manufacturer', 'supplier']}
     if not terms_data:
-        pass
+        return redirect('uw_file_io.views.add_users')
 
     old_terms = {}
 
@@ -105,6 +111,27 @@ def add_terms(request):
     return render(request, 'uw_file_io/import/new_terms.html', {
         'new_terms': terms_data,
         'old_terms': old_terms,
+    })
+
+
+@csrf_protect
+def add_users(request):
+    if request.method == 'POST':
+        request.session['new-users'] = json.loads(request.POST['userHierarchy'])
+
+        return redirect('uw_file_io.views')
+
+    extract_data = request.session['extract_data']
+    terms_data = {k: v for k, v in extract_data['new_terms'] if
+                  k in ['owner', 'technician']}
+    if not terms_data:
+        pass
+
+    old_users = User.objects.all()
+
+    return render(request, 'uw_file_io/import/new_users.html', {
+        'new_users': terms_data,
+        'old_users': old_users,
     })
 
 
