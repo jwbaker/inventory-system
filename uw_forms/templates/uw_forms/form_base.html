@@ -27,7 +27,7 @@
           <div class="panel-body">
             <ul class="nav">
               <li>
-                <button class="btn btn-success navbar-btn nav-justified" id="pageSave" disabled="disabled">
+                <button class="btn btn-success navbar-btn nav-justified" id="pageSave">
                   <i class="save-item fa-fw"></i> Save
                 </button>
               </li>
@@ -62,10 +62,8 @@
 
       if(changeCount == 0){
         $('#pageEditWarning').addClass('hidden');
-        $('#pageSave').attr('disabled', 'disabled');
       } else{
         $('#pageEditWarning').removeClass('hidden');
-        $('#pageSave').removeAttr('disabled');
       }
     });
 

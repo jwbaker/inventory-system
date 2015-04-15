@@ -3,5 +3,11 @@
 {% csrf_token %}
 
 {% for field in fields %}
-    {% show_field field %}
+    {% if field.legacy %}
+        {% if field.field.value %}
+            {% show_static_field field %}
+        {% endif %}
+    {% else %}
+        {% show_field field %}
+    {% endif %}
 {% endfor %}
