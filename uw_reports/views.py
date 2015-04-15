@@ -129,7 +129,10 @@ def view_report(request, report_id):
     report_data_json = json.loads(report.report_data)
     query_filter = postfix_to_query_filter(report_data_json['query'])
 
-    results = InventoryItem.objects.filter(query_filter)
+    if query_filter:
+        results = InventoryItem.objects.filter(query_filter)
+    else:
+        results = []
 
     message_list = _collect_messages(request)
     return render(request, 'uw_reports/view_report.html', {
