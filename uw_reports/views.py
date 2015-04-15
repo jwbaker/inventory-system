@@ -80,7 +80,7 @@ def create_report(request, report_id=None):
             report.report_data = json.dumps(report_data)
             report.creator_id = request.user.id
             report.save()
-            return redirect('uw_reports.views.view_report', args=[report.id])
+            return redirect('uw_reports.views.view_report', report_id=report.id)
         else:
             raise ValidationError(form.errors)
     message_list = _collect_messages(request)
