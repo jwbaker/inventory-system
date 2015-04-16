@@ -6,6 +6,7 @@ div#print-header {
 }
 footer,
 i,
+div.alert,
 div#image-add-container,
 nav.affix {
 	display: none !important;
