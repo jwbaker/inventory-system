@@ -1,10 +1,11 @@
 {% extends 'uw_forms/form_base.html' %}
+{% load uw_inventory_misc_tags %}
 
 {% block page_content %}
   <div class="row panel panel-default" id="display-fields">
     <div class="panel-heading" data-toggle="collapse" href="#field-list">
       Choose Fields to Display
-      <i class="pull-right menu-down"></i>
+      {% icon 'pull-right menu-down' %}'
     </div>
     <div class="panel-body" id="field-list">
       <div class="col-xs-12">
@@ -53,7 +54,7 @@
       </div>
       <div class="btn-group btn-group-sm pull-right">
         <button class="btn btn-info btn-sm" id="run-query">
-          <i class="run"></i>
+          {% icon 'run' %}
           Test query
         </button>
       </div>
@@ -301,9 +302,7 @@
       </td>
       <td class="expression-input"><input type="text" class="form-control" disabled="disabled" /></td>
       <td class="expression-menu">
-        {#<i class="fa-arrow-up"></i>#}
-        {#<i class="fa-arrow-down"></i>#}
-        <i class="cancel"></i>
+        {% icon 'cancel' %}
       </td>
     </tr>
   </script>
@@ -312,8 +311,6 @@
     <tr class="condition condition-__cond__">
       <td class="condition-cond" colspan="4">__cond__</td>
       <td class="expression-cond-menu">
-        {#<i class="fa-arrow-up"></i>#}
-        {#<i class="fa-arrow-down"></i>#}
       </td>
     </tr>
   </script>
@@ -323,9 +320,7 @@
       <td><label><input type="checkbox" class="expression-negate" /> Not</label></td>
       <td colspan="4">__paren__</td>
       <td class="expression-cond-menu">
-        {#<i class="fa-arrow-up"></i>#}
-        {#<i class="fa-arrow-down"></i>#}
-        <i class="cancel"></i>
+        {% icon 'cancel' %}
       </td>
     </tr>
   </script>

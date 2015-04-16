@@ -1,4 +1,5 @@
 {% extends 'uw_inventory_system/base.html' %}
+{% load uw_inventory_misc_tags %}
 
 {% block messages %}
   {% if error %}
@@ -29,8 +30,8 @@
             {{ form.model.label }}
             {{ form.model }}
           </div>
-        <button type="submit" class="btn btn-primary"><i class="upload"></i> Import</button>
-        <i class="spinner fa-2x hidden"></i>
+        <button type="submit" class="btn btn-primary">{% icon 'upload' %} Import</button>
+        {% icon 'hidden spinner fa-2x' %}
       </form>
     </div>
   </div>

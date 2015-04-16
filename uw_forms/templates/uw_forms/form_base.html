@@ -1,4 +1,5 @@
 {% extends 'uw_inventory_system/base.html' %}
+{% load uw_inventory_misc_tags %}
 
 {% block content %}
   <div class="row form-container">
@@ -28,12 +29,12 @@
             <ul class="nav">
               <li>
                 <button class="btn btn-success navbar-btn nav-justified" id="pageSave">
-                  <i class="save-item fa-fw"></i> Save
+                  {% icon 'save-item fa-fw' %} Save
                 </button>
               </li>
               <li>
                 <button class="btn btn-danger navbar-btn nav-justified" id="pageCancel">
-                  <i class="cancel-item fa-fw"></i> Cancel
+                  {% icon 'cancel-item fa-fw' %} Cancel
                 </button>
               </li>
             </ul>

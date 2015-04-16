@@ -1,4 +1,5 @@
 {% extends 'uw_inventory_system/base.html' %}
+{% load uw_inventory_misc_tags %}
 
 {% block content %}
   <div class="row">
@@ -42,7 +43,7 @@
       <button class="btn btn-success pull-right" id="continue">Continue export</button>
       <button class="btn btn-danger pull-left" id="cancel">Cancel export</button>
     </div>
-    <i class="spinner fa-2x hidden"></i>
+    {% icon 'spinner fa-2x hidden' %}
   </div>
 {% endblock content %}
 

@@ -1,3 +1,5 @@
+{% load uw_inventory_misc_tags %}
+
 <div class="modal fade" id="newFieldModal" tabindex="-1" role="dialog" aria-labelledby="newFieldModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -65,7 +67,7 @@
             <div class="form-group fieldOptions selectFieldOptions hidden">
               <label for="inputFieldAllowDups" class="col-xs-2 control-label">Allow Multiple?</label>
               <div class="col-xs-8">
-                <i class="checkbox-2 fa-2x" id="inputFieldAllowDups"></i>
+                {% icon 'checkbox-2 fa-2x' id='inputFieldAllowDups' %}
               </div>
             </div>
 
@@ -109,7 +111,7 @@
             <div class="form-group fieldOptions numberFieldOptions hidden">
               <label for="inputFieldAllowNegative" class="col-xs-2 control-label">Allow Negative?</label>
               <div class="col-xs-8">
-                <i class="checkbox-2 fa-2x" id="inputFieldAllowNegative"></i>
+                {% icon 'checkbox-2 fa-2x' id='inputFieldAllowNegative' %}
               </div>
             </div>
 

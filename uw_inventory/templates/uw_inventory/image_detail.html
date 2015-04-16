@@ -1,3 +1,5 @@
+{% load uw_inventory_misc_tags %}
+
 <div class="image-item" id="image-{{ forloop.counter0 }}">
   <div class="col-md-6">
     <div class="thumbnail clearfix">
@@ -11,15 +13,15 @@
         </a>
       </div>
       <div class="pull-right">
-        <i class="menu-down details"></i>
-        <i class="menu-up hidden details"></i>
-        <i class="edit"></i>
+        {% icon 'menu-down details' %}
+        {% icon 'menu-up hidden details' %}
+        {% icon 'edit' %}
         {% if image.to_display %}
-          <i class="delete fa-fw"></i>
-          <i class="restore fa-fw hidden"></i>
+          {% icon 'delete fa-fw' %}
+          {% icon 'restore fa-fw hidden' %}
         {% else %}
-          <i class="delete fa-fw hidden"></i>
-          <i class="restore fa-fw"></i>
+          {% icon 'delete fa-fw hidden' %}
+          {% icon 'restore fa-fw' %}
         {% endif %}
       </div>
       <div class="collapse image-detail col-xs-12">

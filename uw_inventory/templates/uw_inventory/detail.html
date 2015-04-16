@@ -15,20 +15,20 @@
   {{ block.super }}
   <li class="list-group-item">
     <a href="" onclick="window.print()">
-      <i class="fa-print"></i> Print
+      {% icon 'print' %} Print
     </a>
   </li>
 
   <li class="list-group-item">
     <a href="{{ inventory_item|admin_url }}">
-      <i class="fa-history"></i> History
+      {% icon 'history' %} History
     </a>
   </li>
 
   {% if perms.uw_inventory.add_inventoryitem %}  
     <li class="list-group-item">
       <a href="{% url 'uw_inventory.views.inventory_copy' inventory_item.id %}">
-        <i class="copy navigate" id="duplicate"></i> Duplicate
+        {% icon 'copy navigate' id='duplicate' %} Duplicate
       </a>
     </li>
   {% endif %}
@@ -36,11 +36,11 @@
     <li class="list-group-item">
       {% if inventory_item.to_display %}
         <a href="{% url 'uw_inventory.views.inventory_delete' inventory_item.id %}">
-          <i class="delete navigate fa-fw"></i> Delete
+          {% icon 'delete navigate fa-fw' %} Delete
         </a>
       {% else %}
         <a href="{% url 'uw_inventory.views.inventory_undelete' inventory_item.id %}">
-          <i class="restore navigate fa-fw"></i> Restore
+          {% icon 'restore navigate fa-fw' %} Restore
         </a>
       {% endif %}
     </li>
@@ -103,9 +103,9 @@
       </div>
       {% if perms.uw_inventory.change_itemfile %}
         <div class="col-xs-1">
-          <i class="save hidden" for="inputSopFile"></i>
-          <i class="cancel hidden" for="inputSopFile"></i>
-          <i class="edit" for="inputSopFile"></i>
+          {% icon 'save hidden' for='inputSopFile' %}
+          {% icon 'cancel hidden' for='inputSopFile' %}
+          {% icon 'edit' for='inputSopFile' %}
         </div>
       {% endif %}
     </div>

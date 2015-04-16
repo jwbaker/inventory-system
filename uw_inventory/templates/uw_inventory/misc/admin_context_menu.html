@@ -1,6 +1,8 @@
+{% load uw_inventory_misc_tags %}
+
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">
-    Admin <i class="drop-down"></i>
+    Admin {% icon 'drop-down' %}
   </a>
   <ul class="dropdown-menu" role="menu">
     <li><a href="{% url 'uw_inventory.views.associate_terms' %}">Associate terms</a></li>

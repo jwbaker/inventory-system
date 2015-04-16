@@ -1,5 +1,6 @@
 {% extends 'uw_inventory_system/base.html' %}
 {% load uw_reports_misc_tags %}
+{% load uw_inventory_misc_tags %}
 
 {% block content %}
   <div class="row">
@@ -10,7 +11,7 @@
       </span>
     {% if perms.uw_reports.change_report or report.owner == user %}
       <div class="pull-right">
-        <button class="btn btn-default btn-sm" id="edit-report"><i class="edit"></i> Edit</button>
+        <button class="btn btn-default btn-sm" id="edit-report">{% icon 'edit' %} Edit</button>
       </div>
     {% endif %}
     </h2>
@@ -27,7 +28,7 @@
   <script type="text/html" id="toolbar-template">
     <div class="btn-group btn-group-sm">
       <button class="btn btn-default" id="export">
-        <i class="download"></i> Export
+        {% icon 'download' %} Export
       </button>
     </div>
   </script>

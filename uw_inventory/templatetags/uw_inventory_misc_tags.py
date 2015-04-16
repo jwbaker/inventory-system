@@ -1,6 +1,6 @@
 from django import template
-from django.contrib.auth.models import Group
 from django.core.urlresolvers import reverse
+from django.utils.safestring import mark_safe
 
 from uw_inventory.models import ItemFile
 
@@ -49,3 +49,15 @@ def admin_url(instance):
 @register.inclusion_tag('uw_inventory/misc/admin_context_menu.html')
 def inventory_admin_context_menu():
     return
+
+
+@register.simple_tag
+def icon(classes, **kwargs):
+    kw_args = ''
+
+    for k, v in kwargs.iteritems():
+        kw_args += '{0}="{1}" '.format(k.replace('_', '-'), v)
+
+    return mark_safe(
+        '<i class="{0}" title="{1}" {2}></i>'.format(classes, '', kw_args)
+    )

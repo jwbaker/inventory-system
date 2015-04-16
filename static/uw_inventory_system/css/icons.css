@@ -87,6 +87,9 @@ i,
 .filter::after {
   content: "\f0b0"; /* fa-filter */
 }
+.history::after {
+  content: "\f1da"; /* fa-history */ 
+}
 .list::after {
   content: "\f03a"; /* fa-list */
 }
@@ -98,6 +101,9 @@ i,
 }
 .picture::after {
   content: "\f03e"; /* fa-picture-o */
+}
+.print::after {
+  content: "\f02f"; /* fa-print */
 }
 .run::after {
   content: "\f04b"; /* fa-play */

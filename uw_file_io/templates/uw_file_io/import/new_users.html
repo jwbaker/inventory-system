@@ -1,4 +1,5 @@
 {% extends 'uw_file_io/import/base.html' %}
+{% load uw_inventory_misc_tags %}
 {% load staticfiles %}
 
 {% block messages %}
@@ -17,8 +18,8 @@
             <li class="list-group-item new-user" id="{{ forloop.counter }}">
               <div class="user-label">
                 {{ key }}
-                <i class="danger text-danger hidden warning"></i>
-                <i class="menu-down pull-right" data-toggle="collapse" data-target="#{{ forloop.counter }}-detail"></i>
+                {% icon 'danger text-danger hidden warning' %}
+                {% icon 'menu-down pull-right' data_toggle="collapse" data_target="#{{ forloop.counter }}-detail" %}
               </div>
               <div class="user-detail collapse" id="{{ forloop.counter }}-detail">
                 <div class="form-group username">

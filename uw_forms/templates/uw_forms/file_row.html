@@ -1,4 +1,5 @@
 {% load uw_forms_format_tags %}
+{% load uw_inventory_misc_tags %}
 
 <tr class="file-row {% if form.errors %}danger{% endif %} {% if not form.instance.to_display %}disabled{% endif %}">
   <td class="file-description">
@@ -16,27 +17,25 @@
     </td>
   {% endif %}
   <td class="file-menu">
-    <i class="file-download"
-       data-target="{% url 'uw_file_io.views.file_download' form.instance.id %}">
-    </i>
+    {% icon 'file-download' data_target="{% url 'uw_file_io.views.file_download' form.instance.id %}" %}
     {% if can_edit %}
-      <i class="file-edit"></i>
+      {% icon 'file_edit' %}
       {% if form.instance.to_display %}
-        <i class="file-hide"></i>
+        {% icon 'file-hide' %}
       {% else %}
-        <i class="restore"></i>
+        {% icon 'restore' %}
       {% endif %}
     {% endif %}
   </td>
 
   {% if can_edit %}
     <td class="hidden file-menu">
-      <i class="save"></i>
-      <i class="cancel"></i>
+      {% icon 'save' %}
+      {% icon 'cancel' %}
       {% if form.instance.to_display %}
-        <i class="file-hide"></i>
+        {% icon 'file-hide' %}
       {% else %}
-        <i class="restore"></i>
+        {% icon 'restore' %}
       {% endif %}
     </td>
   {% endif %}

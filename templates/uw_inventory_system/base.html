@@ -75,13 +75,13 @@
             {% if perms.uw_inventory.add_inventoryitem %}
               <li>
                 <a href="{% url 'uw_inventory.views.inventory_add' %}">
-                  <i class="add-item navigate"></i>
+                  {% icon 'add-item navigate' %}
                 </a>
               </li>
               {% if request.user.is_superuser %}
                 <li>
                   <a href="{% url 'uw_file_io.views.file_import' %}">
-                    <i class="upload"></i>
+                  {% icon 'upload' %}
                   </a>
                 </li>
               {% endif %}

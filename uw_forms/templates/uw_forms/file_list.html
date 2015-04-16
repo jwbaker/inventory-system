@@ -1,3 +1,5 @@
+{% load uw_inventory_misc_tags %}
+
 <div class="form-group list-group-item clearfix">
   <div class="col-xs-3">
     <label class="control-label">Attachments</label>
@@ -5,8 +7,8 @@
   <div class="col-xs-9">
     <table id="file-table" class="table table-condensed">
       <thead>
-        <td>Description <i class="sort-row sort pull-right" data-index="0"></i></td>
-        <td>Size <i class="sort-row sort pull-right" data-index="1"></i></td>
+        <td>Description {% icon 'sort-row sort pull-right' data_index=0 %}</td>
+        <td>Size {% icon 'sort-row sort pull-right' data_index=1 %}</td>
         <td></td>
       </thead>
       <tbody>
@@ -20,7 +22,7 @@
             <tr>
               <td align="center" colspan="3">
                 <a id="add-file">
-                  <i class="add-item"></i>
+                  {% icon 'add-item' %}
                 </a>
               </td>
             </tr>

@@ -1,9 +1,10 @@
 {% load uw_reports_misc_tags %}
+{% load uw_inventory_misc_tags %}
 
 <li class="dropdown">
   {% if user.is_authenticated %}
     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">
-      Reports <i class="drop-down"></i>
+      Reports {% icon 'drop-down' %}
     </a>
     <ul class="dropdown-menu" role="menu">
       <li><a href="{% url 'uw_reports.views.reports_list' %}">All reports</a></li>

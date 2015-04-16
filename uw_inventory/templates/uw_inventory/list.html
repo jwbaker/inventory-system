@@ -60,7 +60,7 @@
           <th class="column-hidden">Notes</th>
         </tr>
         <tr id="column-filters" class="hidden">
-          <th><i class="fa-2x checkbox-3"></i></th>
+          <th>{% icon 'fa-2x checkbox-3' %}</th>
           <th>
             <input type="text" class="form-control input-sm" placeholder="Begin typing..." />
           </th>
@@ -141,19 +141,19 @@
   <script type="text/html" id="list-toolbar-template">
     <div class="btn-group btn-group-sm">
       <button class="btn btn-default" id="show-filters">
-        <i class="filter"></i> Show filters
+        {% icon 'filter' %} Show filters
       </button>
       <button class="btn btn-default hidden" id="hide-filters">
-        <i class="fa-inverse filter"></i> Hide filters
+        {% icon 'fa-inverse filter' %} Hide filters
       </button>
       <button class="btn btn-danger hidden" id="clear-filters">
-        <i class="cancel"></i>
+        {% icon 'cancel' %}
         Clear all filters
       </button>
     </div>
     <div class="btn-group btn-group-sm">
       <button class="btn btn-default" id="export">
-        <i class="download"></i> Export
+        {% icon 'download' %} Export
       </button>
     </div>
   </script>

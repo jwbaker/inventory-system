@@ -1,3 +1,5 @@
+{% load uw_inventory_misc_tags %}
+
 <div class="singleton-field form-group list-group-item clearfix {% if field.errors %}list-group-item-danger has-error{% endif %}">
   <div class="col-xs-3">
     <label for="{{ field_id }}" class="control-label">
@@ -23,9 +25,9 @@
   {# If we came from a show_editable_field tag and we are allowed to edit this model #}
   {% if caller == "edit" and can_edit %}
     <div class="col-xs-1">
-      <i class="save hidden"></i>
-      <i class="cancel hidden"></i>
-      <i class="edit"></i>
+      {% icon 'save hidden' %}
+      {% icon 'cancel hidden' %}
+      {% icon 'edit' %}
     </div>
   {% endif %}
 </div>

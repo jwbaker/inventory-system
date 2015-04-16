@@ -1,6 +1,7 @@
 {% extends 'uw_forms/form_base.html' %}
 {% load uw_inventory_modal_tags %}
 {% load uw_inventory_model_tags %}
+{% load uw_inventory_misc_tags %}
 {% load uw_forms_form_tags %}
 
 {% block css_includes %}
@@ -22,7 +23,7 @@
 
 {% block gutter_nav %}
   <li class="list-group-item">
-    <button class="btn btn-primary" data-toggle="modal" data-target="#newFieldModal"><i class="list"></i> Add field</button>
+    <button class="btn btn-primary" data-toggle="modal" data-target="#newFieldModal">{% icon 'list' %} Add field</button>
   </li>
 {% endblock gutter_nav %}
 
@@ -407,17 +408,17 @@
           {{ formsets.comment.empty_form.as_p }}
         </div>
         <div class="col-xs-1">
-          <i class="save"></i>
-          <i class="cancel"></i>
-          <i class="delete"></i>
+          {% icon 'save' %}
+          {% icon 'cancel' %}
+          {% icon 'delete' %}
         </div>
 
         <div class="col-xs-11 hidden static-comment">
           {% include 'uw_inventory/comment_detail.html' %}
         </div>
         <div class="col-xs-1 hidden">
-          <i class="edit"></i>
-          <i class="delete"></i>
+          {% icon 'edit' %}
+          {% icon 'delete' %}
         </div>
       </div>
     </script>
@@ -504,14 +505,14 @@
         <td class="hidden file-description"></td>
         <td class="hidden file-size"></td>
         <td class="hidden">
-          <i class="file-edit"></i>
-          <i class="delete"></i>
+          {% icon 'file-edit' %}
+          {% icon 'delete' %}
         </td>
         <td colspan="2">__form__</td>
         <td>
-          <i class="save"></i>
-          <i class="cancel"></i>
-          <i class="delete"></i>
+          {% icon 'save' %}
+          {% icon 'cancel' %}
+          {% icon 'delete' %}
         </td>
       </tr>
     </script>
@@ -564,7 +565,7 @@
         {% if perms.uw_inventory.view_deleted_itemfile %}
           row.addClass('disabled');
           row.find('i.file-hide').remove();
-          row.find('.file-menu').append('<i class="restore"></i>');
+          row.find('.file-menu').append('{% icon "restore" %}');
         {% else %}
           row.addClass('persist-hidden');
         {% endif %}
@@ -577,7 +578,7 @@
         row.find('[id*=to_display]').attr('checked', 'checked');
         row.removeClass('disabled');
         row.find('i.restore').remove();
-        row.find('.file-menu').append('<i class="file-hide"></i>');
+        row.find('.file-menu').append('{% icon "file-hide" %}');
 
         var hasChanged = row.find('span.initial-display').text() === 'False';
         $(window).trigger('pagechanges', hasChanged);
@@ -712,14 +713,14 @@
       <div class="col-md-6">
         <div class="thumbnail clearfix">
           <div class="image" style="height:150px;text-align:center">
-            <i class="picture fa-fw fa-5x"></i>
+            {% icon 'picture fa-fw fa-5x' %}
           </div>
           <div class="pull-right">
-            <i class="menu-down details"></i>
-            <i class="menu-up hidden details"></i>
-            <i class="edit"></i>
-            <i class="delete fa-fw"></i>
-            <i class="restore fa-fw hidden"></i>
+            {% icon 'menu-down details' %}
+            {% icon 'menu-up hidden details' %}
+            {% icon 'edit' %}
+            {% icon 'delete fa-fw' %}
+            {% icon 'restore fa-fw hidden' %}
           </div>
           <div class="collapse image-detail col-xs-12">
             <p class="form-control-static image-description">
@@ -780,7 +781,7 @@
         var hasChanges = (newDescription.val() !== oldDescription.val()) || fileChanged;
 
         if(fileChanged){
-          oldForm.closest('.image-item').find('.image').empty().append('<div class="image-placeholder" style="min-height:91px;text-align:center"><i class="picture fa-fw fa-5x"></i></div>');
+          oldForm.closest('.image-item').find('.image').empty().append('<div class="image-placeholder" style="min-height:91px;text-align:center">{% icon "picture fa-fw fa-5x" %}</div>');
         }
 
         oldForm.siblings('.image-detail').find('p').text(newDescription.val());

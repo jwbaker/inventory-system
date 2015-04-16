@@ -1,3 +1,5 @@
+{% load uw_inventory_misc_tags %}
+
 <div class="form-group list-group-item clearfix">
   <div class="col-xs-2">
     <label class="control-label">Images</label>
@@ -13,7 +15,7 @@
     <div class="col-md-6" id="image-add-container">
       <div class="thumbnail clearfix">
         <div class="image" style="height:150px;text-align:center" id="add-image">
-          <i class="add-item fa-5x"></i>
+          {% icon 'add-item fw-5x' %}
         </div>
       </div>
     </div>

@@ -1,4 +1,5 @@
 {% load uw_custom_field_field_tags %}
+{% load uw_inventory_misc_tags %}
 
 {% for id, data in fields.items %}
   <div class="singleton-field form-group list-group-item clearfix">
@@ -14,9 +15,9 @@
         {% render_custom_widget data %}
     </div>
     <div class="col-xs-1">
-      <i class="save hidden"></i>
-      <i class="cancel hidden"></i>
-      <i class="edit"></i>
+      {% icon 'save hidden' %}
+      {% icon 'cancel hidden' %}
+      {% icon 'edit' %}
     </div>
   </div>
 {% endfor %}
