@@ -51,6 +51,21 @@ def inventory_admin_context_menu():
     return
 
 
+ICON_TITLES = {
+    'edit': 'Edit',
+    'save': 'Save',
+    'download': 'Download',
+    'cancel': 'Cancel',
+    'delete': 'Delete',
+    'add-item': 'Add',
+    'file-hide': 'Delete',
+    'file-download': 'Download',
+    'upload': 'Import',
+    'menu-down': 'Show details',
+    'menu-up': 'Hide details',
+}
+
+
 @register.simple_tag
 def icon(classes, **kwargs):
     kw_args = ''
@@ -58,6 +73,11 @@ def icon(classes, **kwargs):
     for k, v in kwargs.iteritems():
         kw_args += '{0}="{1}" '.format(k.replace('_', '-'), v)
 
+    title = ''
+    for c in classes.split(' '):
+        if c in ICON_TITLES:
+            title = ICON_TITLES[c]
+
     return mark_safe(
-        '<i class="{0}" title="{1}" {2}></i>'.format(classes, '', kw_args)
+        '<i class="{0}" title="{1}" {2}></i>'.format(classes, title, kw_args)
     )
