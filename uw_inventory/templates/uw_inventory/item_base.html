@@ -440,6 +440,7 @@
 
       $('#comments-list').on('click', 'i.save', function(){
         var comment = $(this).closest('.comment');
+        comment.removeAttr('comment-initial');
 
         var newcommentJSON = {
           'body': comment.find('#inputBody').val(),
@@ -457,10 +458,12 @@
       });
 
       $('#comments-list').on('click', 'i.cancel', function(){
-        if(!$(this).closest('.comment').find('#inputBody').val()){
+        var comment = $(this).closest('.comment');
+        if(!comment.find('#inputBody').val()){
           $(this).siblings('i.delete').click();
         } else {
-          $(this).closest('.comment').children().toggleClass('hidden');
+          comment.find('#inputBody').val(comment.attr('comment-initial'));
+          comment.children().toggleClass('hidden');
         }
       });
 
@@ -472,7 +475,9 @@
       });
 
       $('#comments-list').on('click', 'i.edit', function(){
-        $(this).closest('.comment').children().toggleClass('hidden');
+        var comment = $(this).closest('.comment');
+        comment.attr('comment-initial', comment.find('#inputBody').val())
+        comment.children().toggleClass('hidden');
       });
     </script>
   {% endif %}
@@ -530,12 +535,16 @@
       $('#file-table').on('click', 'i.cancel', function(){
         var row = $(this).closest('tr');
 
-        var inputFileName = row.find('[type="file"]').val();
-        var inputFileDescription = row.find('#inputDescription').val();
+        var inputFileName = row.find('[type="file"]');
+        var inputFileDescription = row.find('#inputDescription');
+        var inputFileType = row.find('#inputFieldType')
 
-        if(!inputFileName && !inputFileDescription && row.find('a').length === 0){
+        if(!inputFileName.val() && !inputFileDescription.val() && !inputFileType.val() && row.find('a').length === 0){
           row.find('.delete').click();
         } else{
+          inputFileName.val('');
+          inputFileDescription.val(row.attr('data-description-initial'));
+          inputFileType.val(row.attr('data-type-initial'))
           row.children().toggleClass('hidden');
         }
       });
@@ -576,6 +585,8 @@
 
       $('#file-table').on('click', 'i.save', function(){
         var row = $(this).closest('tr');
+        row.removeAttr('data-description-initial')
+        row.removeAttr('data-type-initial')
         var descriptionChanged = (row.find('#inputDescription').val() !== row.find('.default-description').text());
         var fileChanged = row.find('[type="file"]').val();
         if(row.find('[type="file"]').val()){
@@ -620,6 +631,8 @@
       $('#file-table').on('click', 'i.file-edit', function(){
         var row = $(this).closest('tr');
         row.children().toggleClass('hidden');
+        row.attr('data-description-initial', row.find('#inputDescription').val());
+        row.attr('data-type-initial', row.find('#inputFieldType').val());
       });
     </script>
   {% endif %}

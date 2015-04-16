@@ -143,21 +143,6 @@
     </script>
 
     <script type="text/javascript">
-      $('input[type="checkbox"]').change(function(){
-        console.log('hi')
-        var checkboxIcon = $(this).closest('i.checkbox-2');
-
-        if(checkboxIcon){
-          if($(this).val() === 'on'){
-            checkboxIcon.addClass('checked');
-          } else{
-            checkboxIcon.removeClass('checked');
-          }
-        }
-      });
-    </script>
-
-    <script type="text/javascript">
       {# This function performs all the magic of adding and removing edit states #}
       var editClickHandler = function(context){
         var container = context.closest('.form-group').find('.field-container');
@@ -195,6 +180,7 @@
       });
 
       $('.singleton-formset .cancel').click(function(){
+        var container = $(this).closest('.form-group').find('.field-container').find('input').val('');
         editClickHandler($(this));
       });
 
