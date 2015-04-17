@@ -10,6 +10,7 @@ urlpatterns = patterns(
     url(r'^autocomplete/(?P<source>.*)$', views.autocomplete_list),
     url(r'^admin/term-associate$', views.associate_terms),
     url(r'^(?P<item_id>\d+)$', views.inventory_detail),
+    url(r'^(?P<item_id>\d+)/label/$', views.inventory_label),
     url(r'^(?P<item_id>\d+)/duplicate$', views.inventory_copy),
     url(r'^(?P<item_id>\d+)/delete$', views.inventory_delete),
     url(r'^(?P<item_id>\d+)/restore$', views.inventory_undelete),

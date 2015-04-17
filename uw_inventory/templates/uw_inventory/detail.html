@@ -26,6 +26,11 @@
       {% icon 'print' %} Print
     </a>
   </li>
+  <li class="list-group-item">
+    <a href="{% url 'uw_inventory.views.inventory_label' inventory_item.id %}">
+      {% icon 'fa-tag' %} Print Label
+    </a>
+  </li>
 
   <li class="list-group-item">
     <a href="{{ inventory_item|admin_url }}">

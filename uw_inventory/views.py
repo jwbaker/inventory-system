@@ -353,6 +353,15 @@ def inventory_add(request):
     })
 
 
+@permission_required('uw_inventory.view_item')
+def inventory_label(request, item_id):
+    item = InventoryItem.objects.get(id=item_id)
+
+    return render(request, 'uw_inventory/label.html', {
+        'item': item,
+    })
+
+
 @permission_required('uw_inventory.add_inventoryitem')
 def inventory_copy(request, item_id):
     item = InventoryItem.objects.get(pk=item_id)

@@ -1,0 +1,23 @@
+{% extends 'uw_inventory_system/base.html' %}
+{% load staticfiles %}
+
+{% block css_includes %}
+  <link rel="stylesheet" type="text/css" media="print" href="{% static 'uw_inventory/detail_print.css' %}">
+{% endblock css_includes %}
+
+{% block content %}
+  <div class="row" id="print-header">
+    <h1 class="pull-left">{{ item.uuid }}</h1>
+    <div id="qr-code" class="pull-right">
+      <img src="{{ item.qr_code.url }}" style="width:50%">
+    </div>
+  </div>
+{% endblock content %}
+
+{% block js_includes %}
+  <script type="text/javascript">
+    $(function(){
+      window.print();
+    });
+  </script>
+{% endblock js_includes %}
