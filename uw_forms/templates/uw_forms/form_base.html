@@ -1,6 +1,9 @@
 {% extends 'uw_inventory_system/base.html' %}
 {% load uw_inventory_misc_tags %}
 
+{% block message_container %}
+{% endblock message_container %}
+
 {% block content %}
   <div class="row form-container">
     {% if can_edit or can_add %}
@@ -11,6 +14,16 @@
     {% endif %}
         <div class="row">
           <div class="col-xs-offset-2" style="position:fixed;z-index:100000000000000">
+            {% if page_messages %}
+              {% for msg in page_messages %}
+                <div class="alert alert-dismissible alert-{{ msg.class }}" data-dismiss="alert" role="alert">
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                  {{ msg.message }}
+                </div>
+              {% endfor %}
+            {% endif %}
             <div class="alert alert-warning hidden" 
                  id="pageEditWarning" 
                  role="alert">
@@ -19,9 +32,9 @@
           </div>
 
         {% block page_content %}
-      {% endblock page_content %}
+        {% endblock page_content %}
+        </div>
       </div>
-    </div>
     {% if can_edit or can_add %}
       <div class="col-xs-1">
         <nav class="affix panel panel-default" data-spy="affix">
