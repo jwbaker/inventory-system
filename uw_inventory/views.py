@@ -309,7 +309,7 @@ def inventory_add(request):
                     messages.error(
                         request,
                         '''Too many items have been created.
-                        Please contact an administrator'''
+                        Please contact an administrator.'''
                     )
                 else:
                     comment_formset.save()
@@ -356,9 +356,24 @@ def inventory_add(request):
 @permission_required('uw_inventory.add_inventoryitem')
 def inventory_copy(request, item_id):
     item = InventoryItem.objects.get(pk=item_id)
-    new_item = item.copy()
 
-    return HttpResponseRedirect('/list/{0}'.format(new_item.pk))
+    try:
+        new_item = item.copy()
+    except IndexError:
+        messages.error(
+            request,
+            '''Unable to copy. Too many items have been created.
+            Please contact an administrator.'''
+        )
+        dest = item_id
+    else:
+        messages.success(
+            request,
+            'Successfully duplicated item {0}'.format(item.uuid)
+        )
+        dest = new_item.id
+
+    return HttpResponseRedirect('/list/{0}'.format(dest))
 
 
 @permission_required('uw_inventory.change_inventoryitem')
@@ -369,11 +384,13 @@ def inventory_delete(request, item_id):
         item.save()
     except:
         messages.error(request,
-                       'Something went wrong')
+                       'Could not delete')
         dest = '/list/{0}'.format(item_id)
     else:
-        messages.success(request,
-                         'Deleted')
+        messages.success(
+            request,
+            'Deleted item {0}'.format(item.uuid)
+        )
         dest = '/list/'
     return HttpResponseRedirect(dest)
 
@@ -385,12 +402,18 @@ def inventory_undelete(request, item_id):
     try:
         item.save()
     except:
-        messages.error(request,
-                       'Something went wrong')
+        messages.error(
+            request,
+            'Could not restore'
+        )
+        dest = ''
     else:
-        messages.success(request,
-                         'Restored')
-    return HttpResponseRedirect('/list/{0}'.format(item_id))
+        messages.success(
+            request,
+            'Restored item {0}'.format(item.uuid)
+        )
+        dest = item.id
+    return HttpResponseRedirect('/list/{0}'.format(dest))
 
 
 @permission_required('uw_inventory.change_inventoryitem')
