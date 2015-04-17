@@ -1,6 +1,8 @@
 from datetime import datetime
+import os
 
 from django.contrib.auth.models import User
+from django.conf import settings
 from django.core.files import File
 from django.core.validators import RegexValidator
 from django.db import models
@@ -167,6 +169,22 @@ class InventoryItem(models.Model):
         '''
         return ' '.join([str(f.body) for f in
                         [n for n in self.comment_set.all()]])
+
+    def list_image_url(self):
+        '''
+        Retrieve the URL of the image to display on the main list page
+
+        This function always returns the URL of the first image associated
+        with the item, or the empty string if the item has no images
+        '''
+        try:
+            return os.path.join(
+                settings.MEDIA_URL,
+                settings.MEDIA_ROOT,
+                self.itemimage_set.all()[0].file_field.url
+            )
+        except IndexError:
+            return ''
 
     def copy(self):
         copy = InventoryItem()
