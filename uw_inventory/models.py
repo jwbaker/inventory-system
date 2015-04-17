@@ -128,6 +128,8 @@ class InventoryItem(models.Model):
         ('DI', 'Disposed')
     ]
 
+    __MAX_ITEM_COUNT = 99999
+
     @staticmethod
     def get_status(status_key):
         '''
@@ -216,8 +218,10 @@ class InventoryItem(models.Model):
 
     # save method is overriden so we can generate the UUID automatically
     def save(self, *args, **kwargs):
+        if InventoryItem.objects.count() > InventoryItem.__MAX_ITEM_COUNT:
+            raise IndexError('Too many items')
         super(InventoryItem, self).save()
-        self.uuid = "{0}-{1}".format(
+        self.uuid = "{0}-{1:05d}".format(
             self.creation_date.strftime('%Y%m%d'),
             self.id
         )

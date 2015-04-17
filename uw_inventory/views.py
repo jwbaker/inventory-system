@@ -303,19 +303,29 @@ def inventory_add(request):
                 map(lambda x: x.save(), sop_files)
                 if sop_files:
                     new_item.sop_file_id = sop_files[0].id
-                new_item.save()
-                comment_formset.save()
-                file_formset.save()
-                image_formset.save()
-                map(
-                    lambda x: setattr(x, 'inventory_item_id', new_item.id),
-                    sop_files
-                )
-                map(lambda x: x.save(), sop_files)
+                try:
+                    new_item.save()
+                except IndexError:
+                    messages.error(
+                        request,
+                        '''Too many items have been created.
+                        Please contact an administrator'''
+                    )
+                else:
+                    comment_formset.save()
+                    file_formset.save()
+                    image_formset.save()
+                    map(
+                        lambda x: setattr(x, 'inventory_item_id', new_item.id),
+                        sop_files
+                    )
+                    map(lambda x: x.save(), sop_files)
 
-                messages.success(request,
-                                 'Inventory item saved successfully')
-                return HttpResponseRedirect('/list/{0}'.format(new_item.pk))
+                    messages.success(request,
+                                     'Inventory item saved successfully')
+                    return HttpResponseRedirect(
+                        '/list/{0}'.format(new_item.pk)
+                    )
             else:
                 messages.error(request, 'Fatal formset badness')
         else:
