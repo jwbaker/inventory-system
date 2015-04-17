@@ -13,7 +13,7 @@
       <div class="col-xs-8 col-xs-offset-2">
     {% endif %}
         <div class="row">
-          <div class="col-xs-offset-2" style="position:fixed;z-index:100000000000000">
+          <div class="col-xs-offset-2 col-xs-3" style="position:fixed;z-index:100000000000000">
             {% if page_messages %}
               {% for msg in page_messages %}
                 <div class="alert alert-dismissible alert-{{ msg.class }}" data-dismiss="alert" role="alert">
@@ -29,6 +29,8 @@
                  role="alert">
               This page has unsaved changes
             </div>
+            {% block form_messages %}
+            {% endblock form_messages %}
           </div>
 
         {% block page_content %}

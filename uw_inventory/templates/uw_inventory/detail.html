@@ -11,6 +11,14 @@
   <link rel="stylesheet" type="text/css" media="print" href="{% static 'uw_inventory/detail_print.css' %}">
 {% endblock css_includes %}
 
+{% block form_messages %}
+  {% if not inventory_item.to_display %}
+    <div class="alert alert-info" role="alert">
+      This item has been deleted.
+    </div>
+  {% endif %}
+{% endblock form_messages %}
+
 {% block gutter_nav %}
   {{ block.super }}
   <li class="list-group-item">
