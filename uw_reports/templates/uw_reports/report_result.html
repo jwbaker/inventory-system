@@ -1,12 +1,12 @@
 {% load uw_reports_misc_tags %}
 
 <p>{{ results|length }} result{{ results|pluralize }}</p>
-<table class="table table-hover" id="query-result">
+<table class="table table-hover table-bordered" id="query-result">
   <thead>
     {% for field in display_fields %}
       <td>{{ field }}</td>
     {% endfor %}
-    <td></td>
+    <td class="persist-hidden"></td>
   </thead> 
   <tbody>
     {% for item in results %}
