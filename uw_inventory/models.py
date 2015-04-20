@@ -90,7 +90,8 @@ class ItemFile(models.Model):
         return self.description or self.file_field.name
 
     def save(self, *args, **kwargs):
-        # self.mimetype = self.file_field.file.content_type
+        if not self.mimetype:
+            self.mimetype = self.file_field.file.content_type
         super(ItemFile, self).save(*args, **kwargs)
 
     def __unicode__(self):

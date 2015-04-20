@@ -17,7 +17,7 @@
     </td>
   {% endif %}
   <td class="file-menu">
-    {% icon 'file-download' data_target="{% url 'uw_file_io.views.file_download' form.instance.id %}" %}
+    {% icon 'file-download' data_target=form.instance|download_url %}
     {% if can_edit %}
       {% icon 'file_edit' %}
       {% if form.instance.to_display %}
