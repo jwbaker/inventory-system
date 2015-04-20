@@ -71,7 +71,13 @@ class ItemFile(models.Model):
         default=None,
         null=True
     )
-    file_type = models.CharField(choices=TYPE_CHOICES, max_length=255)
+    file_type = models.CharField(
+        choices=TYPE_CHOICES,
+        blank=True,
+        null=True,
+        default='other',
+        max_length=255
+    )
     mimetype = models.CharField(max_length=255)
     to_display = models.BooleanField(default=True)
 
