@@ -17,6 +17,7 @@ from uw_file_io.parse import (
     process_extract,
     process_terms_transactions,
     process_user_transactions,
+    import_data,
 )
 from uw_inventory.models import (
     AutocompleteData,
@@ -146,6 +147,18 @@ def finish_import(request):
 
     term_to_index = process_terms_transactions(new_terms)
     user_to_index = process_user_transactions(new_users)
+
+    new_items = import_data(
+        extract_data['model_data'],
+        term_to_index,
+        user_to_index
+    )
+
+    message_list = _collect_messages(request)
+    return render(request, 'uw_file_io/import/done.html', {
+        'item_list': new_items,
+        'page_messages': message_list,
+    })
 
 
 @csrf_protect

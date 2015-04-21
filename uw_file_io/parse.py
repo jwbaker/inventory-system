@@ -262,3 +262,22 @@ def process_user_transactions(user_list):
                 user_to_index[user['repalce']] = temp.id
 
     return user_to_index
+
+
+def import_data(model_data, term_to_index, user_to_index):
+    item_list = []
+
+    for data in model_data['InventoryItem']:
+        for field in ['location_id', 'manufacturer_id', 'supplier_id']:
+            if isinstance(data.get('field', None), str):
+                data[field] = term_to_index[data[field]]
+
+        for field in ['owner_id', 'technician_id']:
+            if isinstance(data.get('field', None), str):
+                data[field] = user_to_index[data[field]]
+
+        item = InventoryItem(**data)
+        item.save()
+        item_list.append(item)
+
+    return item_list

@@ -9,6 +9,7 @@ urlpatterns = patterns(
     url(r'^import/$', views.file_import),
     url(r'^import/add-terms$', views.add_terms),
     url(r'^import/add-users$', views.add_users),
+    url(r'^import/done$', views.finish_import),
     url(r'^export/$', views.export_options),
     url(r'^export/(?P<report_id>\d+)/$', views.export_options),
     url(r'^export/done/$', views.finish_export),
