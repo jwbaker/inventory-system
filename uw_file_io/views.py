@@ -83,6 +83,9 @@ def file_view(request, file_name):
 @permission_required('uw_inventory.add_inventoryitem')
 def file_import(request):
     request.session.pop('extract_data', None)
+    request.session.pop('new-terms', None)
+    request.session.pop('new-users', None)
+
     if request.method == 'POST':
         extract_data = process_extract(
             request.FILES.get('file_up', None)
@@ -104,8 +107,8 @@ def add_terms(request):
         return redirect('uw_file_io.views.add_users')
 
     extract_data = request.session['extract_data']
-    terms_data = {k: v for k, v in extract_data['new_terms'] if
-                  k in ['location', 'manufacturer', 'supplier']}
+    terms_data = {k: v for k, v in extract_data['new_terms'].items() if
+                  k in ['location', 'manufacturer', 'supplier'] and len(v) > 0}
     if not terms_data:
         return redirect('uw_file_io.views.add_users')
 
@@ -127,8 +130,12 @@ def add_users(request):
         return redirect('uw_file_io.views.finish_import')
 
     extract_data = request.session['extract_data']
-    terms_data = {k: v for k, v in extract_data['new_terms'] if
-                  k in ['owner', 'technician']}
+    terms_data = reduce(
+        lambda x, y: x.append(y),
+        [v for k, v in extract_data['new_terms'].items() if
+         k in ['owner', 'technician']],
+        []
+    )
     if not terms_data:
         return redirect('uw_file_io.views.finish_import')
 
@@ -141,9 +148,9 @@ def add_users(request):
 
 
 def finish_import(request):
-    extract_data = request.session.pop('extract_data')
-    new_terms = request.session.pop('new-terms')
-    new_users = request.session.pop('new-users')
+    extract_data = request.session.pop('extract_data', None)
+    new_terms = request.session.pop('new-terms', [])
+    new_users = request.session.pop('new-users', [])
 
     term_to_index = process_terms_transactions(new_terms)
     user_to_index = process_user_transactions(new_users)

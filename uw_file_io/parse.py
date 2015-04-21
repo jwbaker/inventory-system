@@ -67,7 +67,7 @@ def __check_existing_term(term, field_name):
     elif field_name in ['owner', 'technician']:
         try:
             exact = User.objects.get(username__iexact=term)
-            return exact
+            return exact.id
         except User.DoesNotExist:
             candidates = User.objects.filter(username__icontains=term)
             if len(candidates) == 1:
@@ -90,13 +90,17 @@ def __process_fields(data, fields, files):
                 if field not in terms:
                     terms[field] = []
 
-                term = __check_existing_term(data[field], field)
-                if isinstance(term, int):
-                    data[field] = term
-                else:
-                    terms[field].append(term)
-                    del data[field]
+                try:
+                    term = int(data[field])
+                except ValueError:
+                    term = __check_existing_term(data[field], field)
+                    if term == data[field]:
+                        terms[field].append(term)
                     data['{0}_id'.format(field)] = term
+                else:
+                    data['{0}_id'.format(field)] = term
+                del data[field]
+
         elif field == 'file_field':
             if data[field] not in files:
                 raise ValueError(
@@ -139,7 +143,7 @@ def process_extract(file_up):
     if not file_up:
         raise ValueError
 
-    ret_object = {'model_data': {}, 'new_terms': []}
+    ret_object = {'model_data': {}, 'new_terms': {}}
     with zipfile.ZipFile(file_up, 'r') as archive:
         csv_files, files = __unpack_archive(archive)
 
@@ -149,7 +153,7 @@ def process_extract(file_up):
         if f_data['status'] == 'fail':
             raise Exception(f_data['errors'])
         ret_object['model_data'][f_data['model_name']] = f_data['model_data']
-        ret_object['new_terms'].append(f_data['terms'])
+        ret_object['new_terms'].update(f_data['terms'])
 
     return ret_object
 
