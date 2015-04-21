@@ -152,3 +152,113 @@ def process_extract(file_up):
         ret_object['new_terms'].append(f_data['terms'])
 
     return ret_object
+
+
+def process_terms_transactions(term_list):
+    '''
+    Creates Autocomplete terms according to a given list
+
+    Positional arguments:
+        term_list -- A list of term instructions to follow. The objects must
+                        have the following format:
+
+                        {
+                            'action': 'skip' | 'create' | 'rename',
+                            'kind': str,
+                            'name': name,
+                            'type': 'new->new' | 'new->old' (rename only),
+                            'replace': str (rename only),
+                        }
+
+                        A type of 'new->new' will associate an uncreated term
+                        with another uncreated term.
+
+                        A type of 'new->old' will associate an uncreated term
+                        with an existing term.
+    '''
+    term_to_index = {}
+
+    while len(term_list) > 0:
+        term = term_list.pop(0)
+
+        if term['action'] == 'skip':
+            continue
+        elif term['action'] == 'create':
+            temp = AutocompleteData(
+                kind=term['kind'],
+                name=term['name']
+            )
+            temp.save()
+
+            term_to_index[term['name']] = temp.id
+        elif term['action'] == 'rename':
+            if term['type'] == 'new->new':
+                if term['replace'] in term_to_index:
+                    term_to_index[term['name']] = term_to_index[
+                        term['replace']
+                    ]
+                else:  # We haven't processed the parent term yet, so wait
+                    term_list.append(term)
+            elif term['type'] == 'new->old':
+                temp = AutocompleteData.objects.get(
+                    kind=term['kind'],
+                    name=term['replace']
+                )
+                term_to_index[term['name']] = temp.id
+                term_to_index[term['repalce']] = temp.id
+
+    return term_to_index
+
+
+def process_user_transactions(user_list):
+    '''
+    Creates Users according to a given list
+
+    Positional arguments:
+        user_list -- A list of user instructions to follow. The objects must
+                        have the following format:
+
+                        {
+                            'action': 'skip' | 'create' | 'rename',
+                            'kind': str,
+                            'name': name,
+                            'type': 'new->new' | 'new->old' (rename only),
+                            'replace': str (rename only),
+                            'data': {} (create only)
+                        }
+
+                        A type of 'new->new' will associate an uncreated user
+                        with another uncreated user.
+
+                        A type of 'new->old' will associate an uncreated user
+                        with an existing user.
+
+                        The data field contains all of the field data to be
+                        filled in with a new user. It will be ignored if the
+                        user is associated with another user.
+    '''
+    user_to_index = {}
+
+    while len(user_list) > 0:
+        user = user_list.pop(0)
+
+        if user['action'] == 'skip':
+            continue
+        elif user['action'] == 'create':
+            temp = User(**user['data'])
+            temp.save()
+            user_to_index[user['name']] = temp.id
+        elif user['action'] == 'rename':
+            if user['type'] == 'new->new':
+                if user['replace'] in user_to_index:
+                    user_to_index[user['name']] = user_to_index[
+                        user['replace']
+                    ]
+                else:  # We haven't processed the parent user yet, so wait
+                    user_list.append(user)
+            elif user['type'] == 'new->old':
+                temp = AutocompleteData.objects.get(username=user['replace'])
+                user_to_index[user['name']] = temp.id
+                user_to_index[user['repalce']] = temp.id
+
+    return user_to_index

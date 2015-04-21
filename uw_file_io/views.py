@@ -13,7 +13,11 @@ from django.views.decorators.csrf import csrf_protect
 from django_cas.decorators import permission_required
 
 from uw_file_io.forms import ImportForm
-from uw_file_io.parse import process_extract
+from uw_file_io.parse import (
+    process_extract,
+    process_terms_transactions,
+    process_user_transactions,
+)
 from uw_inventory.models import (
     AutocompleteData,
     InventoryItem,
@@ -119,13 +123,13 @@ def add_users(request):
     if request.method == 'POST':
         request.session['new-users'] = json.loads(request.POST['userHierarchy'])
 
-        return redirect('uw_file_io.views')
+        return redirect('uw_file_io.views.finish_import')
 
     extract_data = request.session['extract_data']
     terms_data = {k: v for k, v in extract_data['new_terms'] if
                   k in ['owner', 'technician']}
     if not terms_data:
-        pass
+        return redirect('uw_file_io.views.finish_import')
 
     old_users = User.objects.all()
 
@@ -133,6 +137,15 @@ def add_users(request):
         'new_users': terms_data,
         'old_users': old_users,
     })
+
+
+def finish_import(request):
+    extract_data = request.session.pop('extract_data')
+    new_terms = request.session.pop('new-terms')
+    new_users = request.session.pop('new-users')
+
+    term_to_index = process_terms_transactions(new_terms)
+    user_to_index = process_user_transactions(new_users)
 
 
 @csrf_protect
