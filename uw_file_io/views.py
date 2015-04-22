@@ -158,7 +158,8 @@ def finish_import(request):
     new_items = import_data(
         extract_data['model_data'],
         term_to_index,
-        user_to_index
+        user_to_index,
+        extract_data['files']
     )
 
     message_list = _collect_messages(request)

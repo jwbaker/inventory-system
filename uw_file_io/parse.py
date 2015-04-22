@@ -1,4 +1,5 @@
 import csv
+from datetime import date
 import os
 import re
 import zipfile
@@ -178,6 +179,7 @@ def process_extract(file_up):
             raise Exception(f_data['errors'])
         ret_object['model_data'][f_data['model_name']] = f_data['model_data']
         ret_object['new_terms'].update(f_data['terms'])
+        ret_object['files'] = files
 
     return ret_object
 
@@ -292,7 +294,25 @@ def process_user_transactions(user_list):
     return user_to_index
 
 
-def import_data(model_data, term_to_index, user_to_index):
+def __move_tempfile(file_path, file_type, temp_prefix='media/temp'):
+    today = date.today()
+    new_path = os.path.join(
+            'media',
+            '{0}s'.format(file_type),
+            today.year,
+            '{0:02}'.format(today.month),
+            '{0:02}'.format(today.day),
+            file_path
+        )
+    os.renames(
+        os.path.join(temp_prefix, file_path),
+        new_path
+    )
+    os.remove(os.path.join(temp_prefix, file_path))
+    return new_path
+
+
+def import_data(model_data, term_to_index, user_to_index, files_list):
     item_list = []
 
     for data in model_data['InventoryItem']:
@@ -307,5 +327,17 @@ def import_data(model_data, term_to_index, user_to_index):
         item = InventoryItem(**data)
         item.save()
         item_list.append(item)
+
+    for data in model_data['ItemFile'] + model_data['ItemImage']:
+        if 'file_field' in data:
+            if data['file_field'] not in files_list:
+                raise Exception(
+                    'Expected file {0} not uploaded'.format(data['file_field'])
+                )
+            data['file_field'] = __move_tempfile(data['file_field'])
+
+        file_obj = ItemFile(**data)
+        file_obj.save()
+        item_list.append(file_obj)
 
     return item_list
