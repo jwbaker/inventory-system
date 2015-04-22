@@ -16,6 +16,31 @@ FILE_DIRECTORY_RE = re.compile(r'files/\d*/\d*/\d*/?$')
 IMAGE_DIRECTORY_RE = re.compile(r'images/\d*/\d*/\d*/?$')
 
 
+def dict_merge(a, b):
+    '''
+    Merges the contents of two dictionaries together. Duplicate keys will
+    be collapsed into a list of values
+    '''
+    if not isinstance(a, dict) or not isinstance(b, dict):
+        raise TypeError('Expected arguments of type "dict"')
+    ret_dict = {}
+
+    for k, v in b.iteritems():
+        if k in a:
+            if isinstance(a[k], []):
+                ret_dict[k] = a[k].append(v)
+            else:
+                ret_dict[k] = [a[k], v]
+        else:
+            ret_dict[k] = v
+
+    for k, v in a.iteritems():
+        if k not in ret_dict:
+            ret_dict[k] = v
+
+    return ret_dict
+
+
 def __unpack_archive(archive):
     csv_files = []
     files = []
@@ -129,8 +154,7 @@ def __import_csv(filename, attached_files):
                 attached_files
             )
             model_data.append(record_data)
-            new_terms.update(terms)
-
+            new_terms = dict_merge(new_terms, terms)
     return {
         'status': 'success',
         'model_name': Model.__name__,
