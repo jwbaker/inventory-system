@@ -82,7 +82,7 @@ def create_report(request, report_id=None):
             report.save()
             return redirect('uw_reports.views.view_report', report_id=report.id)
         else:
-            raise ValidationError(form.errors)
+            messages.error(request, 'Something went wrong')
     message_list = _collect_messages(request)
     form = ReportForm(instance=saved_report)
     return render(request, 'uw_reports/reports_add.html', {
@@ -132,7 +132,7 @@ def view_report(request, report_id):
     if query_filter:
         results = InventoryItem.objects.filter(query_filter)
     else:
-        results = []
+        results = InventoryItem.objects.all()
 
     message_list = _collect_messages(request)
     return render(request, 'uw_reports/view_report.html', {

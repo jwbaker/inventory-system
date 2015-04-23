@@ -5,9 +5,9 @@
   <div class="row panel panel-default" id="display-fields">
     <div class="panel-heading" data-toggle="collapse" href="#field-list">
       Choose Fields to Display
-      {% icon 'pull-right menu-down' %}'
+      {% icon 'pull-right menu-down' %}
     </div>
-    <div class="panel-body" id="field-list">
+    <div class="panel-body in" id="field-list">
       <div class="col-xs-12">
         <button class="btn btn-default btn-sm" id="select-all-fields">Select All</button>
         <button class="btn btn-default btn-sm" id="select-no-fields">Select None</button>
@@ -608,6 +608,8 @@
         while(stack.length > 0){
           inflate_filter(stack.pop());
         }
+      } else {
+        $('#select-all-fields').click();
       }
     });
   </script>
