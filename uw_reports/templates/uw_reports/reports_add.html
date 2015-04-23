@@ -202,7 +202,7 @@
       if(!$('#report-name').find('input').val()){
         $('#report-name').addClass('has-error');
         $('#report-name').find('.error-list').removeClass('hidden');
-        return false;
+        e.stopImmediatePropagation();
       }
 
       $('form textarea').val(JSON.stringify(packageQuery()));
