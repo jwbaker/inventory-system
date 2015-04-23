@@ -15,20 +15,24 @@
       <div class="pull-right">
         {% icon 'menu-down details' %}
         {% icon 'menu-up hidden details' %}
-        {% icon 'edit' %}
-        {% if image.to_display %}
-          {% icon 'delete fa-fw' %}
-          {% icon 'restore fa-fw hidden' %}
-        {% else %}
-          {% icon 'delete fa-fw hidden' %}
-          {% icon 'restore fa-fw' %}
+        {% if can_edit %}
+          {% icon 'edit' %}
+          {% if image.to_display and view_deleted %}
+            {% icon 'delete fa-fw' %}
+            {% icon 'restore fa-fw hidden' %}
+          {% elif view_deleted %}
+            {% icon 'delete fa-fw hidden' %}
+            {% icon 'restore fa-fw' %}
+          {% endif %}
         {% endif %}
       </div>
-      <div class="collapse image-detail col-xs-12">
-        <p class="form-control-static image-description">
-          <strong>Description:</strong> {{ image.description }}
-        </p>
-      </div>
+      {% if can_add %}
+        <div class="collapse image-detail col-xs-12">
+          <p class="form-control-static image-description">
+            <strong>Description:</strong> {{ image.description }}
+          </p>
+        </div>
+      {% endif %}
       <div class="image-form persist-hidden" for="image-{{ forloop.counter0 }}">
         {{ form }}
       </div>

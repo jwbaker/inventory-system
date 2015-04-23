@@ -742,11 +742,6 @@
     <script type="text/javascript">
       var isNewImage = false;
 
-      $('#images-list').on('click', '.details', function(){
-        $(this).closest('.image-item').find('.collapse').collapse('toggle');
-        $(this).parent().children('.details').toggleClass('hidden');
-      });
-
       $('#images-list').on('click', '.edit', function(){
         var form = $(this).closest('.image-item').find('.image-form').clone().removeClass('persist-hidden');
         $('#imageEditModal').find('.modal-body').append(form);
@@ -830,6 +825,11 @@
   {% endif %}
 
   <script type="text/javascript">
+    $('#images-list').on('click', '.details', function(){
+      $(this).closest('.image-item').find('.collapse').collapse('toggle');
+      $(this).parent().children('.details').toggleClass('hidden');
+    });
+
     $('.image-item img').click(function(){
       var imageData = {
         'src': $(this).attr('src'),

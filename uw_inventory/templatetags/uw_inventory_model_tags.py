@@ -21,8 +21,10 @@ def show_comments(comment_set, can_add):
 
 
 @register.inclusion_tag('uw_inventory/images_list.html')
-def show_images(image_set, view_deleted):
+def show_images(image_set, can_add, can_edit, view_deleted):
     return {
         'image_set': image_set,
         'view_deleted': view_deleted,
+        'can_add': can_add,
+        'can_edit': can_edit,
     }

@@ -26,7 +26,7 @@
         {{ formsets.sop.empty_form.as_p|prefix }}
       </div>
     </div>
-    {% show_images formsets.image.forms perms.uw_inventory.view_deleted_itemimage %}
+    {% show_images formsets.image.forms perms.uw_inventory.add_itemimage perms.uw_inventory.change_itemimage perms.uw_inventory.view_deleted_itemimage %}
 
     {% show_files perms.uw_inventory.add_itemfile perms.uw_inventory.change_itemfile perms.uw_inventory.view_deleted_itemfile %}
 
