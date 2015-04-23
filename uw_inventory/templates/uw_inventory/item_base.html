@@ -116,7 +116,7 @@
   <div class="modal fade" id="lightboxModal">
     <div class="modal-dialog">
       <div class="modal-content">
-        <img src="" alt="" style="max-width:100%;height:auto">
+        <img src="" alt="" style="display:block;width:auto;height:100%">
       </div>
     </div>
   </div>
@@ -836,12 +836,28 @@
         'width': $(this).attr('data-width'),
         'height': $(this).attr('data-height'),
       }
-      $('#lightboxModal').find('img').attr('src', imageData.src);
+      $('#lightboxModal').find('img').attr('src', imageData['src']);
+      $('#lightboxModal').find('img').attr('width', imageData['width']);
+      $('#lightboxModal').find('img').attr('height', imageData['height']);
       $('#lightboxModal').modal('show');
     });
 
     $('#lightboxModal').on('hidden.bs.modal', function(){
       $('#lightboxModal').find('img').attr('src', '');
-    })
+      $('#lightboxModal').find('img').attr('width', '');
+      $('#lightboxModal').find('img').attr('height', '');
+      $('#lightboxModal').find('.modal-content').css('');
+    });
+
+    $('#lightboxModal').on('show.bs.modal', function(){
+      var img_height = $(this).find('img').height();
+      var img_width = $(this).find('img').width();
+      var left_margin = ($(this).find('.modal-dialog').width()/2) - img_width;
+      $(this).find('.modal-content').css({
+        height: img_height,
+        width: img_width,
+        'margin-left': left_margin,
+      });
+    });
   </script>
 {% endblock js_includes %}

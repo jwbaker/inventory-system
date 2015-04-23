@@ -61,7 +61,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="/">MME IMS</a>
+          <a class="navbar-brand" href="/" title="Back to main list">MME IMS</a>
         </div>
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav navbar-right">
@@ -75,7 +75,7 @@
             {% if perms.uw_inventory.add_inventoryitem %}
               <li>
                 <a href="{% url 'uw_inventory.views.inventory_add' %}">
-                  {% icon 'add-item navigate' %}
+                  New Record
                 </a>
               </li>
               {% if request.user.is_superuser %}
