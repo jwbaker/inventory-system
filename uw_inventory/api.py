@@ -1,5 +1,3 @@
-from django.contrib.auth.models import User
-
 from tastypie import fields
 from tastypie.authentication import SessionAuthentication
 from tastypie.authorization import ReadOnlyAuthorization
@@ -7,7 +5,6 @@ from tastypie.exceptions import Unauthorized
 from tastypie.resources import ModelResource
 
 from uw_inventory.models import (
-    AutocompleteData,
     InventoryItem,
     ItemImage,
     ItemFile
@@ -44,41 +41,36 @@ class InventoryItemResource(ModelResource):
         blank=True,
         full=True
     )
-    manufacturer = fields.ToOneField(
-        'uw_inventory.api.AutocompleteDataResource',
-        'manufacturer',
-        null=True,
-        blank=True,
-        full=True
-    )
-    supplier = fields.ToOneField(
-        'uw_inventory.api.AutocompleteDataResource',
-        'supplier',
-        null=True,
-        blank=True,
-        full=True
-    )
-    location = fields.ToOneField(
-        'uw_inventory.api.AutocompleteDataResource',
-        'location',
-        null=True,
-        blank=True,
-        full=True
-    )
-    owner = fields.ToOneField(
-        'uw_inventory.api.UserResource',
-        'owner',
-        null=True,
-        blank=True,
-        full=True
-    )
-    technician = fields.ToOneField(
-        'uw_inventory.api.UserResource',
-        'technician',
-        null=True,
-        blank=True,
-        full=True
-    )
+
+    def dehydrate(self, bundle):
+        bundle.data['location'] = getattr(bundle.obj.location, 'name', '')
+        bundle.data['manufacturer'] = getattr(
+            bundle.obj.manufacturer,
+            'name',
+            ''
+        )
+        bundle.data['comments'] = bundle.obj.get_comments_as_string()
+        if bundle.obj.owner:
+            bundle.data['owner'] = {
+                'name': bundle.obj.owner.get_name_display(),
+                'username': bundle.obj.owner.username
+            }
+        else:
+            bundle.data['owner'] = {
+                'name': '',
+                'username': ''
+            }
+        if bundle.obj.technician:
+            bundle.data['technician'] = {
+                'name': bundle.obj.technician.get_name_display(),
+                'username': bundle.obj.technician.username
+            }
+        else:
+            bundle.data['technician'] = {
+                'name': '',
+                'username': ''
+            }
+        return bundle
 
     class Meta:
         queryset = InventoryItem.objects.all()
@@ -98,15 +90,3 @@ class ItemFileResource(ModelResource):
     class Meta:
         queryset = ItemFile.objects.all()
         resource_name = 'ItemFile'
-
-
-class AutocompleteDataResource(ModelResource):
-    class Meta:
-        queryset = AutocompleteData.objects.all()
-        resource_name = 'AutocompleteData'
-
-
-class UserResource(ModelResource):
-    class Meta:
-        queryset = User.objects.all()
-        resource_name = 'User'
