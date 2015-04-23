@@ -9,6 +9,7 @@ from uw_inventory.models import (
     ItemImage,
     ItemFile
 )
+from uw_inventory.templatetags.uw_inventory_misc_tags import contexual_file_icon
 
 
 def permission(user):
@@ -69,6 +70,18 @@ class InventoryItemResource(ModelResource):
             bundle.data['technician'] = {
                 'name': '',
                 'username': ''
+            }
+        if bundle.obj.sop_file:
+            bundle.data['sop'] = {
+                'url': bundle.obj.sop_file.file_field.url,
+                'icon_class': contexual_file_icon(
+                    bundle.obj.sop_file
+                )['file_class'],
+            }
+        else:
+            bundle.data['sop'] = {
+                'url': '',
+                'icon_class': '',
             }
         return bundle
 

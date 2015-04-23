@@ -197,9 +197,9 @@
     var add_to_table = function(row_data){
       if(row_data['to_display'] || '{{ perms.uw_inventory.view_deleted_item }}' === 'True'){
         dataTable.row.add([
-          '',
+          '<a href="' + row_data['sop']['url'] + '"><i class="' + row_data['sop']['icon_class'] + '"></i></a>',
           row_data['image'][0] ? '<img src="' + row_data['image'][0]['file_field'] + '" width="50px" height="50px" />' : '',
-          row_data['name'],
+          '<a class="item-detail" href="' + row_data['id'] + '"></a>' + row_data['name'],
           row_data['location'],
           row_data['technician']['name'],
           row_data['owner']['name'],
