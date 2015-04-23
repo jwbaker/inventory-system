@@ -23,6 +23,13 @@
 
 {% block content %}
   <div class="row">
+    <div class="progress">
+      <div class="progress-bar" role="progressbar" style="width:0;min-width:4em;">
+        <span id="records-loaded">0</span>/<span id="records-count">{{ item_count }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="row">
     <table id="inventoryTable" class="table table-condensed table-hover">
       {# There should be a better way to generate this table, but this will do for now #}
       <thead>
@@ -185,6 +192,79 @@
       });
     $('.toolbar').append($('#list-toolbar-template').html());
   </script>
+
+  <script type="text/javascript">
+    var add_to_table = function(row_data){
+      if(row_data['to_display'] || '{{ perms.uw_inventory.view_deleted_item }}' === 'True'){
+        dataTable.row.add([
+          '',
+          row_data['image'][0] ? '<img src="' + row_data['image'][0]['file_field'] + '" width="50px" height="50px" />' : '',
+          row_data['name'],
+          row_data['location'] ? row_data['location']['name'] : '',
+          row_data['technician'] ? row_data['technician']['first_name'] + ' ' + row_data['technician']['last_name'] : '',
+          row_data['owner'] ? row_data['owner']['first_name'] + ' ' + row_data['owner']['last_name'] : '',
+          row_data['manufacturer'] ? row_data['manufacturer']['name'] : '',
+          row_data['model_number'],
+          row_data['description'],
+          row_data['technician'] ? row_data['technician']['username'] : '',
+          row_data['owner'] ? row_data['owner']['username'] : '',
+          row_data['tech_id'],
+          row_data['status'],
+          row_data['serial_number'],
+          row_data['manufacture_date'],
+          row_data['purchase_price'],
+          row_data['purchase_date'],
+          row_data['replacement_cost'],
+          row_data['replacement_cost_date'],
+          row_data['csa_required'],
+          row_data['factory_csa'],
+          row_data['csa_special'],
+          row_data['csa_special_date'],
+          row_data['modified_since_csa'],
+          row_data['undergraduate'],
+          row_data['csa_cost'],
+          row_data['sop_required'],
+          row_data['lifting_device'],
+          row_data['lifting_device_inspection_date'],
+          row_data['get_comments_as_string'],
+          row_data['notes'],
+        ]);
+      }
+    }
+
+    var recursive_ajax_load = function(limit, offset){
+      if(offset === undefined) offset = 0;
+      else offset += limit;
+
+      $.ajax({
+        url: '/api/InventoryItem/?format=json&limit=' + limit + '&offset=' + offset
+      }).done(function(data){
+        for (var i = 0; i < data['objects'].length; i++) {
+          add_to_table(data['objects'][i]);
+        }
+        dataTable.draw();
+
+        var old_count = parseInt($('#records-loaded').text(), 10);
+        var new_count = old_count + data['objects'].length;
+        $('#records-loaded').text(new_count);
+        $('.progress-bar').css('width', ((new_count/{{ item_count }}) * 100) + '%')
+        if(new_count >= {{ item_count }}){
+          $(window).trigger('doneload');
+          return false;
+        }
+        recursive_ajax_load(limit, offset)
+      });
+    }
+    $(function(){
+      recursive_ajax_load(20);
+    });
+    $(window).on('doneload', function(){
+      setTimeout(function(){
+        $('.progress').parent().addClass('hidden');
+      }, 1500);
+    });
+  </script>
+
   <script type="text/javascript">
     {# If we click anywhere in a row, we want to trigger the link contained in that row #}
     $('tbody').on('click', 'tr', function(){

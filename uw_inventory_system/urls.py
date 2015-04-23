@@ -5,6 +5,9 @@ from django.contrib import admin
 from django.http import HttpResponseRedirect
 
 from uw_inventory_system import views
+from uw_inventory.api import InventoryItemResource
+
+inventory_item_resource = InventoryItemResource()
 
 urlpatterns = patterns(
     '',
@@ -16,5 +19,6 @@ urlpatterns = patterns(
     url(r'^forbidden/$', views.permission_denied),
     url(r'^files/', include('uw_file_io.urls')),
     url(r'^reports/', include('uw_reports.urls')),
+    url(r'^api/', include(inventory_item_resource.urls)),
 )
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

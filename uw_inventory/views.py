@@ -95,9 +95,9 @@ def _json_builder_autocomplete(obj):
 def inventory_list(request):
     request.session['_scrollY'] = 0
     message_list = _collect_messages(request)
-    inventory_list = InventoryItem.objects.all()
+    item_count = InventoryItem.objects.all().count()
     return render(request, 'uw_inventory/list.html', {
-        'inventory_list': inventory_list,
+        'item_count': item_count,
         'page_messages': message_list,
     })
 
