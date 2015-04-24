@@ -23,7 +23,7 @@
 {% block gutter_nav %}
   {{ block.super }}
   <li class="list-group-item">
-    <a href="" onclick="window.print()">
+    <a id="item-print">
       {% icon 'print' %} Print
     </a>
   </li>
@@ -163,6 +163,22 @@
 
 {% block js_includes %}
   {{ block.super }}
+
+  <script type="text/javascript">
+    $('#item-print').click(function(){
+      $('p.form-control-static').each(function(idx, elem){
+        if(!$(this).text().trim()){
+          $(this).closest('.form-group').addClass('hidden');
+        }
+      });
+      if(!{{ inventory_item.comments|length }}){
+        $('#comments-list').closest('.form-group').addClass('hidden');
+      }
+      window.print();
+      $('p.form-control-static').closest('.form-group').removeClass('hidden');
+      $('#comments-list').closest('.form-group').removeClass('hidden');
+    });
+  </script>
 
   <script type="text/javascript">
     (function(){

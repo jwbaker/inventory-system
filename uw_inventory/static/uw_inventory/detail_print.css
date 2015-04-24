@@ -7,7 +7,12 @@ div#print-header {
 footer,
 i,
 div.alert,
+#add-comments-container,
+.description-teaser,
 div#image-add-container,
+span.text-danger,
+hr,
+thead,
 nav.affix {
 	display: none !important;
 }
@@ -17,4 +22,19 @@ div.form-container > div {
 }
 form div.list-group-item {
 	page-break-inside: avoid;
+}
+.image-detail {
+	display: block !important;
+	visibility: visible !important;
+}
+.singleton-field {
+	width: 50%;
+	float: left !important;
+	height: 100%;
+}
+p.form-control-static {
+	float: right !important;
+}
+.control-label {
+	clear: right;
 }
