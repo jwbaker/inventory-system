@@ -369,7 +369,7 @@
                   '<span class="error text-danger">'+ data['error'] +'</span>'
                 );
               } else {
-                $('input#input' + dataSet.toSentenceCase()).val(data['id']);
+                $('input#input' + dataSet.toSentenceCase()).autocomplete('search', data['name']);
                 $('#' + targetID + 'Submit').removeAttr('data-set');
                 $('#' + targetID + 'Modal').modal('hide');
               }
