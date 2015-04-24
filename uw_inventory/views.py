@@ -478,7 +478,10 @@ def autocomplete_new(request):
             error = 'The {0} "{1}" already exists.'.format(data_set, name)
             response = json.dumps({'error': error})
         else:
-            response = json.dumps({})
+            response = json.dumps({
+                'id': request_obj.id,
+                'name': request_obj.get_name_display(),
+            })
     return HttpResponse(response, 'application/json')
 
 

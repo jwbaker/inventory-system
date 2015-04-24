@@ -184,6 +184,18 @@
           }
         });
       }
+
+      Object.defineProperty(String.prototype, 'toSentenceCase', {
+        value: function(){
+          var subjectString = this.toString();
+          switch(subjectString.length){
+            case 0: return subjectString;
+            case 1: return subjectString.charAt(0).toUpperCase();
+            default:
+              return subjectString.charAt(0).toUpperCase() + subjectString.slice(1);
+          }
+        }
+      });
     </script>
 
     <script>

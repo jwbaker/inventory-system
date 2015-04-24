@@ -350,23 +350,26 @@
         $('#' + targetID + 'Name').parent().removeClass('has-error');
 
         var dataSet = $('#' + targetID + 'Submit').attr('data-set');
+        var queryDataSet = dataSet;
 
         if(dataSet === 'owner' || dataSet === 'technician'){
-          dataSet = 'user'
+          queryDataSet = 'user'
         }
         var optionName = $('#' + targetID + 'Name').val();
         if(optionName){
           $.ajax({
             url: '{% url "uw_inventory.views.autocomplete_new" %}',
             type: 'POST',
-            data: $('#' + targetID + 'Form').serialize() + "&dataSet=" + dataSet,
+            data: $('#' + targetID + 'Form').serialize() + "&dataSet=" + queryDataSet,
+            dataType: 'json',
             success: function(data){
-              if(data.error){
+              if(data['error']){
                 $('#' + targetID + 'Name').parent().addClass('has-error');
                 $('#' + targetID + 'Name').parent().append(
-                  '<span class="error text-danger">'+ data.error +'</span>'
+                  '<span class="error text-danger">'+ data['error'] +'</span>'
                 );
               } else {
+                $('input#input' + dataSet.toSentenceCase()).val(data['id']);
                 $('#' + targetID + 'Submit').removeAttr('data-set');
                 $('#' + targetID + 'Modal').modal('hide');
               }
