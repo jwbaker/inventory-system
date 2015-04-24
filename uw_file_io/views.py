@@ -3,6 +3,7 @@ import json
 import os
 import zipfile
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
@@ -210,7 +211,10 @@ MODEL_LOOKUP = {
 def __export_model(Model, report_id):
     data_set = __package_export_dataset(Model, report_id)
     headers = Model._meta.get_all_field_names()
-    filename = 'media/temp/{0}.csv'.format(Model.__name__.lower())
+    filename = os.path.join(
+        settings.MEDIA_ROOT,
+        'media/temp/{0}.csv'.format(Model.__name__.lower())
+    )
     file_list = []
 
     with open(filename, 'w+b') as extract:
