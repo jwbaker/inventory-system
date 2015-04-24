@@ -72,14 +72,14 @@ class AutocompleteInput(forms.Widget):
 
         render_str = _render_static_label(widget_id, value_label)
 
-        render_str += u'''<input id="{0}"
+        render_str += u'''<a class="small autocomplete-add-term hidden"
+                           data-set="{5}">
+                            Add {6}
+                        </a>
+                        <input id="{0}"
                                class="{1}"
                                placeholder="{2}"
                                value="{3}" />
-                        <a class="small autocomplete-add-term hidden"
-                           data-set="{5}">
-                            Add option
-                        </a>
                         <input id="{0}"
                                class="{1} hidden persist-hidden"
                                value="{4}"
@@ -89,7 +89,9 @@ class AutocompleteInput(forms.Widget):
                                  widget_placeholder,
                                  value_label,
                                  value if value else '',
-                                 name
+                                 name,
+                                 'user' if name in ['owner', 'technician']
+                                 else name
                                )
         render_str += _render_default_value(widget_id, value_label)
         return mark_safe(render_str)

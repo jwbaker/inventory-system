@@ -8,6 +8,7 @@
 {% load uw_inventory_misc_tags %}
 
 {% block css_includes %}
+  {{ block.super }}
   <link rel="stylesheet" type="text/css" media="print" href="{% static 'uw_inventory/detail_print.css' %}">
 {% endblock css_includes %}
 
