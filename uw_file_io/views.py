@@ -212,7 +212,7 @@ def __export_model(Model, report_id):
     data_set = __package_export_dataset(Model, report_id)
     headers = Model._meta.get_all_field_names()
     filename = os.path.join(
-        settings.MEDIA_ROOT,
+        settings.MEDIA_URL,
         'media/temp/{0}.csv'.format(Model.__name__.lower())
     )
     file_list = []
@@ -237,7 +237,10 @@ def __export_model(Model, report_id):
                 row.append(cell)
             writer.writerow(row)
     print file_list
-    zipfile_name = 'media/temp/{0}.zip'.format(Model.__name__.lower())
+    zipfile_name = os.path.join(
+        settings.MEDIA_URL,
+        'media/temp/{0}.zip'.format(Model.__name__.lower())
+    )
 
     with zipfile.ZipFile(zipfile_name, 'w') as archive:
         archive.write(filename, os.path.basename(filename))
@@ -268,7 +271,10 @@ def __package_export_dataset(Model, report_id):
 @csrf_protect
 def finish_export(request):
     if request.method == 'POST':
-        archive_name = request.session.pop('export_filename')
+        archive_name = os.path.join(
+            settings.MEDIA_URL,
+            request.session.pop('export_filename')
+        )
 
         with open(archive_name, 'r') as archive:
             response = HttpResponse(archive)
