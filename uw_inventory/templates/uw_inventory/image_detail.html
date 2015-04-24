@@ -12,6 +12,7 @@
                class="{% if not image.to_display %}disabled{% endif %} pull-left" />
         </a>
       </div>
+      <div class="pull-left description-teaser">{{ image.description|truncatechars:20 }}</div>
       <div class="pull-right">
         {% icon 'menu-down details' %}
         {% icon 'menu-up hidden details' %}

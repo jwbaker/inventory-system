@@ -870,4 +870,13 @@
       });
     });
   </script>
+
+  <script type="text/javascript">
+    $('#images-list').on('show.bs.collapse', '.image-detail', function(){
+      $(this).siblings('.description-teaser').addClass('hidden');
+    });
+    $('#images-list').on('hide.bs.collapse', '.image-detail', function(){
+      $(this).siblings('.description-teaser').removeClass('hidden');
+    });
+  </script>
 {% endblock js_includes %}
