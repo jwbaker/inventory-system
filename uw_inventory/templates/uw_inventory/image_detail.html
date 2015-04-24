@@ -18,7 +18,7 @@
         {% icon 'menu-up hidden details' %}
         {% if can_edit %}
           {% icon 'edit' %}
-          {% if image.to_display and view_deleted %}
+          {% if image.to_display %}
             {% icon 'delete fa-fw' %}
             {% icon 'restore fa-fw hidden' %}
           {% elif view_deleted %}
@@ -27,13 +27,11 @@
           {% endif %}
         {% endif %}
       </div>
-      {% if can_add %}
-        <div class="collapse image-detail col-xs-12">
-          <p class="form-control-static image-description">
-            <strong>Description:</strong> {{ image.description }}
-          </p>
-        </div>
-      {% endif %}
+      <div class="collapse image-detail col-xs-12">
+        <p class="form-control-static image-description">
+          <strong>Description:</strong> {{ image.description }}
+        </p>
+      </div>
       <div class="image-form persist-hidden" for="image-{{ forloop.counter0 }}">
         {{ form }}
       </div>
