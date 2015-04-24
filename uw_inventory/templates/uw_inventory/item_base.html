@@ -673,7 +673,8 @@
         minLength: 1,
         source: "{% url 'uw_inventory.views.autocomplete_list' 'location' %}",
         select: function(event, ui){
-          $('input#inputLocation').attr('to-save', ui.item.id)
+          $('input#inputLocation').attr('to-save', ui.item.id);
+          $('input#inputLocation')[1].setAttribute('value', ui.item.id);
         }
       });
 
@@ -681,7 +682,8 @@
         minLength: 1,
         source: "{% url 'uw_inventory.views.autocomplete_list' 'manufacturer' %}",
         select: function(event, ui){
-          $('input#inputManufacturer').attr('to-save', ui.item.id)
+          $('input#inputManufacturer').attr('to-save', ui.item.id);
+          $('input#inputManufacturer')[1].setAttribute('value', ui.item.id);
         }
       });
 
@@ -689,7 +691,8 @@
         minLength: 1,
         source: "{% url 'uw_inventory.views.autocomplete_list' 'supplier' %}",
         select: function(event, ui){
-          $('input#inputSupplier').attr('to-save', ui.item.id)
+          $('input#inputSupplier').attr('to-save', ui.item.id);
+          $('input#inputSupplier')[1].setAttribute('value', ui.item.id);
         }
       });
 
@@ -697,7 +700,8 @@
         minLength: 1,
         source: "{% url 'uw_inventory.views.autocomplete_list' 'technician' %}",
         select: function(event, ui){
-          $('input#inputTechnician').attr('to-save', ui.item.id)
+          $('input#inputTechnician').attr('to-save', ui.item.id);
+          $('input#inputTechnician')[1].setAttribute('value', ui.item.id);
         }
       });
 
@@ -705,7 +709,8 @@
         minLength: 1,
         source: "{% url 'uw_inventory.views.autocomplete_list' 'owner' %}",
         select: function(event, ui){
-          $('input#inputOwner').attr('to-save', ui.item.id)
+          $('input#inputOwner').attr('to-save', ui.item.id);
+          $('input#inputOwner')[1].setAttribute('value', ui.item.id);
         }
       });
     </script>
