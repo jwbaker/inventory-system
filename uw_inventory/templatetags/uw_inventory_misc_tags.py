@@ -73,10 +73,11 @@ def icon(classes, **kwargs):
     for k, v in kwargs.iteritems():
         kw_args += '{0}="{1}" '.format(k.replace('_', '-'), v)
 
-    title = ''
-    for c in classes.split(' '):
-        if c in ICON_TITLES:
-            title = ICON_TITLES[c]
+    title = kwargs.get('title', '')
+    if not title:
+        for c in classes.split(' '):
+            if c in ICON_TITLES:
+                title = ICON_TITLES[c]
 
     return mark_safe(
         '<i class="{0}" title="{1}" {2}></i>'.format(classes, title, kw_args)
