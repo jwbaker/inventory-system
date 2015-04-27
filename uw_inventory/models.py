@@ -80,6 +80,7 @@ class ItemFile(models.Model):
     )
     mimetype = models.CharField(max_length=255)
     to_display = models.BooleanField(default=True)
+    remove_file = models.BooleanField(default=False)
 
     def copy(self, parent_id):
         new_item_file = ItemFile()
@@ -96,6 +97,9 @@ class ItemFile(models.Model):
         return self.description or self.file_field.name
 
     def save(self, *args, **kwargs):
+        if self.remove_file:
+            self.file_field = ''
+            self.remove_file = False
         if not self.mimetype:
             self.mimetype = self.file_field.file.content_type
         super(ItemFile, self).save(*args, **kwargs)

@@ -664,6 +664,13 @@
       $('#confirmExitModalCancel').click(function(){
         $('#confirmExitModal').modal('hide');
       });
+
+      $('.singleton-formset i.delete').click(function(){
+        var formContainer = $(this).closest('.singleton-formset').find('div.form-element');
+        formContainer.find('p:first').contents().not('label, input').remove();
+        formContainer.find('input[type="file"]').val('');
+        formContainer.find('[id*=remove_file]').prop('checked', true);
+      });
     </script>
 
     <script type="text/javascript">

@@ -3,6 +3,7 @@
 {% load uw_forms_field_tags %}
 {% load uw_forms_format_tags %}
 {% load uw_inventory_model_tags %}
+{% load uw_inventory_misc_tags %}
 
 {% block page_heading %}New Inventory Item{% endblock page_heading %}
 
@@ -18,12 +19,15 @@
     <textarea name="custom_field_data" id="inputCustomFields" class="persist-hidden">{{ inventory_item.custom_field_data|default:'' }}</textarea>
     
     {% add_form form %}
-    <div class="form-group list-group-item clearfix">
+    <div class="singleton-formset form-group list-group-item clearfix">
       <div class="col-xs-3">
         <label for="inputSopFile" class="control-label">SOP</label>
       </div>
-      <div class="col-xs-8">
+      <div class="col-xs-8 form-element">
         {{ formsets.sop.empty_form.as_p|prefix }}
+      </div>
+      <div class="col-xs-1">
+        {% icon 'delete' title='Clear file' %}
       </div>
     </div>
     {% show_images formsets.image.forms perms.uw_inventory.add_itemimage perms.uw_inventory.change_itemimage perms.uw_inventory.view_deleted_itemimage %}
