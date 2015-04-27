@@ -421,10 +421,6 @@
         <div class="col-xs-11 hidden static-comment">
           {% include 'uw_inventory/comment_detail.html' %}
         </div>
-        <div class="col-xs-1 hidden">
-          {% icon 'edit' %}
-          {% icon 'delete' %}
-        </div>
       </div>
     </script>
 
@@ -444,7 +440,7 @@
         newElement.find('[id*=DELETE]').parent().addClass('persist-hidden');
       });
 
-      $('#comments-list').on('click', 'i.save', function(){
+      $('#comment').on('click', 'i.save', function(){
         var comment = $(this).closest('.comment');
         comment.removeAttr('comment-initial');
 
@@ -463,7 +459,7 @@
         $(window).trigger('pagechanges', true);
       });
 
-      $('#comments-list').on('click', 'i.cancel', function(){
+      $('#comment').on('click', 'i.cancel', function(){
         var comment = $(this).closest('.comment');
         if(!comment.find('#inputBody').val()){
           $(this).siblings('i.delete').click();
@@ -473,17 +469,44 @@
         }
       });
 
-      $('#comments-list').on('click', 'i.delete', function(){
+      $('#comment').on('click', 'i.delete', function(){
         var comment = $(this).closest('.comment');
 
         comment.find('[id*=DELETE]').attr('checked', 'checked');
         comment.addClass('hidden');
       });
 
-      $('#comments-list').on('click', 'i.edit', function(){
+      $('#comment').on('click', 'i.edit', function(){
         var comment = $(this).closest('.comment');
         comment.attr('comment-initial', comment.find('#inputBody').val())
         comment.children().toggleClass('hidden');
+      });
+
+      $('.item-comment').on('click', 'i.edit', function(){
+        var comment = $(this).closest('.item-comment');
+        comment.attr('initial-value', comment.find('#inputBody').val());
+        comment.find('.comment-menu').children().toggleClass('hidden');
+        comment.find('.panel-body').children().toggleClass('hidden');
+      });
+
+      $('.item-comment').on('click', 'i.cancel', function(){
+        var comment = $(this).closest('.item-comment');
+
+        comment.find('#inputBody').val(comment.attr('initial-value'));
+        comment.removeAttr('initial-value');
+
+        comment.find('.comment-menu').children().toggleClass('hidden');
+        comment.find('.panel-body').children().toggleClass('hidden');
+      });
+
+      $('.item-comment').on('click', 'i.save', function(){
+        var comment = $(this).closest('.item-comment');
+        comment.removeAttr('initial-value');
+
+        comment.find('.form-control-static').text(comment.find('#inputBody').val());
+
+        comment.find('.comment-menu').children().toggleClass('hidden');
+        comment.find('.panel-body').children().toggleClass('hidden');
       });
     </script>
   {% endif %}

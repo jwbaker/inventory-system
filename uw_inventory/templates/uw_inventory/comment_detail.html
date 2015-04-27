@@ -1,14 +1,28 @@
+{% load uw_inventory_misc_tags %}
+
 <div class="panel item-comment {% if saved %}panel-default{% else %}panel-warning{% endif %}">
   <div class="panel-heading">
     <small>
       <strong>{{ comment.instance.author.get_name_display }}</strong> @ 
       <em>{{ comment.instance.creation_date }}</em>
     </small>
+    <span class="pull-right comment-menu">
+      {% icon 'edit' %}
+      {% icon 'save hidden' %}
+      {% icon 'cancel hidden' %}
+    </span>
   </div>
   <div class="panel-body">
-    {{ comment.instance.body }}
-  </div>
-  <div class="persist-hidden">
-      {{ comment }}
+    <p class="form-control-static">{{ comment.instance.body }}</p>
+    <div class="hidden">
+        {{ comment.body }}
+        <div class="persist-hidden">
+          {{ comment.creation_date }}
+          {{ comment.author }}
+          {{ comment.inventory_item }}
+          {{ comment.id }}
+          {{ comment.DELETE }}
+        </div>
+    </div>
   </div>
 </div>
