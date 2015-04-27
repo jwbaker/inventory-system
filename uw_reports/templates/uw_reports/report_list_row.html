@@ -1,0 +1,20 @@
+{% load uw_reports_misc_tags %}
+{% load uw_inventory_misc_tags %}
+
+<tr id="{{ report.id }}">
+  <td>{% visibility_icon report %}</td>
+  <td>{{ report.creation_date }}</td>
+  <td class="report-name">
+    <a href="{% url 'uw_reports.views.view_report' report.id %}" class="report-detail"></a>
+    {{ report.name }}
+  </td>
+  <td>{{ report.creator }}</td>
+  <td class="row-menu">
+    {% if report.owner == request.user or view_all_reports %}
+      {% icon 'delete' %}
+      {% if view_deleted %}
+        {% icon 'restore hidden' %}
+      {% endif %}
+    {% endif %}
+  </td>
+</tr>

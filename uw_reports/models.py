@@ -8,6 +8,7 @@ class Report(models.Model):
     class Meta:
         permissions = (
             ('view_all_reports', 'Can view all reports'),
+            ('view_deleted_report', 'Can view deleted reports'),
         )
 
     creator = models.ForeignKey(
@@ -19,6 +20,7 @@ class Report(models.Model):
     )
     creation_date = models.DateField(default=datetime.now)
     view_count = models.PositiveIntegerField(default=0)
+    to_display = models.BooleanField(default=True)
 
     name = models.CharField(max_length=255)
     report_data = models.TextField()

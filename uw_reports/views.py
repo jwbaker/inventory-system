@@ -2,9 +2,9 @@ import json
 
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
-from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db.models import Q
+from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, redirect, render_to_response
 from django.views.decorators.csrf import csrf_protect
 
@@ -141,3 +141,20 @@ def view_report(request, report_id):
         'results': results,
         'display_fields': report_data_json['display_fields'].split(',')[:-1]
     })
+
+
+@csrf_protect
+def delete_report(request):
+    if request.is_ajax():
+        report_id = request.POST.get('report_id')
+        report = Report.objects.get(id=report_id)
+
+        if (
+                request.user != report.owner and
+                not request.user.has_perm('uw_reports.view_all_reports')
+           ):
+            return HttpResponseForbidden()
+        report.to_display = False
+        report.save()
+
+        return HttpResponse()

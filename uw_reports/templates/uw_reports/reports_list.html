@@ -1,5 +1,6 @@
 {% extends 'uw_inventory_system/base.html' %}
 {% load uw_reports_misc_tags %}
+{% load uw_inventory_misc_tags %}
 
 {% block css_includes %}
   <!-- DataTables -->
@@ -15,6 +16,8 @@
 {% endblock css_includes %}
 
 {% block content %}
+  {% csrf_token %}
+
   <div class="row">
     <table id="reports-table" class="table table-condensed table-hover">
       <thead>
@@ -23,24 +26,63 @@
           <td>Creation Date</td>
           <td>Name</td>
           <td>Creator</td>
+          <td></td>
         </tr>
       </thead>
       <tbody>
         {% for report in reports_list %}
-          <tr>
-            <td>{% visibility_icon report %}</td>
-            <td>{{ report.creation_date }}</td>
-            <td>
-              <a href="{% url 'uw_reports.views.view_report' report.id %}" class="report-detail"></a>
-              {{ report.name }}
-            </td>
-            <td>{{ report.creator }}</td>
-          </tr>
+          {% if report.to_display or perms.uw_reports.view_deleted_report %}
+            <tr {% if not report.to_display %}class="disabled"{% endif %} id="{{ report.id }}">
+              <td>{% visibility_icon report %}</td>
+              <td>{{ report.creation_date }}</td>
+              <td class="report-name">
+                <a href="{% url 'uw_reports.views.view_report' report.id %}" class="report-detail"></a>
+                {{ report.name }}
+              </td>
+              <td>{{ report.creator }}</td>
+              <td class="row-menu">
+                {% if report.owner == request.user or perms.uw_reports.view_all_reports %}
+                  {% if report.to_display %}
+                    {% icon 'delete' %}
+                  {% else %}
+                    {% icon 'delete hidden' %}
+                  {% endif %}
+                {% endif %}
+              </td>
+            </tr>
+          {% endif %}
         {% endfor %}
       </tbody>
     </table>
   </div>
 {% endblock content %}
+
+{% block modal %}
+  <div class="modal fade" id="confirm-delete-modal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Are you sure?</h4>
+        </div>
+        <div class="modal-body">
+          <p>Are you sure you want to delete this item?</p>
+          <p>
+            {% if perms.uw_reports.view_deleted_report %}
+              If you change your mind, you will be able to restore this item later.
+            {% else %}
+              This action cannot be undone.
+            {% endif %}
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" id="cancel-delete-button">Cancel</button>
+          <button type="button" class="btn btn-danger" id="confirm-delete-button">Delete</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+{% endblock modal %}
 
 {% block js_includes %}
   <!-- DataTables -->
@@ -48,13 +90,63 @@
   <script src="http://cdn.datatables.net/plug-ins/3cfcc339e89/integration/bootstrap/3/dataTables.bootstrap.js"></script>
 
   <script type="text/javascript">
-    var dataTable = $('table#reports-table').DataTable();
+    var dataTable = $('table#reports-table').DataTable({
+      'columnDefs': [{
+        'targets': -1,
+        'searchable': false,
+        'orderable': false,    
+      }]
+    });
   </script>
   <script type="text/javascript">
     {# If we click anywhere in a row, we want to trigger the link contained in that row #}
-    $('tbody').on('click', 'tr', function(){
-      window.location = $(this).find('a.report-detail').attr('href');
+    $('tbody').on('click', 'td', function(){
+      if(!$(this).find('i.delete:visible').length){
+        window.location = $(this).closest('tr').find('a.report-detail').attr('href');
+      }
     })
   </script>
 
+  <script type="text/javascript">
+    $('#reports-table').on('click', 'i.delete', function(e){
+      e.stopImmediatePropagation();
+      e.stopPropagation();
+      e.preventDefault();
+
+      var rowToDelete = $(this).closest('tbody tr').attr('id');
+      $('#confirm-delete-modal').attr('row-to-delete', rowToDelete).modal('show');
+    });
+
+    $('#confirm-delete-button').click(function(){
+      var rowToDelete = $('#confirm-delete-modal').attr('row-to-delete');
+      console.log(rowToDelete)
+      $.ajax({
+        url: '{% url "uw_reports.views.delete_report" %}',
+        method: 'POST',
+        data: {'report_id': rowToDelete, 'csrfmiddlewaretoken': $('[name="csrfmiddlewaretoken"]').val()},
+      }).done(function(data){
+        var row = $('#reports-table tbody tr:eq(' + rowToDelete + ')');
+
+        {% if perms.uw_reports.view_deleted_report %}
+          row.addClass('disabled');
+          row.find('td.row-menu').children().toggleClass('hidden');
+        {% else %}
+          dataTable.row($(rowToDelete)).remove().draw();
+        {% endif %}
+
+        $('#confirm-delete-modal').modal('hide');
+        $('#confirm-delete-modal').removeAttr('row-to-delete');
+      }).fail(function(xhr, status, err){
+        console.log(xhr);
+        console.log(status);
+        console.log(err);        
+        $('#confirm-delete-modal').modal('hide');
+      });
+    });
+
+    $('#cancel-delete-button').click(function(){
+      $('#confirm-delete-modal').modal('hide');
+      $('#confirm-delete-modal').removeAttr('row-to-delete');
+    });
+  </script>
 {% endblock js_includes %}
