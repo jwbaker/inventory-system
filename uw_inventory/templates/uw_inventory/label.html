@@ -7,7 +7,15 @@
 
 {% block content %}
   <div class="row" id="print-header">
-    <h1 class="pull-left">{{ item.uuid }}</h1>
+    <div class="pull-left">
+      <h1>{{ item.name }} <small>{{ item.uuid }}</small></h1>
+      <dl class="dl-horizontal">
+        <dt>Model Number</dt>
+        <dd>{{ item.model_number }}</dd>
+        <dt>Manufacturer</dt>
+        <dd>{{ item.manufacturer }}</dd>
+      </dl>
+    </div>
     <div id="qr-code" class="pull-right">
       <img src="{{ item.qr_code.url }}" style="width:50%">
     </div>
