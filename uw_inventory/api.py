@@ -1,6 +1,7 @@
 from tastypie import fields
 from tastypie.authentication import SessionAuthentication
 from tastypie.authorization import ReadOnlyAuthorization
+from tastypie.cache import SimpleCache
 from tastypie.exceptions import Unauthorized
 from tastypie.resources import ModelResource
 
@@ -86,6 +87,7 @@ class InventoryItemResource(ModelResource):
         return bundle
 
     class Meta:
+        cache = SimpleCache()
         queryset = InventoryItem.objects.all()
         resource_name = 'InventoryItem'
         allowed_methods = ['get']
