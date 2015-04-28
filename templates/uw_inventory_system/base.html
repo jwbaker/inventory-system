@@ -122,12 +122,39 @@
       {% block content %}
       {% endblock content %}
 
+      <div class="modal fade" id="dev-team-modal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title">Development Team</h4>
+            </div>
+            <div class="modal-body">
+              <dl class="dl-horizontal">
+                <dt>Developed By</dt>
+                <dd>Jason Baker, Co-op student</dd>
+                <dt>With Assistance From</dt>
+                <dd>Mirko Vucicevich, Science Computing</dd>
+                <dd>William Penney, Mechanical and Mechatronics Engineering</dd>
+                <dd>Michael Herz, Mechanical and Mechatronics Engineering</dd>
+                <dd>Mike Willson, Mechanical and Mechatronics Engineering</dd>
+              </dl>
+              <p><strong>Special thanks to all members of the Mechanical and Mechatronics Engineering technical staff for their feedback during the development process.</strong></p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+      </div><!-- /.modal -->
+
       {% block modal %}
       {% endblock modal %}
 
       <hr>
 
       <footer>
+        <p class="pull-right"><button class="btn-link btn-sm" data-toggle="modal" data-target="#dev-team-modal">Development Team</button></p>
         <p id="copyright">&copy; University of Waterloo</p>
       </footer>
     </div>
