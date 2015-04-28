@@ -232,13 +232,15 @@
       }
     }
 
-    var recursive_ajax_load = function(limit, offset){
+    var recursive_ajax_load = function(limit, offset, acc){
       if(offset === undefined) offset = 0;
       else offset += limit;
 
       $.ajax({
         url: '/api/InventoryItem/?format=json&limit=' + limit + '&offset=' + offset
       }).done(function(data){
+        acc = acc.concat(data['objects']);
+
         for (var i = 0; i < data['objects'].length; i++) {
           add_to_table(data['objects'][i]);
         }
@@ -249,16 +251,32 @@
         $('#records-loaded').text(new_count);
         $('.progress-bar').css('width', ((new_count/{{ item_count }}) * 100) + '%')
         if(new_count >= {{ item_count }}){
+          sessionStorage.setItem('uw_inventory_list_cache_data', JSON.stringify(acc));
+          sessionStorage.setItem('uw_inventory_list_cache_time', Date.now());
           $(window).trigger('doneload');
           return false;
         }
-        recursive_ajax_load(limit, offset)
+        recursive_ajax_load(limit, offset, acc)
       });
     }
     $(function(){
-      recursive_ajax_load(20);
+      var cache_data = JSON.parse(sessionStorage.getItem('uw_inventory_list_cache_data'));
+      var cache_time = sessionStorage.getItem('uw_inventory_list_cache_time');
+      var now = Date.now();
+
+      // We'll hold the cache for 5 minutes, because why not?
+      if(!cache_data || (cache_time && (now - cache_time > 300000))){
+        recursive_ajax_load(20, undefined, []);
+      } else{
+        $('.progress').parent().addClass('hidden');
+        for (var i = 0; i < cache_data.length; i++) {
+          add_to_table(cache_data[i]);
+        }
+        dataTable.draw();
+      }
     });
     $(window).on('doneload', function(){
+      $('.progress-bar').addClass('progress-bar-success').text('Done loading');
       setTimeout(function(){
         $('.progress').parent().addClass('hidden');
       }, 1500);
