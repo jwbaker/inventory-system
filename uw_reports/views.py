@@ -158,3 +158,50 @@ def delete_report(request):
         report.save()
 
         return HttpResponse()
+    elif request.method == 'POST':
+        report_id = request.POST.get('report_id')
+        report = Report.objects.get(id=report_id)
+
+        if (
+                request.user != report.owner and
+                not request.user.has_perm('uw_reports.view_all_reports')
+           ):
+            messages.error(request, 'You do not have permission to do that.')
+            dest = reverse('uw_reports.views.view_report', args=[report_id])
+        else:
+            report.to_display = False
+            report.save()
+            messages.success(
+                request,
+                'Deleted report "{0}"'.format(report.name)
+            )
+            if request.user.has_perm('uw_reports.view_deleted_reports'):
+                dest = reverse(
+                    'uw_reports.views.view_report',
+                    args=[report_id]
+                )
+            else:
+                dest = reverse('uw_reports.views.reports_list')
+        return redirect(dest)
+
+
+@csrf_protect
+def undelete_report(request):
+    if request.method == 'POST':
+        report_id = request.POST.get('report_id')
+        report = Report.objects.get(id=report_id)
+
+        if (
+                request.user != report.owner and
+                not request.user.has_perm('uw_reports.view_all_reports')
+           ):
+            messages.error(request, 'You do not have permission to do that.')
+        else:
+            report.to_display = True
+            report.save()
+            messages.success(
+                request,
+                'Restored report "{0}"'.format(report.name)
+            )
+
+        return redirect('uw_reports.views.view_report', report_id=report_id)

@@ -2,6 +2,14 @@
 {% load uw_reports_misc_tags %}
 {% load uw_inventory_misc_tags %}
 
+{% block messages %}
+  {% if not report.to_display %}
+    <div class="alert alert-info" role="alert">
+      This report has been deleted.
+    </div>
+  {% endif %}
+{% endblock messages %}
+
 {% block content %}
   <div class="row">
     <h2>
@@ -11,11 +19,25 @@
       </span>
     {% if perms.uw_reports.change_report or report.owner == user %}
       <div class="pull-right">
+        {% if request.user == report.owner or perms.uw_reports.view_deleted_reports %}
+          <button class="btn btn-default btn-sm {% if not report.to_display %}hidden{% endif %}" id="delete-report">
+            {% icon 'delete' %} Delete
+          </button>
+          <button class="btn btn-default btn-sm {% if report.to_display %}hidden{% endif %}" id="restore-report">
+            {% icon 'restore' %} Restore
+          </button>
+        {% endif %}
         <button class="btn btn-default btn-sm" id="edit-report">{% icon 'edit' %} Edit</button>
       </div>
     {% endif %}
     </h2>
 
+    {% if perms.uw_reports.view_all_reports or report.owner == request.user %}
+      <form action="" method="post" id="restore-delete-form" class="persist-hidden">
+        {% csrf_token %}
+        <input type="text" name="report_id" value="{{ report.id }}" />
+      </form>
+    {% endif %}
   </div>
   {% include 'uw_reports/report_result.html' %}
 {% endblock content %}
@@ -50,6 +72,18 @@
     });
     $('table#query-result').on('click', 'tr', function(){
       window.location = $(this).find('td.record-link').text();
+    });
+  </script>
+
+  <script type="text/javascript">
+    $('#restore-report').click(function(){
+      $('#restore-delete-form').attr('action', '{% url "uw_reports.views.undelete_report" %}');
+      $('#restore-delete-form').submit();
+    });
+
+    $('#delete-report').click(function(){
+      $('#restore-delete-form').attr('action', '{% url "uw_reports.views.delete_report" %}');
+      $('#restore-delete-form').submit();
     });
   </script>
 
