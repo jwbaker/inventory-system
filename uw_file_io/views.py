@@ -12,7 +12,7 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.csrf import csrf_protect
 
-from django_cas.decorators import permission_required
+from django_cas.decorators import permission_required, user_passes_test
 
 from uw_file_io.forms import ImportForm
 from uw_file_io.parse import (
@@ -85,6 +85,7 @@ def file_view(request, file_name):
 
 
 @csrf_protect
+@user_passes_test(lambda u: u.is_superuser)
 @permission_required('uw_inventory.add_inventoryitem')
 def file_import(request):
     if request.method == 'POST':
@@ -143,6 +144,7 @@ def file_import(request):
     })
 
 
+@user_passes_test(lambda u: u.is_superuser)
 @csrf_protect
 def add_terms(request):
     if request.method == 'POST':
@@ -169,6 +171,7 @@ def add_terms(request):
     })
 
 
+@user_passes_test(lambda u: u.is_superuser)
 @csrf_protect
 def add_users(request):
     if request.method == 'POST':
@@ -184,6 +187,7 @@ def add_users(request):
     })
 
 
+@user_passes_test(lambda u: u.is_superuser)
 def add_images(request):
     if request.method == 'POST':
         request.session['NewImages'] = parse_zip(
@@ -208,6 +212,7 @@ def add_images(request):
     })
 
 
+@user_passes_test(lambda u: u.is_superuser)
 def add_files(request):
     if request.method == 'POST':
         request.session['NewFiles'] = parse_zip(
@@ -231,6 +236,7 @@ def add_files(request):
     })
 
 
+@user_passes_test(lambda u: u.is_superuser)
 def finish_import(request):
     item_list = request.session.get('IntermediateItems', [])
     term_list = request.session.get('NewTerms', [])
