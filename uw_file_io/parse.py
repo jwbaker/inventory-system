@@ -262,9 +262,10 @@ def __parse_inventory_extract(data):
                             )
                             store_value = temp.id or temp.name
                     elif field_meta['type'] == 'boolean':
-                        store_value = (
-                            True if val == 'yes' else False
-                        )
+                        if val == 'yes' or val == 1:
+                            store_value = True
+                        else:
+                            store_value = False
                     elif field_meta['type'] == 'date':
                         if val:
                             date_components = val.split('-')
