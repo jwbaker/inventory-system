@@ -6,6 +6,7 @@ import zipfile
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
@@ -15,10 +16,13 @@ from django_cas.decorators import permission_required
 
 from uw_file_io.forms import ImportForm
 from uw_file_io.parse import (
-    process_extract,
     process_terms_transactions,
     process_user_transactions,
-    import_data,
+    process_image_transactions,
+    process_file_transactions,
+    parse_extract,
+    parse_zip,
+    reverse_transactions,
 )
 from uw_inventory.models import (
     AutocompleteData,
@@ -83,16 +87,55 @@ def file_view(request, file_name):
 @csrf_protect
 @permission_required('uw_inventory.add_inventoryitem')
 def file_import(request):
-    request.session.pop('extract_data', None)
-    request.session.pop('new-terms', None)
-    request.session.pop('new-users', None)
-
     if request.method == 'POST':
-        extract_data = process_extract(
-            request.FILES.get('file_up', None)
-        )
-        request.session['extract_data'] = extract_data
-        return redirect('uw_file_io.views.add_terms')
+        # Clear these session tokens on every file upload
+        # This will (hopefully) prevent unexpected behaviour if the user
+        # does some silliness
+        request.session.pop('ImportType', None)
+        request.session.pop('IntermediateItems', None)
+        request.session.pop('NewTerms', None)
+        request.session.pop('NewUsers', None)
+        request.session.pop('NewFiles', None)
+        request.session.pop('NewImages', None)
+
+        if request.POST['model'] == 'II':
+            request.session['ImportType'] = 'InventoryItem'
+            try:
+                parse_response = parse_extract(
+                    request.FILES['file_up'],
+                    'InventoryItem'
+                )
+            except (TypeError, ValidationError) as e:
+                messages.error(
+                    request,
+                    str(e[0])
+                )
+                return redirect('uw_file_io.views.file_import')
+            else:
+                request.session['IntermediateItems'] = parse_response[
+                    'new_items'
+                ]
+                request.session['NewTerms'] = parse_response['new_terms']
+                request.session['NewUsers'] = parse_response['new_users']
+                request.session['NewImages'] = parse_response['new_images']
+                request.session['NewFiles'] = parse_response['new_files']
+
+                return redirect('uw_file_io.views.add_terms')
+        elif request.POST['model'] == 'US':
+            request.session['ImportType'] = 'User'
+            try:
+                request.session['NewUsers'] = parse_extract(
+                    request.FILES['file_up']
+                )
+            except ValidationError as e:
+                messages.error(
+                    request,
+                    str(e[0])
+                )
+                return redirect('uw_file_io.views.file_import')
+            else:
+                return redirect('uw_file_io.views.finish_import')
+
     message_list = _collect_messages(request)
     return render(request, 'uw_file_io/import/start.html', {
         'form': ImportForm(),
@@ -103,64 +146,185 @@ def file_import(request):
 @csrf_protect
 def add_terms(request):
     if request.method == 'POST':
-        request.session['new-terms'] = json.loads(request.POST['termHierarchy'])
+        request.session['NewTerms'] = json.loads(request.POST['termHierarchy'])
 
         return redirect('uw_file_io.views.add_users')
 
-    extract_data = request.session['extract_data']
-    terms_data = {k: v for k, v in extract_data['new_terms'].items() if
-                  k in ['location', 'manufacturer', 'supplier'] and len(v) > 0}
-    if not terms_data:
+    if not request.session.get('NewTerms', None):
         return redirect('uw_file_io.views.add_users')
-
-    old_terms = {}
-
-    for k in terms_data.keys():
-        old_terms[k] = AutocompleteData.objects.filter(kind=k)
     return render(request, 'uw_file_io/import/new_terms.html', {
-        'new_terms': terms_data,
-        'old_terms': old_terms,
+        'new_terms': request.session['NewTerms'],
+        'old_terms': {
+            'location': [t.name for t in
+                         AutocompleteData.objects.filter(kind='location')],
+            'manufacturer': [t.name for t in
+                             AutocompleteData.objects.filter(
+                                 kind='manufacturer'
+                             )],
+            'supplier': [t.name for t in
+                         AutocompleteData.objects.filter(
+                             kind='supplier'
+                         )],
+        }
     })
 
 
 @csrf_protect
 def add_users(request):
     if request.method == 'POST':
-        request.session['new-users'] = json.loads(request.POST['userHierarchy'])
+        request.session['NewUsers'] = json.loads(request.POST['userHierarchy'])
+        return redirect('uw_file_io.views.add_images')
 
-        return redirect('uw_file_io.views.finish_import')
-
-    extract_data = request.session['extract_data']
-    terms_data = reduce(
-        lambda x, y: x.append(y),
-        [v for k, v in extract_data['new_terms'].items() if
-         k in ['owner', 'technician']],
-        []
-    )
-    if not terms_data:
-        return redirect('uw_file_io.views.finish_import')
-
-    old_users = User.objects.all()
+    if not request.session.get('NewUsers', None):
+        return redirect('uw_file_io.views.add_images')
 
     return render(request, 'uw_file_io/import/new_users.html', {
-        'new_users': terms_data,
-        'old_users': old_users,
+        'new_users': request.session['NewUsers'],
+        'old_users': User.objects.all(),
+    })
+
+
+def add_images(request):
+    if request.method == 'POST':
+        request.session['NewImages'] = parse_zip(
+            request.FILES.get('file_up')
+        )
+        print request.session['NewImages']
+        return redirect('uw_file_io.views.add_files')
+
+    if not request.session.get('NewImages', None):
+        return redirect('uw_file_io.views.add_files')
+
+    return render(request, 'uw_file_io/import/file_upload.html', {
+        'form': ImportForm(),
+        'form_action': 'uw_file_io.views.add_images',
+        'page_data': {
+            'header': 'Upload Images',
+            'explanation': '''It looks like one or more of the records you've
+                             uploaded have associated images. Please upload a
+                             *.ZIP file containing all of the image files
+                             required by your records.''',
+        }
+    })
+
+
+def add_files(request):
+    if request.method == 'POST':
+        request.session['NewFiles'] = parse_zip(
+            request.FILES.get('file_up')
+        )
+        return redirect('uw_file_io.views.finish_import')
+
+    if not request.session.get('NewFiles', None):
+        return redirect('uw_file_io.views.finish_import')
+
+    return render(request, 'uw_file_io/import/file_upload.html', {
+        'form': ImportForm(),
+        'form_action': 'uw_file_io.views.add_files',
+        'page_data': {
+            'header': 'Upload File Attachments',
+            'explanation': '''It looks like one or more of the records you've
+                             uploaded have associated files. Please upload a
+                             *.ZIP file containing all of the files required by
+                             your records.''',
+        }
     })
 
 
 def finish_import(request):
-    extract_data = request.session.pop('extract_data', None)
-    new_terms = request.session.pop('new-terms', [])
-    new_users = request.session.pop('new-users', [])
+    item_list = request.session.get('IntermediateItems', [])
+    term_list = request.session.get('NewTerms', [])
+    user_list = request.session.get('NewUsers', [])
+    images_list = request.session.get('NewImages', {})
+    files_list = request.session.get('NewFiles', {})
+    new_items = []
+    transactions = []
 
-    term_to_index = process_terms_transactions(new_terms)
-    user_to_index = process_user_transactions(new_users)
+    if isinstance(images_list, list) and len(images_list) == 0:
+        images_list = {}
+    elif isinstance(images_list, list):
+        raise TypeError('images_list is a list instead of a dict')
+    if isinstance(files_list, list) and len(files_list) == 0:
+        files_list = {}
+    elif isinstance(files_list, list):
+        raise TypeError('files_list is a list instead of a dict')
 
-    new_items = import_data(
-        extract_data['model_data'],
-        term_to_index,
-        user_to_index,
-        extract_data['files']
+    if request.session['ImportType'] == 'InventoryItem':
+        term_to_index = process_terms_transactions(term_list, transactions)
+
+        user_to_index = process_user_transactions(user_list, transactions)
+        image_to_index = process_image_transactions(images_list, transactions)
+        file_to_index = process_file_transactions(files_list, transactions)
+
+        for item_args in item_list:
+            picture_id = None
+            for field in ['location_id', 'manufacturer_id', 'supplier_id']:
+                if (isinstance(item_args.get(field, None), str)):
+                    item_args[field] = term_to_index[item_args[field]]
+
+            for field in ['technician_id', 'owner_id']:
+                if (isinstance(item_args.get(field, None), str)):
+                    item_args[field] = user_to_index[item_args[field]]
+
+            if item_args.get('image_id', None):
+                picture_id = item_args['image_id']
+            item_args.pop('image_id', None)
+
+            if item_args.get('sop_file_id', None):
+                item_args['sop_file_id'] = file_to_index[
+                    item_args['sop_file_id']
+                ]
+
+            item = InventoryItem(**item_args)
+            try:
+                item.save()
+            except ValidationError:
+                messages.error(
+                    request,
+                    'There was a problem with your file.'
+                )
+                reverse_transactions(transactions)
+                return redirect('uw_file_io.views.file_import')
+            else:
+                if picture_id:
+                    if isinstance(picture_id, str):
+                        try:
+                            picture_id = image_to_index[picture_id]
+                        except KeyError:
+                            print 'Image not processed {0}'.format(picture_id)
+                        else:
+                            image = ItemImage.objects.get(id=picture_id)
+                            image.inventory_item_id = item.id
+                            image.save()
+                    else:
+                        image = ItemImage.objects.get(id=picture_id)
+                        image.inventory_item_id = item.id
+                        image.save()
+                if item.sop_file_id:
+                    sop_file = item.sop_file
+                    sop_file.inventory_item_id = item.id
+                    sop_file.save()
+                transactions.append(
+                    'Create InventoryItem with id={0}'.format(item.id)
+                )
+                new_items.append(item)
+    elif request.session['ImportType'] == 'User':
+        for user_args in user_list:
+            if isinstance(user_args, dict):
+                new_user = User(**user_args)
+                new_user.save()
+                new_items.append(new_user)
+
+    request.session.pop('IntermediateItems', None)
+    request.session.pop('NewTerms', None)
+    request.session.pop('NewUsers', None)
+    request.session.pop('NewFiles', None)
+    request.session.pop('NewImages', None)
+    request.session.pop('ImportType', None)
+
+    messages.success(
+        request,
+        'Import successful. {0} records created'.format(len(new_items))
     )
 
     message_list = _collect_messages(request)
