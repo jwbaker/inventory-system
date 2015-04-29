@@ -290,6 +290,9 @@ def __parse_inventory_extract(data):
                     elif field_meta['type'] == 'file':
                         store_value = val.split('/')[-1]
                         new_files.append(store_value)
+
+                        if col == 'SOP':
+                            kwargs['sop_required'] = True
                     elif field_meta['type'] == 'image':
                         picture = val.split('/')[-1]
                         new_images.append(val.split('/')[-1])
