@@ -440,7 +440,7 @@
         newElement.find('[id*=DELETE]').parent().addClass('persist-hidden');
       });
 
-      $('#comment').on('click', 'i.save', function(){
+      $('#comments-list').on('click', '.comment i.save', function(){
         var comment = $(this).closest('.comment');
         comment.removeAttr('comment-initial');
 
@@ -459,7 +459,7 @@
         $(window).trigger('pagechanges', true);
       });
 
-      $('#comment').on('click', 'i.cancel', function(){
+      $('#comments-list').on('click', '.comment i.cancel', function(){
         var comment = $(this).closest('.comment');
         if(!comment.find('#inputBody').val()){
           $(this).siblings('i.delete').click();
@@ -469,14 +469,14 @@
         }
       });
 
-      $('#comment').on('click', 'i.delete', function(){
+      $('#comments-list').on('click', '.comment i.delete', function(){
         var comment = $(this).closest('.comment');
 
         comment.find('[id*=DELETE]').attr('checked', 'checked');
         comment.addClass('hidden');
       });
 
-      $('#comment').on('click', 'i.edit', function(){
+      $('#comments-list').on('click', '.comment i.edit', function(){
         var comment = $(this).closest('.comment');
         comment.attr('comment-initial', comment.find('#inputBody').val())
         comment.children().toggleClass('hidden');
@@ -555,7 +555,7 @@
         var compiledRowTemplate = $("#file-template").html().replace(/__prefix__-(DELETE|to_display)"/g, '__prefix__-$1" class="persist-hidden"').replace(/__prefix__/g, count);
         var compiledTemplate = $('#file-table-row-template').html().replace(/__form__/g, compiledRowTemplate);
         
-        $('#file-table tbody').append(compiledTemplate);
+        $(compiledTemplate).appendTo('#file-table tbody').find('[id*="remove_file"]').parent().addClass('hidden');
         $('#id_files-TOTAL_FORMS').attr('value', parseInt(count, 10)+1);
       });
 

@@ -19,7 +19,7 @@
   <td class="file-menu">
     {% icon 'file-download' data_target=form.instance|download_url %}
     {% if can_edit %}
-      {% icon 'file_edit' %}
+      {% icon 'file-edit' %}
       {% if form.instance.to_display %}
         {% icon 'file-hide' %}
       {% else %}
