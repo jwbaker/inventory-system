@@ -85,6 +85,11 @@
                   </a>
                 </li>
               {% endif %}
+              <li id="page-help-icon">
+                <a href="#page-help-modal" data-toggle="modal">
+                  {% icon 'help' title='How to use this page' %}
+                </a>
+              </li>
             {% endif %}
           </ul>
         </div><!--/.nav-collapse -->
@@ -141,6 +146,21 @@
               </dl>
               <p><strong>Special thanks to all members of the Mechanical and Mechatronics Engineering technical staff for their feedback during the development process.</strong></p>
             </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+      </div><!-- /.modal -->
+
+      <div class="modal fade" id="page-help-modal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title">How to use this page</h4>
+            </div>
+            <div class="modal-body">{% block page_help %}{% endblock page_help %}</div>
             <div class="modal-footer">
               <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
@@ -227,6 +247,14 @@
 
     <script>
       $('#copyright').append('<span> ' + (new Date()).getFullYear() + '</span>')
+    </script>
+
+    <script type="text/javascript">
+      $(function(){
+        if($('#page-help-modal').find('.modal-body').is(':empty')){
+          $('#page-help-icon').addClass('hidden');
+        }
+      });
     </script>
 
     {% block js_includes %}

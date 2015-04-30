@@ -87,6 +87,9 @@ i,
 .filter::after {
   content: "\f0b0"; /* fa-filter */
 }
+.help::after {
+  content: "\f059"; /* fa-question-circle */
+}
 .history::after {
   content: "\f1da"; /* fa-history */ 
 }
