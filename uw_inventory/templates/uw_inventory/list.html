@@ -149,6 +149,43 @@
   </div>
 {% endblock content %} 
 
+{% block page_help %}
+  <p>This page shows the list of all inventory items stored in the system. By default, 10 items are shown per page. However, you can use the "Show Entries" dropdown above the table to display 25 or 50 items on a page, or to show all items on a single page.</p>
+
+  <p>Clicking on a row will redirect you to the detail page for that item.</p>
+
+  <h4>Sorting</h4>
+  <p>The table can be sorted by clicking on the <img src="http://cdn.datatables.net/plug-ins/3cfcc339e89/integration/bootstrap/images/sort_both.png" /> icon in the table header. This icon will change depending on how the column is sorted:</p>
+
+  <ul class="list-unstyled">
+    <li><img src="http://cdn.datatables.net/plug-ins/3cfcc339e89/integration/bootstrap/images/sort_both.png" /> - Unsorted</li>
+    <li><img src="http://cdn.datatables.net/plug-ins/3cfcc339e89/integration/bootstrap/images/sort_asc.png" /> - Sort ascending</li>
+    <li><img src="http://cdn.datatables.net/plug-ins/3cfcc339e89/integration/bootstrap/images/sort_desc.png" /> - Sort descending</li>
+  </ul>
+
+  <p>Only one column can be sorted at a time.</p>
+
+  <h4>Filtering</h4>
+  <p>The "Search" box at the right-hand corner of the table will do a simple filtering on the table. If the text entered in the box appears in any field in an inventory item (even a field not displayed in the table), that item will be shown.</p>
+
+  <p>More advanced filtering can be done by clicking on <button class="btn btn-default">{% icon 'filter' %} Show filters</button>. This will allow more complex filtering on all fields displayed on the table. Only items that satisfy all applied filters will be shown in the table.</p>
+
+  <p>Most fields are sorted by text; an item will be shown only if the entered text appears in the field for that item. However, the SOP and Picture fields are sorted by existence. These filters are applied using a checkbox with three states:</p>
+
+  <ul class="list-unstyled">
+    <li>{% icon 'checkbox-3 demo' %} - Filter disabled; all items will be shown</li>
+    <li>{% icon 'checkbox-3 unchecked demo' %} - Only items that do <strong>not</strong> have a value will be shown</li>
+    <li>{% icon 'checkbox-3 checked demo' %} - Only items that <strong>do</strong> have a value will be shown</li>
+  </ul>
+
+  <p>Clicking on <button class="btn btn-default hidden">{% icon 'fa-inverse filter' %} Hide filters</button> will hide the filter inputs. Filters cannot be hidden if one or more are still active.</p>
+
+  <p>Clicking on <button class="btn btn-danger hidden">{% icon 'cancel' %} Clear all filters</button> will automatically disable all enabled filters.</p>
+
+  <h5>Exporting</h5>
+  <p>Clicking on <button class="btn btn-default">{% icon 'download' %} Export</button> will redirect you to the Export page, where you will be able to download all inventory items in <abbr title="Comma-Separated Value">CSV</abbr> format.</p>
+{% endblock page_help %}
+
 {% block js_includes %}
   <!-- DataTables -->
   <script src="http://cdn.datatables.net/1.10.4/js/jquery.dataTables.min.js"></script>
@@ -292,6 +329,7 @@
 
   <script type="text/javascript">
     $('.checkbox-3').click(function(e){
+      if($(this).is('.demo')) return;
       var filter_value;
       if($(this).hasClass('unchecked')){      // New state: indeterminate
         $(this).removeClass('unchecked');
