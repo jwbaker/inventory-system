@@ -1,10 +1,13 @@
 {% load uw_inventory_misc_tags %}
+{% load uw_forms_field_tags %}
+
+{% set_help_text 'images' as field_help %}
 
 <div class="form-group list-group-item clearfix">
   <div class="col-xs-2">
     <label class="control-label">Images</label>
   </div>
-  <div class="col-xs-10">
+  <div class="col-xs-9">
     <div id="images-list">
       {% for image in image_set %}
         {% if image.instance.to_display or view_deleted %}
@@ -20,4 +23,8 @@
       </div>
     </div>
   </div>
+  <div class="col-xs-1">
+    {% if field_help %}
+      {% icon 'field-help persist-visible' data_toggle='popover' data_trigger='focus' data_html='True' data_content=field_help %}
+    {% endif %}  </div>
 </div>

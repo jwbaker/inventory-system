@@ -1,4 +1,7 @@
 {% load uw_inventory_misc_tags %}
+{% load uw_forms_field_tags %}
+
+{% set_help_text field_label as field_help %}
 
 <div class="singleton-field form-group list-group-item clearfix {% if field.errors %}list-group-item-danger has-error{% endif %}">
   <div class="col-xs-3">
@@ -28,6 +31,15 @@
       {% icon 'save hidden' %}
       {% icon 'cancel hidden' %}
       {% icon 'edit' %}
+      {% if field_help %}
+        {% icon 'field-help persist-visible' data_toggle='popover' data_trigger='focus' data_html='True' data_content=field_help %}
+      {% endif %}
+    </div>
+  {% elif caller == 'static' or caller == 'field' %}
+    <div class="col-xs-1">
+      {% if field_help %}
+        {% icon 'field-help persist-visible' data_toggle='popover' data_trigger='focus' data_html='True' data_content=field_help %}
+      {% endif %}
     </div>
   {% endif %}
 </div>

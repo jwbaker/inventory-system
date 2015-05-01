@@ -1,5 +1,7 @@
 from django import template
 
+from uw_forms import help
+
 register = template.Library()
 
 
@@ -127,3 +129,9 @@ def show_files(can_add, can_edit, view_deleted, formset=None):
             'view_deleted': view_deleted,
             'forms': None
         }
+
+
+@register.assignment_tag
+def set_help_text(field_name):
+    print field_name
+    return help.dispatch(field_name)

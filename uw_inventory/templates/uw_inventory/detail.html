@@ -121,6 +121,10 @@
           {% icon 'cancel hidden' for='inputSopFile' %}
           {% icon 'delete hidden' for='inputSopFile' title='Clear file' %}
           {% icon 'edit' for='inputSopFile' %}
+          {% set_help_text 'sop_file' as field_help %}
+          {% if field_help %}
+            {% icon 'field-help persist-visible' data_toggle='popover' data_trigger='focus' data_html='True' data_content=field_help %}
+          {% endif %}
         </div>
       {% endif %}
     </div>

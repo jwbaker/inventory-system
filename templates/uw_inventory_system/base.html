@@ -39,6 +39,10 @@
         display: none!important;
         visibility: hidden!important;
       }
+      .persist-visible {
+        display: initial !important;
+        visibility: visible!important;
+      }
       tr.disabled td {
         background-color: #E5E5E5;
       }
@@ -46,6 +50,9 @@
         {# I'm not exactly thrilled about this solution, but we need modals to be 'higher' than messages, #}
         {# otherwise the messages will lay overtop modals and look icky #}
         z-index:100000000000001;
+      }
+      .popover {
+        width: 20em;
       }
     </style>
 
@@ -254,6 +261,12 @@
         if($('#page-help-modal').find('.modal-body').is(':empty')){
           $('#page-help-icon').addClass('hidden');
         }
+      });
+    </script>
+
+    <script type="text/javascript">
+      $('i.field-help').click(function(){
+        $(this).popover('toggle');
       });
     </script>
 

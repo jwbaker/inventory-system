@@ -28,6 +28,10 @@
       </div>
       <div class="col-xs-1">
         {% icon 'delete' title='Clear file' %}
+        {% set_help_text 'sop_file' as field_help %}
+        {% if field_help %}
+          {% icon 'field-help persist-visible' data_toggle='popover' data_trigger='focus' data_html='True' data_content=field_help %}
+        {% endif %}
       </div>
     </div>
     {% show_images formsets.image.forms perms.uw_inventory.add_itemimage perms.uw_inventory.change_itemimage perms.uw_inventory.view_deleted_itemimage %}
@@ -41,82 +45,82 @@
 
 {% block page_help %}
   <p>This page will allow you to add a new inventory item.</p>
-
   <p>The SOP field has an additional icon: {% icon 'delete' %}. Clicking this icon will clear the currently-selected file from the field, or will have no effect if the field is empty.</p>
-    <h4>Image attachments</h4>
-    <p>Clicking on a saved image will open a pop-up displaying the image at a larger size, if possible. That popup can be dismissed by clicking anywhere on the page.</p>
 
-    <p>The first 20 characters of the image's description will be displayed beneath the image preview, to the left of the icon menu. The full description can be viewed by clicking on the {% icon 'menu-down' %} icon. It can be hidden again by clicking on the {% icon 'menu-up' %} icon.</p>
+  <h4>Image attachments</h4>
+  <p>Clicking on a saved image will open a pop-up displaying the image at a larger size, if possible. That popup can be dismissed by clicking anywhere on the page.</p>
 
-    <p>Clicking on the {% icon 'add-item' %} icon beside the Images field will allow you to attach an image to this item, as well as provide a short description of the image. Once a new image has been submitted, it will <strong>not</strong> appear immediately;  a placeholder image will appear in its place until the inventory item has been saved.</p>
+  <p>The first 20 characters of the image's description will be displayed beneath the image preview, to the left of the icon menu. The full description can be viewed by clicking on the {% icon 'menu-down' %} icon. It can be hidden again by clicking on the {% icon 'menu-up' %} icon.</p>
+
+  <p>Clicking on the {% icon 'add-item' %} icon beside the Images field will allow you to attach an image to this item, as well as provide a short description of the image. Once a new image has been submitted, it will <strong>not</strong> appear immediately;  a placeholder image will appear in its place until the inventory item has been saved.</p>
 
 
-    <p>Clicking on the {% icon 'edit' %} icon next to an image will allow you to modify the image and/or its description. As with other fields, changes will not be saved automatically. The {% icon 'delete' %} icon will allow you to remove the image. If you change your mind <strong>before saving the inventory item</strong>, you can restore the image by clicking on the {% icon 'restore' %} icon.</p>
+  <p>Clicking on the {% icon 'edit' %} icon next to an image will allow you to modify the image and/or its description. As with other fields, changes will not be saved automatically. The {% icon 'delete' %} icon will allow you to remove the image. If you change your mind <strong>before saving the inventory item</strong>, you can restore the image by clicking on the {% icon 'restore' %} icon.</p>
 
-    <h4>File attachments</h4>
-    <p>File attachments appear in a sortable table.</p>
-    <p>The table can be sorted by clicking on the <img src="http://cdn.datatables.net/plug-ins/3cfcc339e89/integration/bootstrap/images/sort_both.png" /> icon in the table header. This icon will change depending on how the column is sorted:</p>
+  <h4>File attachments</h4>
+  <p>File attachments appear in a sortable table.</p>
+  <p>The table can be sorted by clicking on the <img src="http://cdn.datatables.net/plug-ins/3cfcc339e89/integration/bootstrap/images/sort_both.png" /> icon in the table header. This icon will change depending on how the column is sorted:</p>
 
-    <ul class="list-unstyled">
-      <li><img src="http://cdn.datatables.net/plug-ins/3cfcc339e89/integration/bootstrap/images/sort_both.png" /> - Unsorted</li>
-      <li><img src="http://cdn.datatables.net/plug-ins/3cfcc339e89/integration/bootstrap/images/sort_asc.png" /> - Sort ascending</li>
-      <li><img src="http://cdn.datatables.net/plug-ins/3cfcc339e89/integration/bootstrap/images/sort_desc.png" /> - Sort descending</li>
-    </ul>
+  <ul class="list-unstyled">
+    <li><img src="http://cdn.datatables.net/plug-ins/3cfcc339e89/integration/bootstrap/images/sort_both.png" /> - Unsorted</li>
+    <li><img src="http://cdn.datatables.net/plug-ins/3cfcc339e89/integration/bootstrap/images/sort_asc.png" /> - Sort ascending</li>
+    <li><img src="http://cdn.datatables.net/plug-ins/3cfcc339e89/integration/bootstrap/images/sort_desc.png" /> - Sort descending</li>
+  </ul>
 
-    <p>Clicking on the name of the file will attempt to open the file in the browser. If the file is not a text or PDF document, this will instead download the file. Clicking on the {% icon 'file-download' %} icon will always download the file.</p>
+  <p>Clicking on the name of the file will attempt to open the file in the browser. If the file is not a text or PDF document, this will instead download the file. Clicking on the {% icon 'file-download' %} icon will always download the file.</p>
 
-    <p>The {% icon 'delete' %} icon will allow you to remove the file. If you change your mind <strong>before saving the inventory item</strong>, you can restore the file by clicking on the {% icon 'restore' %} icon.</p>
+  <p>The {% icon 'delete' %} icon will allow you to remove the file. If you change your mind <strong>before saving the inventory item</strong>, you can restore the file by clicking on the {% icon 'restore' %} icon.</p>
 
-    <p>Clicking on the {% icon 'add-item' %} icon beneath the file table will allow you to add a new file. As with other fields, the {% icon 'save' %} icon will commit your changes, and the {% icon 'cancel' %} icon will discard them.</p>
+  <p>Clicking on the {% icon 'add-item' %} icon beneath the file table will allow you to add a new file. As with other fields, the {% icon 'save' %} icon will commit your changes, and the {% icon 'cancel' %} icon will discard them.</p>
 
-    <p>You can edit file attachments by clicking on the {% icon 'file-edit' %} icon.</p>
+  <p>You can edit file attachments by clicking on the {% icon 'file-edit' %} icon.</p>
 
-    <h4>Custom fields</h4>
-    <p>Clicking <button class="btn btn-primary">{% icon 'list' %} Add field</button> will open a dialogue allowing the creation of custom fields. These fields will appear only on the current inventory item. There are allowed field types:</p>
+  <h4>Custom fields</h4>
+  <p>Clicking <button class="btn btn-primary">{% icon 'list' %} Add field</button> will open a dialogue allowing the creation of custom fields. These fields will appear only on the current inventory item. There are allowed field types:</p>
 
-    <ul>
-      <li>
-        <strong>Text</strong> for free text input. These fields have the following options:
-        <dl class="dl-horizontal">
-          <dt>Secondary Type</dt>
-          <dd>Defines what kind of input field will be displayed:</dd>
-          <dd>None - A single-line input box</dd>
-          <dd>Long - A multi-line, resizeable input box</dd>
-          <dd>Email - The same as None, but will validate for email addresses</dd>
-          <dd>Obscured - The same as None, but input will be hidden to the user. Useful for confidential information.</dd>
-          <dt>Maximum Length</dt>
-          <dd>The maximum number of characters allowed in the field. Default is 255.</dd>
-        </dl>
-      </li>
-      <li>
-        <strong>Select</strong> to allow choosing from a list of choices.
-        <dl class="dl-horizontal">
-          <dt>Options</dt>
-          <dd>The list of allowed choices. Choices can be separated with a comma, or written on separate lines.</dd>
-          <dt>Allow Multiple?</dt>
-          <dd>If checked, users will be able to select more than one choice. This option affects the choices for the following options.</dd>
-          <dt>Control</dt>
-          <dd>The input control to display to the user. If <strong>Allow Multiple?</strong> is checked, the choices are "Multi-select List" and "Checkboxes"; otherwise, "Radio buttons" and "Dropdown List". "Auto" will decide based on the number of choices specified in the <strong>Options</strong> box.</dd>
-        </dl>
-      </li>
-      <li><strong>Date</strong></li>
-      <li>
-        <strong>Yes/No</strong> will display a checkbox
-      </li>
-      <li>
-        <strong>Number</strong>
-        <dl class="dl-horizontal">
-          <dt>Secondary Type</dt>
-          <dd>Defines extra context for the number:</dd>
-          <dd>None - No extra information</dd>
-          <dd>Currency - Formats the value for currency input</dd>
-          <dt>Precision</dt>
-          <dd>If the input box has arrow buttons to increment the value, this value is the size of one increment. Users can always type a number manually, at any precision</dd>
-          <dt>Allow Negative?</dt>
-          <dd>If checked, the number will be allowed to go arbitraily negative. Otherwise, it will not go below 0</dd>
-        </dl>
-      </li>
-    </ul>
+  <ul>
+    <li>
+      <strong>Text</strong> for free text input. These fields have the following options:
+      <dl class="dl-horizontal">
+        <dt>Secondary Type</dt>
+        <dd>Defines what kind of input field will be displayed:</dd>
+        <dd>None - A single-line input box</dd>
+        <dd>Long - A multi-line, resizeable input box</dd>
+        <dd>Email - The same as None, but will validate for email addresses</dd>
+        <dd>Obscured - The same as None, but input will be hidden to the user. Useful for confidential information.</dd>
+        <dt>Maximum Length</dt>
+        <dd>The maximum number of characters allowed in the field. Default is 255.</dd>
+      </dl>
+    </li>
+    <li>
+      <strong>Select</strong> to allow choosing from a list of choices.
+      <dl class="dl-horizontal">
+        <dt>Options</dt>
+        <dd>The list of allowed choices. Choices can be separated with a comma, or written on separate lines.</dd>
+        <dt>Allow Multiple?</dt>
+        <dd>If checked, users will be able to select more than one choice. This option affects the choices for the following options.</dd>
+        <dt>Control</dt>
+        <dd>The input control to display to the user. If <strong>Allow Multiple?</strong> is checked, the choices are "Multi-select List" and "Checkboxes"; otherwise, "Radio buttons" and "Dropdown List". "Auto" will decide based on the number of choices specified in the <strong>Options</strong> box.</dd>
+      </dl>
+    </li>
+    <li><strong>Date</strong></li>
+    <li>
+      <strong>Yes/No</strong> will display a checkbox
+    </li>
+    <li>
+      <strong>Number</strong>
+      <dl class="dl-horizontal">
+        <dt>Secondary Type</dt>
+        <dd>Defines extra context for the number:</dd>
+        <dd>None - No extra information</dd>
+        <dd>Currency - Formats the value for currency input</dd>
+        <dt>Precision</dt>
+        <dd>If the input box has arrow buttons to increment the value, this value is the size of one increment. Users can always type a number manually, at any precision</dd>
+        <dt>Allow Negative?</dt>
+        <dd>If checked, the number will be allowed to go arbitraily negative. Otherwise, it will not go below 0</dd>
+      </dl>
+    </li>
+  </ul>
 {% endblock page_help %}
 
 {% block js_includes %}

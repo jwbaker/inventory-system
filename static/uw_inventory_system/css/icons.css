@@ -49,6 +49,9 @@ i,
 .edit::after {
   content: "\f040"; /* fa-pencil */
 }
+.field-help::after {
+  content: "\f128"; /* fa-question */
+}
 .file-file::after {
   content: "\f016"; /* fa-file-o */
 }
