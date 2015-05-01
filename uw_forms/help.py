@@ -15,6 +15,8 @@ AUTOCOMPLETE_USER_HELP = '''Typing in this field will bring up a list of users
 DEPRECATED_HELP = '''This field has been deprecated. Changes to its value are
                     not allowed.'''
 
+DATE_HELP = 'Please enter dates in dd/mm/yyyy format'
+
 FIELD_HELP_TEXT = {
     'Location': AUTOCOMPLETE_HELP.format('location'),
     'Supplier': AUTOCOMPLETE_HELP.format('supplier'),
@@ -22,6 +24,11 @@ FIELD_HELP_TEXT = {
     'Owner': AUTOCOMPLETE_USER_HELP,
     'Technician': AUTOCOMPLETE_USER_HELP,
     'Technician ID': DEPRECATED_HELP,
+    'Manufacture date': DATE_HELP,
+    'Purchase date': DATE_HELP,
+    'Estimation date': DATE_HELP,
+    'Special CSA inspection date': DATE_HELP,
+    'Lifting device inspection date': DATE_HELP,
 }
 
 
