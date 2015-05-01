@@ -133,5 +133,4 @@ def show_files(can_add, can_edit, view_deleted, formset=None):
 
 @register.assignment_tag
 def set_help_text(field_name):
-    print field_name
     return help.dispatch(field_name)

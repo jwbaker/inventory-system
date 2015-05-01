@@ -33,5 +33,4 @@ FIELD_HELP_TEXT = {
 
 
 def dispatch(field_name):
-    # print field_name
     return mark_safe(FIELD_HELP_TEXT.get(field_name, ''))

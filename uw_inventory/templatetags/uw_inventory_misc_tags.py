@@ -63,6 +63,8 @@ ICON_TITLES = {
     'upload': 'Import',
     'menu-down': 'Show details',
     'menu-up': 'Hide details',
+    'field-help': 'Help with this field',
+    'help': 'Help with this page',
 }
 
 
@@ -70,14 +72,23 @@ ICON_TITLES = {
 def icon(classes, **kwargs):
     kw_args = ''
 
-    for k, v in kwargs.iteritems():
-        kw_args += '{0}="{1}" '.format(k.replace('_', '-'), v)
-
     title = kwargs.get('title', '')
     if not title:
         for c in classes.split(' '):
             if c in ICON_TITLES:
                 title = ICON_TITLES[c]
+
+    if 'field-help' in classes:
+        print title
+        kwargs.update({
+            'data-toggle': 'popover',
+            'data-trigger': 'focus',
+            'data-html': 'True',
+        })
+        classes += ' persist-visible'
+
+    for k, v in kwargs.iteritems():
+        kw_args += '{0}="{1}" '.format(k.replace('_', '-'), v)
 
     return mark_safe(
         '<i class="{0}" title="{1}" {2}></i>'.format(classes, title, kw_args)
